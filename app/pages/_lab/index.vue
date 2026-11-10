@@ -9,6 +9,12 @@ const NuxtLinkComponent = resolveComponent('NuxtLink')
 
 const experiments = [
   {
+    to: '/_lab/sistema',
+    title: 'Sistema de diseño',
+    status: 'Fase 6',
+    text: 'Paleta y contrastes, tipografía, botones, formularios, glass, iconos y reveal.',
+  },
+  {
     to: '/_lab/escena',
     title: 'Escena de prueba',
     status: 'Fase 1',

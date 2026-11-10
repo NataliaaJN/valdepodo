@@ -218,7 +218,9 @@ Cada fase lista **entregables** y **gate** (criterios de cierre). Las fases 2, 3
   - sin errores de hidratación;
   - navegación entre páginas sin triggers huérfanos.
 
-### FASE 6 — Desarrollo del resto de secciones de la web
+### FASE 6 — Desarrollo del resto de secciones de la web 🟡 bloques desarrollados, esperando la revisión responsive de cada uno
+
+> **Resultado (11/11/2026):** los 7 bloques en código real: footer, `error.vue`, intro de marca (fundido: sin vector original no hay transformación), Home completa, índice y 5 servicios, Conócenos, Pedir cita (wizard + `/api/cita` con antispam y correo), Contacto y legales/créditos. 14 rutas prerenderizadas, 130 tests, sin avisos de hidratación ni scroll horizontal a 360 px. Lighthouse móvil: Home 89, resto 91-92. `npm run check:pending` lista 161 marcadores y bloquea el build de producción. Detalle en [fase6-web.md](fase6-web.md). **Pendiente:** revisión responsive en los 8 anchos, contenidos de la clínica y textos de la asesoría.
 
 Orden recomendado; cada bloque con su gate de revisión responsive (8 anchos):
 

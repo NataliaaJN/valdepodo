@@ -1,31 +1,20 @@
 <script setup lang="ts">
 /**
- * Estudio biomecánico (spec 04 §1). Fase 5: estructura mínima con la secuencia del laboratorio (Fase 3)
- * montada en su página; textos `pending`. Contenido completo, schema y "También te puede interesar": Fase 6.
+ * Estudio biomecánico (spec 04 §1): hero con el mapa de presión que respira, introducción, secuencia de
+ * huellas (experiencia nº 2), servicios relacionados y CTA. Textos clínicos en `pending`.
  */
 import { pending } from '#shared/utils/pending'
 import { ILLUSTRATIVE_LABEL, pressureStates } from '~/data/biomech'
-import { getService } from '~/data/services'
+import { bookingPath } from '~/data/services'
 
-const service = getService('estudio-biomecanico')
-
-useSeoMeta({
-  title: service.name,
-  description:
-    'Estudio biomecánico de la pisada en Valdepodo: análisis estático, de la marcha y de la carrera.',
-  robots: 'noindex, nofollow',
-})
-
-const description = pending(
-  'Analizamos cómo apoyas y cómo te mueves para entender mejor tus pies.',
-  'Descripción del servicio: validar con la clínica',
-)
+const service = useServicePage('estudio-biomecanico')
+const description = service.description
 const intro = pending(
   '[Qué es el estudio biomecánico y qué permite analizar: texto pendiente de validar]',
   'Introducción del servicio (spec 04 §1.2): la redacta o valida la clínica',
 )
 const indicators = ['Estático', 'Marcha', 'Carrera']
-const cta = { label: 'Solicitar estudio', to: '/pedir-cita?motivo=estudio-biomecanico' }
+const cta = { label: 'Solicitar estudio', to: bookingPath(service.slug) }
 </script>
 
 <template>
@@ -36,8 +25,17 @@ const cta = { label: 'Solicitar estudio', to: '/pedir-cita?motivo=estudio-biomec
         class="pointer-events-none absolute inset-0 -z-10 bg-(image:--grad-atmosphere)"
         aria-hidden="true"
       />
+      <div class="container-site pt-8 lg:pt-10">
+        <SiteBreadcrumbs
+          :items="[
+            { name: 'Inicio', to: '/' },
+            { name: 'Servicios', to: '/servicios' },
+            { name: service.name },
+          ]"
+        />
+      </div>
       <div
-        class="container-site grid gap-10 py-12 lg:min-h-[calc(100svh-var(--nav-h))] lg:grid-cols-2 lg:items-center lg:py-0"
+        class="container-site grid gap-10 py-12 lg:min-h-[calc(100svh-var(--nav-h)-5rem)] lg:grid-cols-2 lg:items-center lg:py-0"
       >
         <div>
           <p class="eyebrow text-primary-strong">Servicios · {{ service.number }}</p>
@@ -88,6 +86,8 @@ const cta = { label: 'Solicitar estudio', to: '/pedir-cita?motivo=estudio-biomec
     <div class="bg-white py-(--space-section)">
       <BiomechSequence />
     </div>
+
+    <RelatedServices :slugs="service.related" />
 
     <CtaBlock
       :title="{ before: 'Cada paso empieza por entender ', accent: 'cómo pisas' }"

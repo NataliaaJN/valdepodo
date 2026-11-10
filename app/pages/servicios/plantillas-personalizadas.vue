@@ -1,27 +1,21 @@
 <script setup lang="ts">
 /**
- * Plantillas personalizadas (spec 04 §2). Fase 5: estructura mínima con la experiencia del laboratorio
- * (Fase 4) montada en su página; textos `pending`.
+ * Plantillas personalizadas (spec 04 §2): hero, plantilla descompuesta + fibras (experiencia nº 3),
+ * proceso de personalización, servicios relacionados y CTA. Textos en `pending`.
  * Un único lienzo WebGL por página (spec 08 §1.2): el hero usa el póster de Blender de la plantilla completa
  * y la escena 3D vive en la experiencia de capas y fibras.
  */
 import { pending } from '#shared/utils/pending'
-import { CONCEPTUAL_LABEL } from '~/data/insole'
-import { getService } from '~/data/services'
+import { CONCEPTUAL_LABEL, insoleProcess } from '~/data/insole'
+import { bookingPath } from '~/data/services'
 
-const service = getService('plantillas-personalizadas')
-
-useSeoMeta({
-  title: service.name,
-  description: 'Plantillas personalizadas en Valdepodo, diseñadas a partir de la valoración de tu pie.',
-  robots: 'noindex, nofollow',
-})
+const service = useServicePage('plantillas-personalizadas')
 
 const description = pending(
   'No existen dos pies iguales. Tus plantillas tampoco deberían serlo.',
   'Descripción del servicio (concepto de la spec 04 §2): validar con la clínica',
 )
-const cta = { label: 'Pedir cita', to: '/pedir-cita?motivo=plantillas-personalizadas' }
+const cta = { label: 'Pedir cita', to: bookingPath(service.slug) }
 </script>
 
 <template>
@@ -32,8 +26,17 @@ const cta = { label: 'Pedir cita', to: '/pedir-cita?motivo=plantillas-personaliz
         class="pointer-events-none absolute inset-0 -z-10 bg-(image:--grad-atmosphere)"
         aria-hidden="true"
       />
+      <div class="container-site pt-8 lg:pt-10">
+        <SiteBreadcrumbs
+          :items="[
+            { name: 'Inicio', to: '/' },
+            { name: 'Servicios', to: '/servicios' },
+            { name: service.name },
+          ]"
+        />
+      </div>
       <div
-        class="container-site grid gap-10 py-12 lg:min-h-[calc(100svh-var(--nav-h))] lg:grid-cols-12 lg:items-center lg:py-0"
+        class="container-site grid gap-10 py-12 lg:min-h-[calc(100svh-var(--nav-h)-5rem)] lg:grid-cols-12 lg:items-center lg:py-0"
       >
         <div class="lg:col-span-5">
           <p class="eyebrow text-primary-strong">Servicios · {{ service.number }}</p>
@@ -81,6 +84,18 @@ const cta = { label: 'Pedir cita', to: '/pedir-cita?motivo=plantillas-personaliz
 
     <!-- Plantilla descompuesta + fibras (experiencia nº 3) -->
     <InsoleStory class="pt-(--space-section)" />
+
+    <!-- Proceso de personalización (spec 04 §2.4) -->
+    <section class="container-site py-(--space-section)" aria-labelledby="ins-process">
+      <SectionHeading
+        id="ins-process"
+        eyebrow="Proceso"
+        :title="{ before: 'Cómo personalizamos ', accent: 'tus plantillas', after: '' }"
+      />
+      <StepList :steps="insoleProcess" horizontal class="mt-12" />
+    </section>
+
+    <RelatedServices :slugs="service.related" />
 
     <CtaBlock
       :title="{ before: 'El soporte adecuado empieza con un ', accent: 'buen análisis' }"

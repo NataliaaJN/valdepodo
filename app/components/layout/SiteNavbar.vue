@@ -9,6 +9,7 @@
 import { site } from '~/data/site'
 
 const route = useRoute()
+const clinic = useClinic()
 const scrolled = ref(false)
 const open = ref(false)
 const menuButton = ref<HTMLButtonElement | null>(null)
@@ -22,6 +23,8 @@ function onScroll() {
 function isActive(to: string) {
   const [path, hash] = to.split('#')
   if (hash) return route.path === path && route.hash === `#${hash}`
+  // "La clínica" no se marca si el activo es "Equipo" (/conocenos#equipo)
+  if (route.hash && site.nav.some((n) => n.to === `${route.path}${route.hash}`)) return false
   return route.path === path || (path !== '/' && route.path.startsWith(`${path}/`))
 }
 
@@ -161,9 +164,21 @@ onBeforeUnmount(() => {
               </li>
             </ul>
           </nav>
-          <div class="mt-auto grid gap-1 text-text-secondary">
-            <ContentValue :value="site.phone" />
-            <ContentValue :value="site.instagram" />
+          <div class="mt-auto grid gap-3 pt-10 text-deep-blue">
+            <a :href="clinic.phoneHref" class="inline-flex items-center gap-3 font-semibold">
+              <BaseIcon name="phone" class="text-primary" />
+              <ContentValue :value="site.phone" />
+            </a>
+            <a
+              :href="clinic.instagram.url"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-3 font-semibold"
+            >
+              <BaseIcon name="instagram" class="text-primary" />
+              <ContentValue v-slot="{ value }" :value="site.instagram">{{ value.handle }}</ContentValue>
+              <span class="sr-only">(Instagram, se abre en una pestaña nueva)</span>
+            </a>
           </div>
         </div>
       </div>

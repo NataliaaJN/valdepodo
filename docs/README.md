@@ -20,5 +20,7 @@
 | [fase3-biomecanico.md](fase3-biomecanico.md) | Informe de la Fase 3: biblioteca SVG del estudio biomecánico, secuencia de 6 fases, peso, rendimiento y lo que falta para el Gate 3. |
 | [fase4-plantilla.md](fase4-plantilla.md) | Informe de la Fase 4: plantilla conceptual por capas, fibras en GPU, presupuestos, rendimiento y lo que falta para el Gate 4. |
 | [fase5-propuesta.md](fase5-propuesta.md) | Informe de la Fase 5: propuesta visual de la Home, integración de las tres experiencias en sus páginas, pósters del pie por capa y lo que falta para el Gate 5. |
+| [fase6-web.md](fase6-web.md) | Informe de la Fase 6: sistema de diseño, layout global, Home completa, servicios, Conócenos, pedir cita (wizard y API), contacto y legales. |
+| [fase6-pendientes.md](fase6-pendientes.md) | Contenido provisional (`pending()`) que tiene que validar la clínica, generado con `npm run check:pending -- --md`. |
 
 Estado: **Fase 1 completada · Fase 2 con prototipo listo, pendiente de la revisión anatómica de la podóloga (Gate 2) · Fase 3 con laboratorio listo, pendiente de la revisión visual (Gate 3) · Fase 4 con laboratorio listo, pendiente de la revisión visual (Gate 4) · Fase 5 con propuesta visual lista, pendiente de la aprobación de la dirección artística (Gate 5).**

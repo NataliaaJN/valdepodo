@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
- * Layout base. Navbar de la propuesta visual (Fase 5, spec 02 §2); el footer definitivo llega en la Fase 6.1.
- * La navbar es fija: `main` deja su altura arriba y las páginas con hero a sangre la recuperan con
- * `.under-navbar` (el hero queda debajo de la navbar transparente).
+ * Layout base (spec 02). La navbar es fija: `main` deja su altura arriba y las páginas con hero a sangre la
+ * recuperan con `.under-navbar` (el hero queda debajo de la navbar transparente).
+ * `data-page-root` marca lo que se vuelve `inert` mientras el menú móvil está abierto.
  */
 </script>
 
@@ -22,11 +22,6 @@
       <slot />
     </main>
 
-    <footer class="bg-deep-blue py-10 text-ice-blue" data-page-root>
-      <div class="container-site flex flex-wrap items-center justify-between gap-4 text-sm">
-        <BrandLogo variant="wordmark" mono label="" class="w-[120px] text-white" />
-        <p>Versión en desarrollo · propuesta visual (Fase 5)</p>
-      </div>
-    </footer>
+    <SiteFooter />
   </div>
 </template>

@@ -29,7 +29,8 @@
     "3d:posters": "node tools/assets/posters.mjs",
     "3d:optimize": "node tools/assets/optimize.mjs",
     "3d:check": "node tools/assets/check-assets.mjs",
-    "3d:smoke": "npm run 3d:test-cube && npm run 3d:optimize -- test-cube && npm run 3d:check"
+    "3d:smoke": "npm run 3d:test-cube && npm run 3d:optimize -- test-cube && npm run 3d:check",
+    "check:pending": "node tools/check-pending.mjs"
   },
   "dependencies": {
     "@nuxt/fonts": "^1.2.0",
@@ -41,7 +42,8 @@
     "tailwindcss": "^4.3.5",
     "three": "^0.187.0",
     "vue": "^3.5.45",
-    "vue-router": "^5.5.0"
+    "vue-router": "^5.5.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@gltf-transform/cli": "^4.5.1",

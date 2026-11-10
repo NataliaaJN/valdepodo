@@ -92,3 +92,35 @@ export const fiberSteps: readonly FiberStep[] = [
 
 /** Rótulo obligatorio de la experiencia (spec 04 §2.2). */
 export const CONCEPTUAL_LABEL = 'Representación conceptual'
+
+/**
+ * Proceso de personalización (spec 04 §2.4). Nombres de la especificación; descripciones en `pending()`.
+ * El paso 01 enlaza al Estudio biomecánico.
+ */
+export interface ProcessStep {
+  title: string
+  text: Maybe<string>
+  link?: { label: string; to: string }
+}
+
+const PROCESS_NOTE = 'Paso del proceso de personalización (spec 04 §2.4): validar con la clínica'
+
+export const insoleProcess: readonly ProcessStep[] = [
+  {
+    title: 'Valoración del pie',
+    text: pending('Empezamos por estudiar tu pie y tu forma de caminar.', PROCESS_NOTE),
+    link: { label: 'Ver el estudio biomecánico', to: '/servicios/estudio-biomecanico' },
+  },
+  {
+    title: 'Análisis de necesidades',
+    text: pending('Valoramos tu actividad diaria, tu calzado y tus molestias.', PROCESS_NOTE),
+  },
+  {
+    title: 'Diseño y adaptación',
+    text: pending('Diseñamos la plantilla a partir de los datos de la valoración.', PROCESS_NOTE),
+  },
+  {
+    title: 'Entrega y seguimiento',
+    text: pending('Te entregamos las plantillas y revisamos cómo te adaptas a ellas.', PROCESS_NOTE),
+  },
+]

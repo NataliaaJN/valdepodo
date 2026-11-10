@@ -92,6 +92,17 @@ export default defineNuxtConfig({
   },
 
   hooks: {
+    // Spec 09 §3: en producción no puede quedar contenido provisional (`pending`)
+    async 'build:before'() {
+      if (process.env.NUXT_PUBLIC_SITE_ENV !== 'production') return
+      const { findPending } = await import('./tools/check-pending.mjs')
+      const entries = await findPending()
+      if (entries.length) {
+        throw new Error(
+          `Quedan ${entries.length} marcadores pending() (npm run check:pending). El build de producción se detiene.`,
+        )
+      }
+    },
     // Sin <link rel="prefetch"> de los chunks asíncronos: el de three/TresJS (~850 KB sin comprimir) se
     // descargaba en toda visita aunque la escena 3D no llegue a cargarse (p. ej. móvil sin interacción).
     // La navegación no lo nota: NuxtLink precarga las páginas por su cuenta.
