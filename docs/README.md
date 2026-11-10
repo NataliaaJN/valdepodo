@@ -19,5 +19,6 @@
 | [fase2-viabilidad-pie.md](fase2-viabilidad-pie.md) | Informe de la Fase 2: fuentes, inventario, calidad, renders de validación, opciones de capas y lo que falta para el Gate 2. |
 | [fase3-biomecanico.md](fase3-biomecanico.md) | Informe de la Fase 3: biblioteca SVG del estudio biomecánico, secuencia de 6 fases, peso, rendimiento y lo que falta para el Gate 3. |
 | [fase4-plantilla.md](fase4-plantilla.md) | Informe de la Fase 4: plantilla conceptual por capas, fibras en GPU, presupuestos, rendimiento y lo que falta para el Gate 4. |
+| [fase5-propuesta.md](fase5-propuesta.md) | Informe de la Fase 5: propuesta visual de la Home, integración de las tres experiencias en sus páginas, pósters del pie por capa y lo que falta para el Gate 5. |
 
-Estado: **Fase 1 completada · Fase 2 con prototipo listo, pendiente de la revisión anatómica de la podóloga (Gate 2) · Fase 3 con laboratorio listo, pendiente de la revisión visual (Gate 3) · Fase 4 con laboratorio listo, pendiente de la revisión visual (Gate 4).**
+Estado: **Fase 1 completada · Fase 2 con prototipo listo, pendiente de la revisión anatómica de la podóloga (Gate 2) · Fase 3 con laboratorio listo, pendiente de la revisión visual (Gate 3) · Fase 4 con laboratorio listo, pendiente de la revisión visual (Gate 4) · Fase 5 con propuesta visual lista, pendiente de la aprobación de la dirección artística (Gate 5).**

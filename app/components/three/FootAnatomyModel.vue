@@ -1,7 +1,9 @@
 <script setup lang="ts">
 /**
  * Contenido 3D del pie anatómico (dentro de <TresCanvas>): materiales de marca por capa y papel de cada capa
- * según la capa activa (spec 08 §2.2). Prototipo de la Fase 2.
+ * según la capa activa (spec 08 §2.2).
+ * El cambio de capa es un fundido de 500 ms (spec 03 §1): 250 ms de salida, cambio de papeles y 250 ms de
+ * entrada. Con reduced motion, el cambio es inmediato.
  */
 import { useLoop, useTres } from '@tresjs/core'
 import {
@@ -20,7 +22,16 @@ import {
 } from 'three'
 import { layerRoles, type FootLayer, type LayerRole } from '~/utils/foot-layers'
 
-const props = defineProps<{ model: Object3D; activeLayer: FootLayer; rotationY: number; idleSpin: boolean }>()
+const props = withDefaults(
+  defineProps<{
+    model: Object3D
+    activeLayer: FootLayer
+    rotationY: number
+    idleSpin: boolean
+    fit?: number
+  }>(),
+  { fit: 2.2 },
+)
 const emit = defineEmits<{ layers: [available: FootLayer[]] }>()
 
 const { invalidate } = useTres()
@@ -109,12 +120,12 @@ const size = box.getSize(new Vector3())
 const center = box.getCenter(new Vector3())
 props.model.position.sub(center)
 group.value.add(props.model)
-group.value.scale.setScalar(2.2 / Math.max(size.x, size.y, size.z))
+group.value.scale.setScalar(props.fit / Math.max(size.x, size.y, size.z))
 
 onMounted(() => emit('layers', [...meshesByLayer.keys()]))
 
-function applyRoles() {
-  const roles = layerRoles(props.activeLayer)
+function applyRoles(layerId: FootLayer) {
+  const roles = layerRoles(layerId)
   for (const [layer, meshes] of meshesByLayer) {
     const role: LayerRole = roles[layer]
     for (const mesh of meshes) {
@@ -130,11 +141,66 @@ function applyRoles() {
   }
   invalidate()
 }
-watch(() => props.activeLayer, applyRoles, { immediate: true })
+// ---------------------------------------------------------------- transición entre capas
+const FADE = 0.25 // s por tramo (salida + entrada = 500 ms)
+const standardMaterials = [...Object.values(activeMaterials), ...Object.values(contextMaterials)] as (
+  MeshStandardMaterial | MeshPhysicalMaterial
+)[]
+const baseState = new Map(
+  standardMaterials.map((m) => [
+    m,
+    { opacity: m.opacity, transparent: m.transparent, depthWrite: m.depthWrite },
+  ]),
+)
+let shownLayer = props.activeLayer
+let fadeT = 1 // 1 = visible
+let fadeDir: -1 | 0 | 1 = 0
+const reduceMotion = import.meta.client && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+function setFade(k: number) {
+  for (const m of standardMaterials) {
+    const base = baseState.get(m)!
+    const fading = k < 1
+    const transparent = fading || base.transparent
+    if (m.transparent !== transparent) {
+      m.transparent = transparent
+      m.needsUpdate = true // cambia el programa (orden de dibujo y mezcla)
+    }
+    m.depthWrite = fading ? false : base.depthWrite
+    m.opacity = base.opacity * k
+  }
+  shellMaterial.uniforms.uStrength!.value = k
+}
+
+applyRoles(shownLayer)
+watch(
+  () => props.activeLayer,
+  (layer) => {
+    if (reduceMotion) {
+      shownLayer = layer
+      applyRoles(layer)
+      return
+    }
+    fadeDir = -1
+    invalidate()
+  },
+)
 
 // ---------------------------------------------------------------- rotación
 let currentY = props.rotationY
 onBeforeRender(({ delta }) => {
+  if (fadeDir !== 0) {
+    fadeT = Math.min(1, Math.max(0, fadeT + (fadeDir * delta) / FADE))
+    if (fadeDir === -1 && fadeT === 0) {
+      shownLayer = props.activeLayer
+      applyRoles(shownLayer)
+      fadeDir = 1
+    } else if (fadeDir === 1 && fadeT === 1) {
+      fadeDir = props.activeLayer === shownLayer ? 0 : -1
+    }
+    setFade(fadeT)
+    invalidate()
+  }
   const target = props.rotationY
   const next = currentY + (target - currentY) * Math.min(1, delta * 8)
   if (Math.abs(next - currentY) > 1e-4 || props.idleSpin) {

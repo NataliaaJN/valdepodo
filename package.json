@@ -25,6 +25,7 @@
     "3d:inspect-za": "node tools/blender/run-blender.mjs tools/blender/inspect_zanatomy.py -- --config tools/blender/config/foot.json",
     "3d:foot-validation": "node tools/blender/run-blender.mjs tools/blender/render_foot_validation.py -- --config tools/blender/config/foot.json",
     "3d:insole": "node tools/blender/run-blender.mjs tools/blender/build_insole.py -- --config tools/blender/config/insole.json --out tools/out/insole.raw.glb --posters",
+    "3d:foot-posters": "node tools/blender/run-blender.mjs tools/blender/render_foot_posters.py -- --config tools/blender/config/foot-view.json && node tools/assets/posters.mjs foot",
     "3d:posters": "node tools/assets/posters.mjs",
     "3d:optimize": "node tools/assets/optimize.mjs",
     "3d:check": "node tools/assets/check-assets.mjs",

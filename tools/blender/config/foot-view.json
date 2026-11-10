@@ -1,0 +1,23 @@
+{
+  "version": "0.1.0",
+  "description": "Encuadre del pie anatómico compartido por la escena web (FootAnatomy.client.vue) y los pósters de Blender (render_foot_posters.py). Coordenadas glTF (Y arriba). El modelo se centra en su caja y se escala para que su mayor dimensión mida `fit`.",
+  "model": "tools/out/foot-proto.raw.glb",
+  "fit": 2.2,
+  "aspect": [1, 1],
+  "fov": 30,
+  "position": [3.45, 1.4, 3.7],
+  "target": [0, -0.04, 0],
+  "rotationY": 0.8,
+  "lights": {
+    "hemisphere": { "sky": "#EAF5FA", "ground": "#163C63", "intensity": 0.9 },
+    "key": { "color": "#FFFFFF", "intensity": 2, "position": [3, 5, 4] },
+    "rim": { "color": "#1EABE1", "intensity": 1.2, "position": [-4, 1, -3] }
+  },
+  "posters": [
+    { "name": "skin", "layer": "skin" },
+    { "name": "muscles", "layer": "muscles" },
+    { "name": "tendons", "layer": "tendons" },
+    { "name": "bones", "layer": "bones" }
+  ],
+  "poster_width": 1600
+}

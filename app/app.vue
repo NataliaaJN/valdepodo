@@ -8,4 +8,5 @@ useHead({
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  <ProposalToolbar />
 </template>

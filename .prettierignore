@@ -6,3 +6,6 @@ public/models
 tools/sources
 tools/out
 *.glb
+
+# Informes generados (Lighthouse)
+docs/assets/**/*.html
