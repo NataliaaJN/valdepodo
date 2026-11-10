@@ -3,7 +3,9 @@
  * Puerta de entrada de toda escena 3D (spec 08 §1.2).
  * - SSR: renderiza el póster (o un hueco del mismo tamaño) → sin CLS y sin WebGL en servidor.
  * - Cliente: si el nivel no es 'static', carga la escena de forma diferida cuando la sección se acerca
- *   al viewport y el navegador está ocioso; funde póster → canvas al recibir `ready`.
+ *   al viewport y: en `full`, el navegador está ocioso; en `lite`, el usuario interactúa por primera vez
+ *   (scroll, toque, tecla; spec 03 §6 "o al interactuar"). Así el chunk de three y el GLB no compiten con la
+ *   carga inicial en móvil: el póster es el primer fotograma de la escena. Funde póster → canvas en `ready`.
  * - `contextlost`: vuelve al póster y marca la sesión para no reintentar.
  *
  * Contrato de la escena cargada: emite `ready` (primer frame con contenido) y `contextlost`.
@@ -28,6 +30,8 @@ const props = withDefaults(
     aspectRatio?: string
     /** Props que se pasan a la escena. */
     sceneProps?: Record<string, unknown>
+    /** El póster es candidato a LCP (hero): se pide con prioridad alta. */
+    priority?: boolean
   }>(),
   {
     poster: undefined,
@@ -36,6 +40,7 @@ const props = withDefaults(
     posterAlt: '',
     aspectRatio: '1 / 1',
     sceneProps: () => ({}),
+    priority: false,
   },
 )
 
@@ -73,10 +78,24 @@ onMounted(() => {
   observer.observe(root.value)
 
   const markIdle = () => (idle.value = true)
+  if (tier.value === 'lite') {
+    for (const type of INTERACTION_EVENTS)
+      window.addEventListener(type, onFirstInteraction, { passive: true })
+    return
+  }
   if ('requestIdleCallback' in window) window.requestIdleCallback(markIdle, { timeout: 2500 })
   // Respaldo: algunos navegadores no ejecutan requestIdleCallback en pestañas en segundo plano.
   idleFallbackTimer = setTimeout(markIdle, 'requestIdleCallback' in window ? 3000 : 800)
 })
+
+const INTERACTION_EVENTS = ['pointerdown', 'touchstart', 'keydown', 'wheel', 'scroll'] as const
+function removeInteractionListeners() {
+  for (const type of INTERACTION_EVENTS) window.removeEventListener(type, onFirstInteraction)
+}
+function onFirstInteraction() {
+  removeInteractionListeners()
+  idle.value = true
+}
 
 watch(
   () => resolved.value && tier.value === 'static',
@@ -122,6 +141,7 @@ onBeforeUnmount(() => {
   observer?.disconnect()
   clearTimeout(slowTimer)
   clearTimeout(idleFallbackTimer)
+  removeInteractionListeners()
 })
 </script>
 
@@ -140,8 +160,8 @@ onBeforeUnmount(() => {
         :sizes="posterSmall ? posterSizes : undefined"
         :alt="posterAlt"
         class="size-full object-contain"
-        decoding="async"
-        fetchpriority="low"
+        :decoding="priority ? 'sync' : 'async'"
+        :fetchpriority="priority ? 'high' : 'low'"
       />
     </picture>
     <div

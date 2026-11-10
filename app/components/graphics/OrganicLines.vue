@@ -2,61 +2,81 @@
 /**
  * Líneas orgánicas que "orbitan" un elemento (spec 01 §7, spec 03 §1). Decorativas (aria-hidden).
  * Elipses finas con giro muy lento; sin movimiento con reduced motion.
+ * Cada anillo es un SVG propio dentro de un div que gira con `transform`: la animación va en el compositor
+ * (girar un <g> dentro del SVG obliga a repintar en el hilo principal en cada fotograma).
  */
 withDefaults(defineProps<{ spin?: boolean }>(), { spin: true })
 
 const rings = [
-  { rx: 46, ry: 20, rotate: -18, dash: '0', opacity: 0.55, dur: 90 },
-  { rx: 40, ry: 27, rotate: 24, dash: '1.2 2.4', opacity: 0.5, dur: 120 },
-  { rx: 48, ry: 34, rotate: 62, dash: '0', opacity: 0.25, dur: 150 },
+  { rx: 46, ry: 20, rotate: -18, dash: '0', opacity: 0.55, dur: 90, dot: { cx: 88, cy: 38, color: 'cyan' } },
+  {
+    rx: 40,
+    ry: 27,
+    rotate: 24,
+    dash: '1.2 2.4',
+    opacity: 0.5,
+    dur: 120,
+    dot: { cx: 14, cy: 64, color: 'primary' },
+  },
+  { rx: 48, ry: 34, rotate: 62, dash: '0', opacity: 0.25, dur: 150, dot: null },
 ]
 </script>
 
 <template>
-  <svg class="organic-lines" viewBox="0 0 100 100" fill="none" aria-hidden="true" focusable="false">
-    <g
+  <div class="organic-lines" aria-hidden="true">
+    <div
       v-for="(ring, i) in rings"
       :key="i"
-      class="ring"
-      :class="{ spin }"
+      class="orbit-ring"
+      :class="{ spin, reverse: i % 2 === 1 }"
       :style="{ '--dur': `${ring.dur}s` }"
     >
-      <ellipse
-        cx="50"
-        cy="50"
-        :rx="ring.rx"
-        :ry="ring.ry"
-        :transform="`rotate(${ring.rotate} 50 50)`"
-        :stroke-dasharray="ring.dash"
-        :stroke-opacity="ring.opacity"
-        stroke="var(--color-cyan)"
-        stroke-width="0.18"
-        vector-effect="non-scaling-stroke"
-      />
-    </g>
-    <circle cx="88" cy="38" r="0.9" fill="var(--color-cyan)" class="spin ring" style="--dur: 90s" />
-    <circle cx="14" cy="64" r="0.7" fill="var(--color-primary)" class="spin ring" style="--dur: 120s" />
-  </svg>
+      <svg viewBox="0 0 100 100" fill="none" focusable="false">
+        <ellipse
+          cx="50"
+          cy="50"
+          :rx="ring.rx"
+          :ry="ring.ry"
+          :transform="`rotate(${ring.rotate} 50 50)`"
+          :stroke-dasharray="ring.dash"
+          :stroke-opacity="ring.opacity"
+          stroke="var(--color-cyan)"
+          stroke-width="1"
+          vector-effect="non-scaling-stroke"
+        />
+        <circle
+          v-if="ring.dot"
+          :cx="ring.dot.cx"
+          :cy="ring.dot.cy"
+          r="0.9"
+          :fill="`var(--color-${ring.dot.color})`"
+        />
+      </svg>
+    </div>
+  </div>
 </template>
 
 <style scoped>
 .organic-lines {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.orbit-ring {
+  position: absolute;
+  inset: 0;
+}
+.orbit-ring svg {
   display: block;
   width: 100%;
   height: 100%;
   overflow: visible;
 }
-.organic-lines :deep(ellipse) {
-  stroke-width: 1px;
-}
-.ring {
-  transform-origin: 50px 50px;
-  transform-box: view-box;
-}
-.ring.spin {
+.orbit-ring.spin {
   animation: orbit var(--dur) linear infinite;
+  will-change: transform;
 }
-.ring:nth-child(2n).spin {
+.orbit-ring.reverse {
   animation-direction: reverse;
 }
 @keyframes orbit {
@@ -65,7 +85,7 @@ const rings = [
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ring.spin {
+  .orbit-ring.spin {
     animation: none;
   }
 }

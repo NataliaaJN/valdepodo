@@ -200,7 +200,7 @@ Cada fase lista **entregables** y **gate** (criterios de cierre). Las fases 2, 3
 
 ### FASE 5 — Integración progresiva de las experiencias 3D en Nuxt + propuesta visual 🟡 propuesta lista, esperando Gate 5
 
-> **Resultado (10/11/2026):** Home en código real (navbar, hero con el pie anatómico provisional y secuencia pineada, fragmento de servicios), tipografía A/B con `?tipo=b`, pósters del pie por capa (`npm run 3d:foot-posters`) y las secuencias del biomecánico y de la plantilla montadas en sus páginas. Sin errores de hidratación ni triggers huérfanos; prerender de 10 rutas. Detalle en [fase5-propuesta.md](fase5-propuesta.md). **Pendiente:** aprobación de la dirección artística, Lighthouse móvil y prueba con reduced motion.
+> **Resultado (10/11/2026):** Home en código real (navbar, hero con el pie anatómico provisional y secuencia pineada, fragmento de servicios), tipografía A/B con `?tipo=b`, pósters del pie por capa (`npm run 3d:foot-posters`) y las secuencias del biomecánico y de la plantilla montadas en sus páginas. Sin errores de hidratación ni triggers huérfanos; prerender de 10 rutas. Lighthouse móvil de la Home: 94. Detalle en [fase5-propuesta.md](fase5-propuesta.md). **Pendiente:** aprobación de la dirección artística y prueba con reduced motion.
 
 - `SceneGate` completo: póster SSR desde `public/images/3d-fallbacks/`, carga diferida, `webglcontextlost`, niveles.
 - Coordinación con ScrollTrigger: estado declarativo, `matchMedia` y limpieza en la navegación entre páginas.

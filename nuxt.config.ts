@@ -86,7 +86,18 @@ export default defineNuxtConfig({
     },
   },
 
+  // Estáticos precomprimidos (gzip/brotli) también en `nuxt preview`, como en el hosting final
+  nitro: {
+    compressPublicAssets: true,
+  },
+
   hooks: {
+    // Sin <link rel="prefetch"> de los chunks asíncronos: el de three/TresJS (~850 KB sin comprimir) se
+    // descargaba en toda visita aunque la escena 3D no llegue a cargarse (p. ej. móvil sin interacción).
+    // La navegación no lo nota: NuxtLink precarga las páginas por su cuenta.
+    'build:manifest'(manifest) {
+      for (const chunk of Object.values(manifest)) chunk.prefetch = false
+    },
     'pages:extend'(pages) {
       if (enableLab) return
       for (let i = pages.length - 1; i >= 0; i--) {

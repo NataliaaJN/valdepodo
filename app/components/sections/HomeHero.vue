@@ -48,7 +48,10 @@ const modelStyle = computed(() =>
 )
 
 const isStatic = computed(() => !resolved.value || tier.value === 'static')
-const poster = computed(() => `/images/3d-fallbacks/foot/${isStatic.value ? activeLayer.value : 'skin'}`)
+// El póster sigue a la capa elegida hasta que la escena está lista (en `lite` se carga al interactuar)
+const poster = computed(
+  () => `/images/3d-fallbacks/foot/${isStatic.value || !sceneReady.value ? activeLayer.value : 'skin'}`,
+)
 
 const loader = () => import('~/components/three/FootAnatomy.client.vue')
 const sceneProps = computed(() => ({
@@ -193,6 +196,7 @@ const layerIcons: Record<FootLayer, string> = {
               poster-small
               poster-sizes="(min-width: 1024px) 60vw, 100vw"
               aspect-ratio="1 / 1"
+              priority
               @ready="sceneReady = true"
             />
           </figure>
@@ -321,10 +325,10 @@ const layerIcons: Record<FootLayer, string> = {
   }
 }
 
+/* Degradados radiales ya difusos: sin filter: blur (pintado caro en móvil) */
 .blob {
   position: absolute;
   border-radius: 999px;
-  filter: blur(60px);
 }
 .blob-a {
   width: min(70vw, 900px);
@@ -376,8 +380,8 @@ const layerIcons: Record<FootLayer, string> = {
   align-items: center;
   gap: 0.4rem;
   border-radius: var(--radius-pill);
-  background: rgb(255 255 255 / 0.72);
-  backdrop-filter: blur(10px);
+  /* Sin backdrop-filter: las órbitas giran detrás y obligarían a recalcular el desenfoque en cada fotograma */
+  background: rgb(255 255 255 / 0.9);
   box-shadow: var(--shadow-soft);
   padding: 0.45rem 0.9rem;
   font-size: 0.8125rem;
