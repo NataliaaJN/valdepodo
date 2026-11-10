@@ -29,6 +29,55 @@
         }
       ],
       "optimizedAt": "2026-11-10T17:50:58Z"
+    },
+    {
+      "name": "foot-proto",
+      "version": "0.1.0",
+      "purpose": "Prototipo anatómico del pie (Fase 2, Gate 2). Solo /_lab hasta su validación por la podóloga.",
+      "generator": "tools/blender/extract_foot.py",
+      "config": "tools/blender/config/foot.json",
+      "sources": [
+        {
+          "name": "BodyParts3D 4.0 (isa_BP3D_4.0_obj_99.zip)",
+          "url": "https://dbarchive.biosciencedbc.jp/data/bodyparts3d/LATEST/isa_BP3D_4.0_obj_99.zip",
+          "retrievedAt": "2026-11-10",
+          "revision": "Release 4.0 (2013/06/19); licencia actualizada 2025/02/27",
+          "sha256": "40665852c49f218326590e204db91064a1ecfc3c6f8cbd7bbbcaac62c7cd409e",
+          "license": "CC BY 4.0"
+        }
+      ],
+      "license": "CC BY 4.0 (obra derivada de BodyParts3D)",
+      "credits": "foot-proto",
+      "budget": {
+        "maxBytes": 2621440,
+        "maxTriangles": 250000
+      },
+      "variants": [
+        {
+          "id": "full",
+          "file": "foot-proto.full.glb"
+        },
+        {
+          "id": "lite",
+          "file": "foot-proto.lite.glb",
+          "simplifyRatio": 0.5,
+          "simplifyError": 0.0005
+        }
+      ],
+      "validatedBy": null,
+      "outputs": [
+        {
+          "file": "public/models/foot-proto.full.glb",
+          "bytes": 576092,
+          "triangles": 73376
+        },
+        {
+          "file": "public/models/foot-proto.lite.glb",
+          "bytes": 495624,
+          "triangles": 60847
+        }
+      ],
+      "optimizedAt": "2026-11-10T19:13:24Z"
     }
   ]
 }

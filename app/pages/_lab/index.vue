@@ -14,7 +14,7 @@ const experiments = [
     status: 'Fase 1',
     text: 'Cadena Blender → GLB → meshopt → TresJS.',
   },
-  { to: null, title: 'Pie anatómico', status: 'Fase 2', text: 'Prototipo y validación de capas.' },
+  { to: '/_lab/pie', title: 'Pie anatómico', status: 'Fase 2', text: 'Prototipo y validación de capas.' },
   {
     to: null,
     title: 'Estudio biomecánico',

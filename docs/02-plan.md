@@ -153,7 +153,9 @@ Cada fase lista **entregables** y **gate** (criterios de cierre). Las fases 2, 3
   - `npm run dev`, `build`, `lint` y `test` en verde;
   - `3d:*` ejecutan un script de prueba (cubo → GLB → optimizado → cargado en `_lab/`) de extremo a extremo.
 
-### FASE 2 — Prototipo anatómico del pie y validación de calidad (ruta crítica)
+### FASE 2 — Prototipo anatómico del pie y validación de calidad (ruta crítica) 🟡 prototipo listo, esperando Gate 2
+
+> **Resultado (10/11/2026):** viable con BodyParts3D 4.0 (CC BY 4.0) para exterior, huesos, músculos (con sus tendones) y tendón de Aquiles. Prototipo de 73k triángulos y 563 KB, visible en `/_lab/pie` con el estilo de marca. Ligamentos: solo esquemáticos (Z-Anatomy, CC BY-SA). Detalle y opciones en [fase2-viabilidad-pie.md](fase2-viabilidad-pie.md). **Bloqueo:** revisión anatómica de la podóloga y elección de la opción de capas (A/B/C).
 
 - Descargar fuentes con confirmación (BodyParts3D 4.0, Z-Anatomy) y registrar checksums.
 - `inspect_source.py` → **inventario del pie** (capas disponibles, triángulos, calidad de malla, licencia de cada objeto).

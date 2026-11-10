@@ -85,7 +85,18 @@ if (!script) {
 const scriptArgs = rest[0] === '--' ? rest.slice(1) : rest
 const result = spawnSync(
   blender,
-  ['-b', '--factory-startup', '--python-exit-code', '1', '-P', resolve(root, script), '--', ...scriptArgs],
+  // --disable-autoexec: los .blend de terceros nunca ejecutan sus scripts embebidos.
+  [
+    '-b',
+    '--factory-startup',
+    '--disable-autoexec',
+    '--python-exit-code',
+    '1',
+    '-P',
+    resolve(root, script),
+    '--',
+    ...scriptArgs,
+  ],
   { stdio: 'inherit', cwd: root },
 )
 process.exit(result.status ?? 1)

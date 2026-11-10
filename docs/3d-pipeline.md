@@ -1,7 +1,18 @@
 # PIPELINE DE RECURSOS 3D — VALDEPODO
 
 > Documento operativo. Decisiones y justificación en [01-research.md §5-7](01-research.md); integración en la web en [specs/08-experiencias-3d.md](specs/08-experiencias-3d.md).
-> Estado (Fase 1, 10/11/2026): **infraestructura implementada y probada** con un modelo de prueba. Pendientes: `inspect_source.py`, `extract_foot.py` (Fase 2), `build_insole.py` (Fase 4) y `render_validation.py` completo.
+> Estado (Fase 2, 10/11/2026): **pipeline del pie implementado** (inventario, renders de validación, extracción y optimización); resultados en [fase2-viabilidad-pie.md](fase2-viabilidad-pie.md). Pendientes: versión final de `extract_foot.py` (fusión por capa, hotspots), pósters de fallback, `build_insole.py` (Fase 4).
+>
+> | Fase 2                                                                                                         | Ruta                                                                                                        |
+> | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+> | Inventario espacial de BodyParts3D (región del pie por huesos ancla, todas las mallas, clasificación por capa) | `tools/blender/inspect_source.py` → `tools/out/inventory/bodyparts3d-foot.{json,md}` (`npm run 3d:inspect`) |
+> | Inventario de Z-Anatomy (abre el `.blend` sin autoejecución; triángulos evaluados)                             | `tools/blender/inspect_zanatomy.py` (`npm run 3d:inspect-za`)                                               |
+> | Renders de validación por capa y vista + calidad de malla                                                      | `tools/blender/render_foot_validation.py` (`npm run 3d:foot-validation`)                                    |
+> | Extracción del prototipo GLB (una malla por estructura, `layer`/`sourceId`/`fmaName` como extras)              | `tools/blender/extract_foot.py`                                                                             |
+> | Operaciones anatómicas compartidas (importar OBJ, soldar, recortar, medir)                                     | `tools/blender/lib/anatomy.py`                                                                              |
+> | Parámetros (fuentes, anclas, márgenes, reglas de clasificación, colores)                                       | `tools/blender/config/foot.json`                                                                            |
+>
+> Lecciones: (1) las mallas OBJ de BodyParts3D traen los vértices sin soldar: hay que unirlos (`remove_doubles`) antes de medir o recortar, y pasan de ~43.000 a ~380 aristas abiertas; (2) en la clasificación por nombre el orden importa (`tibialis` ≠ `tibia`, `tibial artery` ≠ hueso); (3) el render final de Workbench toma el fondo del _world_, no del color del viewport.
 >
 > | Implementado                                                                                                  | Ruta                                                     |
 > | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |

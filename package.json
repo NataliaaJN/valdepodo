@@ -21,6 +21,9 @@
     "test:watch": "vitest",
     "3d:check-env": "node tools/blender/run-blender.mjs --check",
     "3d:test-cube": "node tools/blender/run-blender.mjs tools/blender/test_cube.py -- --config tools/blender/config/test-cube.json --out tools/out/test-cube.raw.glb",
+    "3d:inspect": "node tools/blender/run-blender.mjs tools/blender/inspect_source.py -- --config tools/blender/config/foot.json",
+    "3d:inspect-za": "node tools/blender/run-blender.mjs tools/blender/inspect_zanatomy.py -- --config tools/blender/config/foot.json",
+    "3d:foot-validation": "node tools/blender/run-blender.mjs tools/blender/render_foot_validation.py -- --config tools/blender/config/foot.json",
     "3d:optimize": "node tools/assets/optimize.mjs",
     "3d:check": "node tools/assets/check-assets.mjs",
     "3d:smoke": "npm run 3d:test-cube && npm run 3d:optimize -- test-cube && npm run 3d:check"

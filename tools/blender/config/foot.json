@@ -1,0 +1,67 @@
+{
+  "version": "0.1.0",
+  "description": "Inventario y extracción del pie derecho (Fase 2). Ver docs/3d-pipeline.md §6.1.",
+  "side": "right",
+  "sources": {
+    "bodyparts3d": {
+      "dir": "tools/sources/bodyparts3d",
+      "objDir": "tools/sources/bodyparts3d/obj",
+      "partsList": "isa_parts_list_e.txt",
+      "elementParts": "isa_element_parts.txt",
+      "license": "CC BY 4.0",
+      "attribution": "BodyParts3D, © The Database Center for Life Science licensed under CC Attribution 4.0 International"
+    },
+    "zanatomy": {
+      "dir": "tools/sources/zanatomy/extracted",
+      "license": "CC BY-SA 4.0",
+      "attribution": "Z-Anatomy – The libre 3D atlas of anatomy – CC BY-SA 4.0"
+    }
+  },
+  "region": {
+    "$comment": "La región se calcula a partir de los huesos ancla (pie derecho) y se amplía con estos márgenes (mm, unidades de BodyParts3D).",
+    "anchors": [
+      "right calcaneus",
+      "right talus",
+      "navicular bone of right foot",
+      "right first metatarsal bone",
+      "right fifth metatarsal bone",
+      "distal phalanx of right big toe",
+      "distal phalanx of right little toe"
+    ],
+    "marginMm": 25,
+    "ankleHeightMm": 110,
+    "minVerticesInside": 30,
+    "minFractionInside": 0.02
+  },
+  "$classificationComment": "Se aplica la primera regla que coincide. El orden importa: vasos y nervios antes que huesos (\"tibial artery\"), músculos antes que huesos (\"tibialis\", \"fibularis\").",
+  "classification": [
+    { "layer": "skin", "pattern": "\\bskin\\b" },
+    { "layer": "vessels", "pattern": "arter|\\bvein|venous|plantar arch" },
+    { "layer": "nerves", "pattern": "\\bnerve" },
+    { "layer": "tendons", "pattern": "tendon" },
+    {
+      "layer": "ligaments",
+      "pattern": "ligament|retinacul|aponeuros|plantar fascia"
+    },
+    { "layer": "other", "pattern": "membrane" },
+    {
+      "layer": "muscles",
+      "pattern": "muscle|abductor|adductor|flexor|extensor|lumbrical|interosse|opponens|quadratus|tibialis|fibularis|peroneus|soleus|gastrocnemius|plantaris|popliteus|head of"
+    },
+    {
+      "layer": "bones",
+      "pattern": "bone|phalanx|calcaneus|talus|\\btibia\\b|\\bfibula\\b|cuneiform|cuboid|navicular|sesamoid|metatarsal|cartilage"
+    }
+  ],
+  "layersForWeb": ["skin", "bones", "muscles", "tendons", "ligaments"],
+  "colors": {
+    "skin": "#B9E5F3",
+    "bones": "#F5F8FC",
+    "muscles": "#1270B6",
+    "tendons": "#1EABE1",
+    "ligaments": "#7A8FA3",
+    "vessels": "#B42335",
+    "nerves": "#E8C547",
+    "other": "#999999"
+  }
+}

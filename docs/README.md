@@ -16,4 +16,6 @@
 | [specs/09-contenido-datos.md](specs/09-contenido-datos.md)       | Modelo de contenido y marcadores `pending()`.                                                                                                                                                                                     |
 | [specs/10-calidad-aceptacion.md](specs/10-calidad-aceptacion.md) | Responsive, accesibilidad, SEO, rendimiento, pruebas y criterios de aceptación.                                                                                                                                                   |
 
-Estado: **Fase 1 completada** (entorno, arquitectura y pipeline 3D probados con un modelo de prueba). Siguiente: Fase 2, prototipo anatómico del pie.
+| [fase2-viabilidad-pie.md](fase2-viabilidad-pie.md) | Informe de la Fase 2: fuentes, inventario, calidad, renders de validación, opciones de capas y lo que falta para el Gate 2. |
+
+Estado: **Fase 1 completada · Fase 2 con prototipo listo, pendiente de la revisión anatómica de la podóloga (Gate 2).**

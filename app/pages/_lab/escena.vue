@@ -8,8 +8,13 @@ const status = ref<'esperando' | 'lista' | 'fallback'>('esperando')
 const fallbackReason = ref('')
 const stats = ref<SceneStats | null>(null)
 
+// ?src=/models/<archivo>.glb permite revisar cualquier modelo del pipeline (solo rutas locales de /models).
+const route = useRoute()
+const requested = typeof route.query.src === 'string' ? route.query.src : ''
+const src = /^\/models\/[\w.-]+\.glb$/.test(requested) ? requested : '/models/test-cube.glb'
+
 const loader = () => import('~/components/three/LabModelScene.client.vue')
-const sceneProps = { src: '/models/test-cube.glb', onStats: (s: SceneStats) => (stats.value = s) }
+const sceneProps = { src, onStats: (s: SceneStats) => (stats.value = s) }
 </script>
 
 <template>
