@@ -1,0 +1,71 @@
+<script setup lang="ts">
+/**
+ * Logotipo de Valdepodo. Trazados copiados literalmente de research/valdepodo_logo.svg
+ * (fuente: app/assets/brand/valdepodo-logo.original.svg). No modificar la geometría.
+ * - variant "full": símbolo + wordmark
+ * - variant "symbol": solo la huella
+ * - variant "wordmark": solo "VALDEPODO"
+ */
+type LogoVariant = 'full' | 'symbol' | 'wordmark'
+
+const props = withDefaults(
+  defineProps<{
+    variant?: LogoVariant
+    /** Texto accesible. Vacío = decorativo (aria-hidden). */
+    label?: string
+    /** Monocromo (usa currentColor), p. ej. sobre fondos oscuros. */
+    mono?: boolean
+  }>(),
+  { variant: 'full', label: 'Valdepodo', mono: false },
+)
+
+const viewBoxes: Record<LogoVariant, string> = {
+  full: '150 66 450 544',
+  symbol: '242 66 262 472',
+  wordmark: '152 559 445 50',
+}
+
+const showSymbol = computed(() => props.variant !== 'wordmark')
+const showWordmark = computed(() => props.variant !== 'symbol')
+</script>
+
+<template>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    :viewBox="viewBoxes[variant]"
+    :role="label ? 'img' : undefined"
+    :aria-label="label || undefined"
+    :aria-hidden="label ? undefined : 'true'"
+    focusable="false"
+    class="brand-logo"
+  >
+    <g v-if="showSymbol" data-part="symbol">
+      <path
+        data-part="toes-heel"
+        :fill="mono ? 'currentColor' : '#1270B6'"
+        fill-rule="evenodd"
+        d="M 276 153 L 270 159 L 269 171 L 275 180 L 280 180 L 282 178 L 283 169 L 282 176 L 277 178 L 274 174 L 273 163 L 274 159 L 279 155 L 283 160 L 283 165 L 283 158 L 281 154 Z M 374 147 L 361 146 L 339 149 L 312 163 L 299 175 L 287 191 L 277 210 L 269 234 L 286 208 L 306 187 L 329 172 L 347 167 L 364 167 L 387 174 L 402 184 L 420 205 L 430 228 L 433 246 L 431 273 L 423 295 L 410 314 L 391 332 L 367 348 L 348 357 L 369 353 L 388 346 L 402 339 L 419 327 L 432 314 L 443 298 L 449 285 L 455 262 L 456 246 L 452 219 L 446 202 L 435 184 L 419 167 L 406 158 L 396 153 Z M 301 123 L 297 125 L 292 132 L 291 146 L 297 156 L 304 158 L 309 153 L 310 134 L 308 126 L 305 123 Z M 302 127 L 305 127 L 308 130 L 310 136 L 310 145 L 305 154 L 303 154 L 298 147 L 298 134 Z M 333 93 L 329 95 L 322 104 L 320 122 L 324 134 L 330 140 L 337 141 L 343 135 L 345 126 L 345 109 L 342 97 L 337 93 Z M 334 97 L 338 97 L 341 100 L 345 110 L 344 128 L 337 138 L 331 134 L 327 123 L 328 106 Z M 375 79 L 369 82 L 362 91 L 358 104 L 358 114 L 360 122 L 367 134 L 374 138 L 381 138 L 385 135 L 389 125 L 389 94 L 386 84 L 380 79 Z M 378 84 L 385 89 L 389 100 L 389 118 L 386 127 L 381 133 L 374 131 L 370 124 L 368 115 L 370 94 L 372 89 Z M 424 74 L 414 81 L 408 91 L 404 106 L 404 121 L 409 139 L 415 148 L 422 153 L 430 154 L 436 151 L 442 139 L 444 128 L 444 99 L 442 88 L 437 78 L 431 74 Z M 426 79 L 431 79 L 437 84 L 444 103 L 444 124 L 442 133 L 436 145 L 430 149 L 424 147 L 419 141 L 414 123 L 416 94 L 420 85 Z"
+      />
+      <path
+        data-part="loop"
+        :fill="mono ? 'currentColor' : '#1EABE1'"
+        fill-rule="evenodd"
+        d="M 294 232 L 286 249 L 277 276 L 268 324 L 266 380 L 273 434 L 286 476 L 293 491 L 307 513 L 316 521 L 327 527 L 340 530 L 354 529 L 371 522 L 384 510 L 407 471 L 425 477 L 446 477 L 467 469 L 475 463 L 479 457 L 461 469 L 445 473 L 436 471 L 432 472 L 413 464 L 411 460 L 416 448 L 421 424 L 421 410 L 417 395 L 410 385 L 396 376 L 382 373 L 370 374 L 358 379 L 347 389 L 342 401 L 342 411 L 348 426 L 356 436 L 371 449 L 388 460 L 388 465 L 369 498 L 359 507 L 352 510 L 340 510 L 332 507 L 323 499 L 316 487 L 307 464 L 300 435 L 296 406 L 293 346 L 295 324 Z M 372 394 L 382 393 L 389 395 L 399 404 L 401 411 L 401 425 L 394 449 L 374 433 L 363 417 L 361 404 Z"
+      />
+    </g>
+    <path
+      v-if="showWordmark"
+      data-part="wordmark"
+      :fill="mono ? 'currentColor' : '#565656'"
+      fill-rule="evenodd"
+      d="M 559 568 L 555 572 L 551 583 L 552 596 L 555 602 L 558 605 L 585 605 L 591 594 L 591 580 L 588 573 L 582 567 L 577 565 L 565 565 Z M 569 571 L 576 572 L 582 580 L 582 595 L 580 599 L 574 603 L 566 602 L 562 598 L 560 592 L 561 579 L 563 575 Z M 502 565 L 502 605 L 531 604 L 535 599 L 537 593 L 537 581 L 533 572 L 523 566 Z M 511 572 L 520 572 L 528 580 L 528 594 L 520 602 L 510 602 Z M 456 566 L 449 572 L 445 581 L 445 593 L 448 601 L 452 605 L 478 605 L 482 601 L 485 593 L 485 582 L 483 575 L 474 566 Z M 462 571 L 470 572 L 474 576 L 476 581 L 475 597 L 468 603 L 460 602 L 456 598 L 454 593 L 455 578 Z M 423 566 L 400 565 L 400 605 L 408 605 L 409 593 L 421 593 L 428 590 L 431 586 L 432 575 L 430 571 Z M 408 572 L 418 571 L 422 573 L 425 578 L 423 584 L 419 587 L 409 587 Z M 353 565 L 353 605 L 383 605 L 382 602 L 361 601 L 362 590 L 379 590 L 379 584 L 362 584 L 361 573 L 382 572 L 382 565 Z M 301 565 L 301 605 L 329 605 L 333 601 L 336 594 L 336 579 L 333 573 L 329 569 L 322 566 Z M 310 572 L 319 572 L 323 574 L 328 582 L 327 595 L 323 600 L 315 603 L 309 602 Z M 258 565 L 258 605 L 285 605 L 285 602 L 266 601 L 266 565 Z M 218 565 L 204 605 L 212 605 L 215 599 L 230 599 L 233 605 L 241 605 L 227 565 Z M 222 575 L 224 576 L 228 588 L 227 592 L 216 591 Z M 158 565 L 171 605 L 184 605 L 197 565 L 189 566 L 178 598 L 176 597 L 166 566 Z"
+    />
+  </svg>
+</template>
+
+<style scoped>
+.brand-logo {
+  display: block;
+  height: auto;
+}
+</style>

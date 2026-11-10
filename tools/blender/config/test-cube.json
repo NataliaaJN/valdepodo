@@ -1,0 +1,12 @@
+{
+  "version": "0.1.0",
+  "description": "Modelo de prueba del pipeline (Fase 1). Solo para /_lab. No es un recurso de la web.",
+  "size_m": 0.2,
+  "bevel_m": 0.02,
+  "bevel_segments": 4,
+  "layers": [
+    { "id": "base", "color": "#1270B6", "height_ratio": 0.5 },
+    { "id": "top", "color": "#1EABE1", "height_ratio": 0.5 }
+  ],
+  "render": { "views": [{ "name": "3q", "azimuth": 35, "elevation": 25 }] }
+}

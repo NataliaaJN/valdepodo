@@ -1,0 +1,34 @@
+{
+  "$comment": "Procedencia, licencia, presupuesto y validación de cada modelo 3D (docs/3d-pipeline.md §9-10).",
+  "models": [
+    {
+      "name": "test-cube",
+      "version": "0.1.0",
+      "purpose": "Prueba del pipeline (Fase 1). Solo /_lab; no se usa en páginas públicas.",
+      "generator": "tools/blender/test_cube.py",
+      "config": "tools/blender/config/test-cube.json",
+      "sources": [],
+      "license": "Obra propia del proyecto",
+      "credits": "test-cube",
+      "budget": {
+        "maxBytes": 51200,
+        "maxTriangles": 5000
+      },
+      "variants": [
+        {
+          "id": "full",
+          "file": "test-cube.glb"
+        }
+      ],
+      "validatedBy": null,
+      "outputs": [
+        {
+          "file": "public/models/test-cube.glb",
+          "bytes": 4604,
+          "triangles": 600
+        }
+      ],
+      "optimizedAt": "2026-11-10T17:50:58Z"
+    }
+  ]
+}

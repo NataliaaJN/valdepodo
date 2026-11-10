@@ -1,0 +1,36 @@
+# Nuxt
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Dependencias
+node_modules
+
+# Logs
+logs
+*.log
+
+# Varios
+.DS_Store
+.fleet
+.idea
+coverage
+
+# Configuración local de herramientas
+.claude/
+
+# Entorno (secretos)
+.env
+.env.*
+!.env.example
+
+# Pipeline 3D: fuentes descargadas e intermedios (no se versionan; ver docs/3d-pipeline.md §9)
+tools/sources/
+tools/out/
+
+# Python
+__pycache__/
+*.pyc
