@@ -2,7 +2,23 @@
  * Capas del pie anatómico (spec 08 §2). Los ids coinciden con los grupos del GLB (tools/blender/extract_foot.py).
  * Solo se muestran en la interfaz las capas presentes en el modelo cargado.
  */
+import footView from '~~/tools/blender/config/foot-view.json'
+
 export type FootLayer = 'skin' | 'bones' | 'muscles' | 'tendons' | 'ligaments'
+
+type Vec3 = [number, number, number]
+
+/** Encuadre y luces compartidos con los pósters de Blender (tools/blender/config/foot-view.json). */
+export const FOOT_VIEW = {
+  ...footView,
+  position: footView.position as Vec3,
+  target: footView.target as Vec3,
+  lights: {
+    ...footView.lights,
+    key: { ...footView.lights.key, position: footView.lights.key.position as Vec3 },
+    rim: { ...footView.lights.rim, position: footView.lights.rim.position as Vec3 },
+  },
+}
 
 export const FOOT_LAYER_ORDER: FootLayer[] = ['skin', 'muscles', 'tendons', 'ligaments', 'bones']
 

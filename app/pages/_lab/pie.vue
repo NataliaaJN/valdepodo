@@ -19,7 +19,7 @@ const reducedMotion = useReducedMotion()
 const idleSpin = ref(false)
 
 const layers = computed(() => FOOT_LAYER_ORDER.filter((l) => available.value.includes(l)))
-const loader = () => import('~/components/three/FootAnatomyLab.client.vue')
+const loader = () => import('~/components/three/FootAnatomy.client.vue')
 const sceneProps = computed(() => ({
   src: `/models/foot-proto.${variant.value}.glb`,
   activeLayer: activeLayer.value,
