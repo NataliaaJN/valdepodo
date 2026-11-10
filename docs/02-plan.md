@@ -184,7 +184,9 @@ Cada fase lista **entregables** y **gate** (criterios de cierre). Las fases 2, 3
 - Rótulo "Visualización ilustrativa".
 - **Gate 3:** aprobación visual; rendimiento ≥ 55 fps en escritorio medio y sin jank en móvil; peso < 30 KB.
 
-### FASE 4 — Plantilla conceptual y animación de fibras
+### FASE 4 — Plantilla conceptual y animación de fibras 🟡 laboratorio listo, esperando Gate 4
+
+> **Resultado (10/11/2026):** plantilla paramétrica propia en 3 capas (`insole.glb`, 113 KB, 24k triángulos) con pósters AVIF/WebP, explosión con etiquetas y 6.000/1.500 fibras en un único draw call, en `/_lab/plantilla` (scrub en ≥ 768 px, reproducción autónoma en móvil, modo manual). 144 fps en el equipo de desarrollo. Detalle en [fase4-plantilla.md](fase4-plantilla.md). **Pendiente:** aprobación visual (incluido igualar el color póster ↔ escena), FPS en escritorio medio y móvil real, y prueba con reduced motion.
 
 - `config/insole.json` + `build_insole.py` → `insole.glb` por capas (`layer_*`); renders y fallbacks.
 - `_lab/plantilla`:

@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Plantilla CONCEPTUAL (Fase 4). Valores de forma, no clínicos. Sin materiales ni procesos atribuidos (spec 04 §2.2).",
   "side": "right",
   "length_mm": 260,
@@ -47,7 +47,15 @@
       "color": "#1270B6"
     }
   ],
-  "zones": { "rearfoot": { "fade_start": 0.46, "end": 0.7 } },
+  "zones": {
+    "rearfoot": {
+      "$comment": "Borde delantero curvo: end - front_curve·v² - front_skew·v (v = -1 medial … 1 lateral).",
+      "fade_start": 0.46,
+      "end": 0.72,
+      "front_curve": 0.09,
+      "front_skew": 0.03
+    }
+  },
   "view": {
     "$comment": "Encuadre compartido por la escena web y los pósters (coordenadas glTF, Y arriba, metros).",
     "fov": 24,

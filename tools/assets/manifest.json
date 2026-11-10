@@ -81,7 +81,7 @@
     },
     {
       "name": "insole",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "purpose": "Plantilla conceptual por capas (Fase 4, Gate 4). Solo /_lab hasta la aprobación visual; sin materiales ni procesos atribuidos.",
       "generator": "tools/blender/build_insole.py",
       "config": "tools/blender/config/insole.json",
@@ -102,11 +102,11 @@
       "outputs": [
         {
           "file": "public/models/insole.glb",
-          "bytes": 111952,
-          "triangles": 23950
+          "bytes": 116020,
+          "triangles": 24086
         }
       ],
-      "optimizedAt": "2026-11-10T21:20:56Z"
+      "optimizedAt": "2026-11-10T22:03:22Z"
     }
   ]
 }

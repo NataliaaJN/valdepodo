@@ -115,4 +115,17 @@ describe('contenido y configuración de la plantilla', () => {
     expect(Math.abs(INSOLE_VIEW.explode.model_rotation_deg)).toBeLessThanOrEqual(10)
     expect(Math.abs(INSOLE_VIEW.explode.camera_orbit_deg)).toBeLessThanOrEqual(15)
   })
+
+  it('la base termina en un borde curvo que no corta el tramo de adelgazamiento', () => {
+    const z = insoleConfig.zones.rearfoot
+    const fade = z.end - z.fade_start
+    // u del borde delantero en el centro (v = 0) y en los lados (v = ±1)
+    const edge = (v: number) => z.end - z.front_curve * v * v - z.front_skew * v
+    expect(z.front_curve).toBeGreaterThan(0)
+    expect(edge(-1)).toBeGreaterThan(edge(1)) // el lado interno llega más lejos
+    for (const v of [-1, 0, 1]) {
+      expect(edge(v)).toBeLessThanOrEqual(z.end)
+      expect(edge(v) - fade).toBeGreaterThan(0.2) // el adelgazamiento empieza después de la copa del talón
+    }
+  })
 })

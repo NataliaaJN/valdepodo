@@ -126,21 +126,31 @@ class InsoleShape:
         return x, y
 
 
-def thickness(shape: InsoleShape, layer: dict, u: float) -> float:
+def rearfoot_end(shape: InsoleShape, v: float) -> float:
+    """Borde delantero de la zona `rearfoot` en u: curvo (más adelantado en el centro y en el lado
+    interno) para que la capa no termine en un corte recto con esquinas en punta."""
+    zone = shape.cfg["zones"]["rearfoot"]
+    return float(zone["end"]) - float(zone.get("front_curve", 0)) * v * v - float(zone.get("front_skew", 0)) * v
+
+
+def thickness(shape: InsoleShape, layer: dict, u: float, v: float) -> float:
     cfg = shape.cfg
     t = float(cfg["thickness_mm"]) * float(layer["thickness_ratio"])
     t *= 1 - 0.35 * smoothstep(0.62, 0.98, u)  # algo más fina en la puntera
     if layer["zone"] == "rearfoot":
         zone = cfg["zones"]["rearfoot"]
-        t *= 1 - smoothstep(zone["fade_start"], zone["end"], u)
+        end = rearfoot_end(shape, v)
+        fade = float(zone["end"]) - float(zone["fade_start"])
+        t *= 1 - smoothstep(end - fade, end, u)
     return t
 
 
-def u_range(shape: InsoleShape, layer: dict) -> tuple[float, float]:
+def u_range(shape: InsoleShape, layer: dict):
+    """Tramo de u de la capa; el final puede depender de v (función v → u1)."""
     eps = 0.0015
     if layer["zone"] == "rearfoot":
-        return eps, float(shape.cfg["zones"]["rearfoot"]["end"])
-    return eps, 1 - eps
+        return eps, lambda v: rearfoot_end(shape, v)
+    return eps, lambda v: 1 - eps
 
 
 # --------------------------------------------------------------------------------------------------
@@ -152,24 +162,26 @@ def build_layer_mesh(
     name: str,
     shape: InsoleShape,
     u0: float,
-    u1: float,
+    u1_fn,
     bottom_fn,
     top_fn,
     n_along: int,
     n_across: int,
 ) -> bpy.types.Object:
-    """Malla cerrada: rejilla superior + inferior + paredes del perímetro."""
+    """Malla cerrada: rejilla superior + inferior + paredes del perímetro.
+    `u1_fn(v)` da el final de cada columna: el borde delantero puede ser curvo."""
     bm = bmesh.new()
-    rows = max(8, round(n_along * (u1 - u0)))
+    rows = max(8, round(n_along * (max(u1_fn(-1 + 2 * j / n_across) for j in range(n_across + 1)) - u0)))
     grid_top: list[list[bmesh.types.BMVert]] = []
     grid_bot: list[list[bmesh.types.BMVert]] = []
     for i in range(rows + 1):
         # Más filas en los extremos (curvatura del talón y la puntera)
         t = i / rows
-        u = u0 + (u1 - u0) * (0.5 - 0.5 * math.cos(math.pi * t))
+        f = 0.5 - 0.5 * math.cos(math.pi * t)
         row_t, row_b = [], []
         for j in range(n_across + 1):
             v = -1 + 2 * j / n_across
+            u = u0 + (u1_fn(v) - u0) * f
             x, y = shape.point(u, v)
             zb = bottom_fn(u, v)
             zt = top_fn(u, v)
@@ -231,13 +243,13 @@ def build_insole(cfg: dict) -> list[bpy.types.Object]:
         stack = list(below)
 
         def bottom(u: float, v: float, stack=stack) -> float:
-            return shape.surface(u, v) + sum(thickness(shape, lay, u) for lay in stack)
+            return shape.surface(u, v) + sum(thickness(shape, lay, u, v) for lay in stack)
 
         def top(u: float, v: float, layer=layer, bottom=bottom) -> float:
-            return bottom(u, v) + thickness(shape, layer, u)
+            return bottom(u, v) + thickness(shape, layer, u, v)
 
-        u0, u1 = u_range(shape, layer)
-        obj = build_layer_mesh(f"layer_{layer['id']}", shape, u0, u1, bottom, top, n_along, n_across)
+        u0, u1_fn = u_range(shape, layer)
+        obj = build_layer_mesh(f"layer_{layer['id']}", shape, u0, u1_fn, bottom, top, n_along, n_across)
         smooth_shading(obj)
         obj.data.materials.append(principled_material(f"mat_{layer['id']}", layer["color"], roughness=0.5))
         # Custom properties → extras del GLB (spec 08 §4.1)
