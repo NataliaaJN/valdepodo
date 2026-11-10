@@ -16,6 +16,12 @@ const experiments = [
   },
   { to: '/_lab/pie', title: 'Pie anatómico', status: 'Fase 2', text: 'Prototipo y validación de capas.' },
   {
+    to: '/_lab/pie-procedural',
+    title: 'Pie procedural',
+    status: 'Prueba',
+    text: 'Pie 3D estilizado sin modelos externos, en maqueta de hero.',
+  },
+  {
     to: null,
     title: 'Estudio biomecánico',
     status: 'Fase 3',

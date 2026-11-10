@@ -122,7 +122,12 @@ onBeforeUnmount(() => {
         fetchpriority="low"
       />
     </picture>
-    <div v-else class="absolute inset-0 rounded-l bg-light-blue/60" aria-hidden="true" />
+    <div
+      v-else
+      class="absolute inset-0 rounded-l bg-light-blue/60 transition-opacity duration-(--dur-reveal) ease-out-soft motion-reduce:transition-none"
+      :class="sceneReady ? 'opacity-0' : 'opacity-100'"
+      aria-hidden="true"
+    />
 
     <!-- Escena 3D (solo cliente) -->
     <ClientOnly>
