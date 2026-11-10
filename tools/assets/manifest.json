@@ -78,6 +78,35 @@
         }
       ],
       "optimizedAt": "2026-11-10T19:13:24Z"
+    },
+    {
+      "name": "insole",
+      "version": "0.1.0",
+      "purpose": "Plantilla conceptual por capas (Fase 4, Gate 4). Solo /_lab hasta la aprobación visual; sin materiales ni procesos atribuidos.",
+      "generator": "tools/blender/build_insole.py",
+      "config": "tools/blender/config/insole.json",
+      "sources": [],
+      "license": "Obra propia del proyecto",
+      "credits": "insole",
+      "budget": {
+        "maxBytes": 512000,
+        "maxTriangles": 60000
+      },
+      "variants": [
+        {
+          "id": "full",
+          "file": "insole.glb"
+        }
+      ],
+      "validatedBy": null,
+      "outputs": [
+        {
+          "file": "public/models/insole.glb",
+          "bytes": 111952,
+          "triangles": 23950
+        }
+      ],
+      "optimizedAt": "2026-11-10T21:20:56Z"
     }
   ]
 }

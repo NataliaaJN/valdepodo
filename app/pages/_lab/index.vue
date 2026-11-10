@@ -28,7 +28,7 @@ const experiments = [
     text: 'Huellas, mapas de presión y marcha (SVG).',
   },
   {
-    to: null,
+    to: '/_lab/plantilla',
     title: 'Plantilla y fibras',
     status: 'Fase 4',
     text: 'Plantilla paramétrica y fibras instanciadas.',
