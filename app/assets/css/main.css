@@ -15,7 +15,8 @@
   }
 }
 
-@theme {
+/* `static`: todos los tokens se emiten como variables CSS (los gráficos SVG los usan con var()). */
+@theme static {
   /* ---------- Color: marca (logo) ---------- */
   --color-primary: #1270b6; /* 5.23:1 sobre blanco */
   --color-primary-strong: #0b5e99; /* 6.83:1 · hover y texto azul pequeño en fondos tintados */

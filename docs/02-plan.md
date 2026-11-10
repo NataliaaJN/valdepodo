@@ -169,7 +169,9 @@ Cada fase lista **entregables** y **gate** (criterios de cierre). Las fases 2, 3
   - ❌ plan B (modelo de pago o encargo, con presupuesto).
   - Decisión de licencia del GLB (CC BY o CC BY-SA) con la clínica.
 
-### FASE 3 — Recursos gráficos del estudio biomecánico
+### FASE 3 — Recursos gráficos del estudio biomecánico 🟡 laboratorio listo, esperando Gate 3
+
+> **Resultado (10/11/2026):** biblioteca SVG en `app/components/graphics/`, estados en `app/data/biomech.ts` y secuencia de 6 fases en `/_lab/biomecanico` (sticky en ≥ 768 px, tarjetas en móvil). Peso 11,6 KB + 2,0 KB gzip. `PressureShader.client` descartado: el filtro SVG basta. Detalle en [fase3-biomecanico.md](fase3-biomecanico.md). **Pendiente:** aprobación visual, FPS en escritorio medio y móvil real, y prueba con reduced motion.
 
 - Biblioteca SVG propia:
   - huellas izquierda/derecha;

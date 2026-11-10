@@ -22,7 +22,7 @@ const experiments = [
     text: 'Pie 3D estilizado sin modelos externos, en maqueta de hero.',
   },
   {
-    to: null,
+    to: '/_lab/biomecanico',
     title: 'Estudio biomecánico',
     status: 'Fase 3',
     text: 'Huellas, mapas de presión y marcha (SVG).',
