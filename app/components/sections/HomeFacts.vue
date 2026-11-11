@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
  * Datos de la clínica, FUERA del hero: una fila minimalista (sin tarjetas) con icono de línea en un círculo
- * suave, título y apoyo, separados por filetes finos. Continúa el cian clarito del hero: el degradado de
- * enlace vive al pie del hero (`.hero__bridge`), y esta sección arranca con ese mismo tono.
- * El contenido son los `values`.
+ * suave, título y apoyo, separados por filetes finos. El hero no se toca: la sección sube un poco sobre su
+ * pie con esquinas superiores muy redondeadas y una sombra suave, en un cian clarito de la misma familia, así
+ * se lee como otra sección sin un corte duro. El contenido son los `values`.
  */
 import type { IconName } from '~/components/base/BaseIcon.vue'
 import { site } from '~/data/site'
@@ -57,9 +57,15 @@ const items = computed(() =>
 
 <style scoped>
 .facts {
-  padding-block: clamp(2rem, 4vw, 3.5rem);
-  /* Mismo cian clarito que el hero; arranca exactamente donde acaba el puente del hero */
-  background: linear-gradient(180deg, #d9f0fa 0%, #e6f6fc 100%);
+  z-index: 2;
+  margin-top: calc(-1 * clamp(1.75rem, 3.5vw, 3rem));
+  padding-block: clamp(3rem, 5vw, 4.5rem) clamp(2.25rem, 4vw, 3.5rem);
+  border-radius: clamp(1.75rem, 3.5vw, 3rem) clamp(1.75rem, 3.5vw, 3rem) 0 0;
+  /* Cian clarito de la familia del hero, algo más luminoso para separarse de él */
+  background: linear-gradient(180deg, #eef9fd 0%, #e3f5fb 100%);
+  box-shadow:
+    0 -1px 0 rgb(255 255 255 / 0.9),
+    0 -24px 48px -20px rgb(18 112 182 / 0.22);
 }
 .facts__row {
   display: grid;
