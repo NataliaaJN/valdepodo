@@ -35,6 +35,7 @@ const loader = () => import('~/components/three/FootAnatomy.client.vue')
 const sceneProps = computed(() => ({
   activeLayer: activeLayer.value,
   rotationY: rotationY.value,
+  glass: true,
 }))
 
 useGsapContext(section, (c) => {
@@ -185,8 +186,8 @@ html[data-intro='play'] .hero__title {
   .hero__model {
     top: 50%;
     left: auto;
-    right: -4vw;
-    width: min(62vw, 92svh);
+    right: 7vw;
+    width: min(56vw, 88svh);
     translate: 0 -48%;
   }
   .hero__text {

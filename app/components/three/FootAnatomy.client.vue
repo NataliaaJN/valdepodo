@@ -15,8 +15,8 @@ import type { FootLayer } from '~/utils/foot-layers'
 import type { SceneStats } from '~/utils/scene-types'
 
 const props = withDefaults(
-  defineProps<{ src?: string; activeLayer: FootLayer; rotationY?: number; idleSpin?: boolean }>(),
-  { src: undefined, rotationY: FOOT_VIEW.rotationY, idleSpin: false },
+  defineProps<{ src?: string; activeLayer: FootLayer; rotationY?: number; idleSpin?: boolean; glass?: boolean }>(),
+  { src: undefined, rotationY: FOOT_VIEW.rotationY, idleSpin: false, glass: false },
 )
 const emit = defineEmits<{
   ready: []
@@ -112,6 +112,7 @@ onBeforeUnmount(() => {
       :rotation-y="rotationY"
       :idle-spin="idleSpin"
       :fit="FOOT_VIEW.fit"
+      :glass="glass"
       @layers="(l) => emit('layers', l)"
     />
   </TresCanvas>
