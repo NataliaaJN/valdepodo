@@ -61,50 +61,51 @@ async function copy(text: string, what: string) {
           </div>
         </article>
 
-        <!-- Teléfono -->
-        <article v-reveal="1" class="card card-phone" aria-labelledby="c-phone">
-          <p id="c-phone" class="card-label"><BaseIcon name="phone" /> Teléfono</p>
-          <a :href="clinic.phoneHref" class="card-value link-quiet">
-            <ContentValue :value="site.phone" />
-            <span class="sr-only"> (llamar)</span>
-          </a>
-          <div class="phone-actions">
-            <button type="button" class="copy-btn" @click="copy(clinic.phone, 'Teléfono')">
-              <BaseIcon name="copy" class="size-4" /> Copiar<span class="sr-only"> teléfono</span>
-            </button>
-            <a :href="clinic.whatsappHref" target="_blank" rel="noopener" class="copy-btn">
-              WhatsApp<span class="sr-only"> (se abre en una pestaña nueva)</span>
+        <!-- Teléfono · email · redes: una sola fila mientras quepan -->
+        <div class="contact-row">
+          <article v-reveal="1" class="card card-phone" aria-labelledby="c-phone">
+            <p id="c-phone" class="card-label"><BaseIcon name="phone" /> Teléfono</p>
+            <a :href="clinic.phoneHref" class="card-value link-quiet">
+              <ContentValue :value="site.phone" />
+              <span class="sr-only"> (llamar)</span>
             </a>
-          </div>
-        </article>
+            <div class="phone-actions">
+              <button type="button" class="copy-btn" @click="copy(clinic.phone, 'Teléfono')">
+                <BaseIcon name="copy" class="size-4" /> Copiar<span class="sr-only"> teléfono</span>
+              </button>
+              <a :href="clinic.whatsappHref" target="_blank" rel="noopener" class="copy-btn">
+                WhatsApp<span class="sr-only"> (se abre en una pestaña nueva)</span>
+              </a>
+            </div>
+          </article>
 
-        <!-- Email -->
-        <article v-reveal="2" class="card card-mail" aria-labelledby="c-mail">
-          <p id="c-mail" class="card-label"><BaseIcon name="mail" /> Email</p>
-          <a :href="clinic.mailHref" class="card-value card-value--mail link-quiet">
-            <ContentValue :value="site.email" />
-          </a>
-        </article>
+          <!-- Email -->
+          <article v-reveal="2" class="card card-mail" aria-labelledby="c-mail">
+            <p id="c-mail" class="card-label"><BaseIcon name="mail" /> Email</p>
+            <a :href="clinic.mailHref" class="card-value card-value--mail link-quiet">
+              <ContentValue :value="site.email" />
+            </a>
+          </article>
+
+          <article v-reveal="4" class="card card-social" aria-labelledby="c-social">
+            <p id="c-social" class="card-label">Síguenos</p>
+            <div class="social-list">
+              <a :href="clinic.instagram.url" target="_blank" rel="noopener" class="social-icon">
+                <BaseIcon name="instagram" />
+                <span class="sr-only">Instagram (se abre en una pestaña nueva)</span>
+              </a>
+              <a :href="clinic.linkedin.url" target="_blank" rel="noopener" class="social-icon">
+                <BaseIcon name="linkedin" />
+                <span class="sr-only">LinkedIn (se abre en una pestaña nueva)</span>
+              </a>
+            </div>
+          </article>
+        </div>
 
         <!-- Horario -->
         <article v-reveal="3" class="card card-hours" aria-labelledby="c-hours">
           <p id="c-hours" class="card-label"><BaseIcon name="clock" /> Horario</p>
           <OpeningHours columns />
-        </article>
-
-        <!-- Redes: solo iconos -->
-        <article v-reveal="4" class="card card-social" aria-labelledby="c-social">
-          <p id="c-social" class="card-label">Síguenos</p>
-          <div class="social-list">
-            <a :href="clinic.instagram.url" target="_blank" rel="noopener" class="social-icon">
-              <BaseIcon name="instagram" />
-              <span class="sr-only">Instagram (se abre en una pestaña nueva)</span>
-            </a>
-            <a :href="clinic.linkedin.url" target="_blank" rel="noopener" class="social-icon">
-              <BaseIcon name="linkedin" />
-              <span class="sr-only">LinkedIn (se abre en una pestaña nueva)</span>
-            </a>
-          </div>
         </article>
       </div>
       <p class="sr-only" aria-live="polite">{{ copied }}</p>
@@ -247,6 +248,25 @@ async function copy(text: string, what: string) {
   color: var(--color-primary-strong);
 }
 
+/* Fila de contacto rápido: las tres cards comparten fila y solo saltan de línea si no caben */
+.contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  grid-column: 1 / -1;
+}
+.contact-row > .card {
+  flex: 1 1 11rem;
+  min-width: 0;
+}
+.contact-row > .card-mail {
+  flex-grow: 2;
+  flex-basis: 13rem;
+}
+.contact-row > .card-social {
+  flex: 0 1 auto;
+}
+
 /* Redes: card con más presencia */
 .card-social {
   justify-content: space-between;
@@ -311,8 +331,7 @@ async function copy(text: string, what: string) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .card-place,
-  .card-hours,
-  .card-social {
+  .card-hours {
     grid-column: 1 / -1;
   }
 }
@@ -324,26 +343,16 @@ async function copy(text: string, what: string) {
   /* Izquierda: ubicación (alta). Derecha: teléfono + email · redes · horario */
   .card-place {
     grid-column: 1 / span 5;
-    grid-row: 1 / span 3;
+    grid-row: 1 / span 2;
   }
-  .card-phone {
-    grid-column: 6 / span 3;
-    grid-row: 1;
-  }
-  .card-mail {
-    grid-column: 9 / span 4;
-    grid-row: 1;
-  }
-  .card-social {
+  .contact-row {
     grid-column: 6 / span 7;
-    grid-row: 2;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+    grid-row: 1;
+    gap: 1rem;
   }
   .card-hours {
     grid-column: 6 / span 7;
-    grid-row: 3;
+    grid-row: 2;
   }
 }
 
