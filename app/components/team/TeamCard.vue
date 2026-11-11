@@ -134,7 +134,10 @@ img.photo {
   border-radius: var(--radius-s);
   background: rgb(6 26 44 / 0.5);
   color: var(--color-bone);
-  transition: background-color var(--dur-base) var(--ease-out-soft);
+  opacity: 0;
+  transition:
+    opacity 450ms var(--ease-out-soft),
+    background-color var(--dur-base) var(--ease-out-soft);
 }
 .social:hover {
   background: var(--color-primary);
@@ -216,9 +219,9 @@ img.photo {
   .team-card:focus-visible .scrim--base {
     opacity: 1;
   }
-  .team-card:hover :is(.name, .role),
-  .team-card:focus-within :is(.name, .role),
-  .team-card:focus-visible :is(.name, .role) {
+  .team-card:hover :is(.name, .role, .social),
+  .team-card:focus-within :is(.name, .role, .social),
+  .team-card:focus-visible :is(.name, .role, .social) {
     opacity: 1;
     transform: none;
   }
@@ -234,7 +237,8 @@ img.photo {
 @media (hover: none), (pointer: coarse) {
   .scrim--base,
   .name,
-  .role {
+  .role,
+  .social {
     opacity: 1;
     transform: none;
   }
@@ -249,6 +253,7 @@ img.photo {
   .scrim--base,
   .name,
   .role,
+  .social,
   .more {
     transition-duration: 1ms;
   }
