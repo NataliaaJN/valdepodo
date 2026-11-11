@@ -199,7 +199,7 @@ const floorMaterial = new ShaderMaterial({
     varying vec2 vXZ;
     void main() {
       float d = length(vXZ - uCenter) / uHalf;
-      float edge = 1.0 - smoothstep(0.55, 1.0, d);
+      float edge = 1.0 - smoothstep(0.3, 1.0, d);
       float base = (1.0 - smoothstep(0.1, 1.0, d)) * uBase;
       float sigma = uHalf * 0.34;
       float dc = length(vXZ - uContact);
@@ -215,7 +215,8 @@ const floorMaterial = new ShaderMaterial({
   depthWrite: false,
 })
 // El plano se construye ya a su tamaño: el shader recibe posiciones en unidades del modelo (sin escala de malla)
-const floorSize = (stepTable?.length ?? 0.2) * 1.7
+// Debe desvanecerse por completo dentro del lienzo: si llega a su borde, el corte se ve como un rectángulo
+const floorSize = (stepTable?.length ?? 0.2) * 1.25
 const floorMesh = new ThreeMesh(new PlaneGeometry(floorSize, floorSize).rotateX(-Math.PI / 2), floorMaterial)
 floorMesh.renderOrder = -1
 floorMesh.frustumCulled = false

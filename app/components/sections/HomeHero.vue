@@ -87,6 +87,7 @@ useGsapContext(section, (c) => {
     <!-- Indicador de scroll: ratón con rueda que se desliza, muy sutil; se desvanece en cuanto empieza el paso -->
     <div class="hero__scroll" :style="{ opacity: Math.max(0, 1 - progress * 10) }" aria-hidden="true">
       <span class="hero__mouse"><span class="hero__wheel" /></span>
+      <span class="hero__chevron" />
     </div>
 
     <div class="hero__text container-wide">
@@ -156,8 +157,12 @@ html[data-intro='play'] .hero__model {
 .hero__scroll {
   position: absolute;
   z-index: 2;
-  right: clamp(1rem, 3.2vw, 3rem);
-  bottom: clamp(1.5rem, 6svh, 3.5rem);
+  right: clamp(1.25rem, 3.5vw, 3.5rem);
+  bottom: clamp(1.75rem, 7svh, 4rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
   pointer-events: none;
   transition: opacity 0.3s linear;
   animation: fade-up 1.4s var(--ease-out-soft) both;
@@ -169,34 +174,55 @@ html[data-intro='play'] .hero__scroll {
 .hero__mouse {
   display: block;
   position: relative;
-  width: 1.5rem;
-  height: 2.375rem;
-  border: 1.5px solid rgb(22 60 99 / 0.45);
+  width: 2rem;
+  height: 3.25rem;
+  border: 2px solid var(--color-ink);
   border-radius: 999px;
+  background: rgb(255 255 255 / 0.4);
+  box-shadow: 0 6px 18px rgb(18 112 182 / 0.22);
 }
 .hero__wheel {
   position: absolute;
-  top: 0.45rem;
+  top: 0.65rem;
   left: 50%;
-  width: 3px;
-  height: 0.5rem;
-  margin-left: -1.5px;
+  width: 4px;
+  height: 0.75rem;
+  margin-left: -2px;
   border-radius: 2px;
   background: var(--color-primary);
-  animation: wheel 2.2s cubic-bezier(0.5, 0, 0.2, 1) infinite;
+  animation: wheel 1.8s cubic-bezier(0.5, 0, 0.2, 1) infinite;
+}
+.hero__chevron {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-right: 2px solid var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  rotate: 45deg;
+  animation: chevron 1.8s ease-in-out infinite;
 }
 @keyframes wheel {
   0% {
     opacity: 0;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
   }
   25% {
     opacity: 1;
   }
-  70%,
+  75%,
   100% {
     opacity: 0;
-    transform: translateY(0.7rem);
+    transform: translateY(1rem);
+  }
+}
+@keyframes chevron {
+  0%,
+  100% {
+    opacity: 0.25;
+    translate: 0 -2px;
+  }
+  50% {
+    opacity: 1;
+    translate: 0 3px;
   }
 }
 
@@ -261,7 +287,8 @@ html[data-intro='play'] .hero__title {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__wheel {
+  .hero__wheel,
+  .hero__chevron {
     animation: none;
     opacity: 1;
   }
