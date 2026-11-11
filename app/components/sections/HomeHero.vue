@@ -16,7 +16,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { site } from '~/data/site'
 import { hero } from '~/data/home'
 /** Casi de perfil (3/4 abierto): la puntera apunta a la izquierda y algo hacia la cámara */
-const HERO_ROTATION_Y = -0.1
+const HERO_ROTATION_Y = 0.075
 
 const section = ref<HTMLElement | null>(null)
 const { tier, resolved } = useDeviceTier()
