@@ -17,7 +17,12 @@ useBreadcrumbSchema([
 
 <template>
   <div>
-    <PageHeader id="services-title" title="Servicios" size="l" />
+    <ClinicHero
+      id="services-title"
+      title="Servicios"
+      video="/videos/servicios.mp4"
+      :photo="{ src: null, alt: '' }"
+    />
 
     <section aria-label="Los cinco servicios" data-nav-theme="bone">
       <ServiceScroll />

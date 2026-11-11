@@ -36,7 +36,12 @@ async function copy(text: string, what: string) {
 
 <template>
   <div>
-    <PageHeader id="contact-title" title="Contacto" size="l" />
+    <ClinicHero
+      id="contact-title"
+      title="Contacto"
+      :photo="{ src: '/images/clinic/contacto.jpg', alt: '' }"
+      focus="50% 50%"
+    />
 
     <!-- 1 · Cómo contactar -->
     <section class="container-wide pb-(--space-section)" aria-label="Datos de contacto" data-nav-theme="bone">
