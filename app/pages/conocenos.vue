@@ -47,18 +47,14 @@ if (confirmedPeople.length) {
       title="Detrás de cada paso, hay personas."
       eyebrow="La clínica"
       :photo="clinic.teamPhoto"
-    >
-      <ContentValue :value="clinic.heroText" as="span" />
-    </ClinicHero>
+    />
 
     <!-- 1. Personas -->
     <section id="equipo" class="team py-(--space-section)" aria-labelledby="team-title" data-nav-theme="bone">
       <div class="container-wide team__grid">
         <SectionHeading
           id="team-title"
-          eyebrow="Equipo"
-          :title="{ before: 'Quién te atiende' }"
-          intro="Profesionales que te escuchan y te explican cada paso."
+          :title="{ before: 'Equipo' }"
         />
         <div class="team__cards">
           <TeamCard v-for="(member, i) in team" :key="member.id" v-reveal="i" :member="member" />

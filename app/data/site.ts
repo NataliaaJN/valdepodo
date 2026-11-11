@@ -69,7 +69,7 @@ export const site: SiteData = {
   email: 'info@valdepodo.es',
   instagram: { handle: '@valdepodo', url: 'https://www.instagram.com/valdepodo/' },
   linkedin: { label: 'Valdepodo', url: 'https://es.linkedin.com/company/valdepodo' },
-  foundedYear: pending(2017, 'Año de apertura: la especificación habla de "9 años" (research §3.2)'),
+  foundedYear: 2017,
   hours: [weekday, weekday, weekday, weekday, weekday, [], []],
   responseTime: pending(
     'un plazo máximo de 48 horas laborables',

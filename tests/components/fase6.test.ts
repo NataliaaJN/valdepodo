@@ -62,13 +62,18 @@ describe('BookingWizard (spec 06)', () => {
 })
 
 describe('TeamCard (spec 05 §2): tarjeta compacta', () => {
-  it('muestra nombre y cargo y mantiene siempre en el DOM la información ampliada', async () => {
+  it('muestra nombre y cargo y mantiene siempre en el DOM la información ampliada si la hay', async () => {
     const wrapper = await mountSuspended(TeamCard, { props: { member: team[0]! } })
-    expect(wrapper.find('h3').text()).toContain('Nombre Apellido')
-    expect(wrapper.find('.role').text()).toContain('Cargo')
+    expect(wrapper.find('h3').text()).toContain('Paula Vigara Aranda')
+    expect(wrapper.find('.role').text()).toContain('Podóloga')
+    // Sin descripción ni especialidades no hay bloque ampliado
+    expect(wrapper.find('.more').exists()).toBe(false)
+    const detailed = await mountSuspended(TeamCard, {
+      props: { member: { ...team[0]!, bio: 'Breve descripción', specialties: ['Biomecánica'] } },
+    })
     // Plegada en reposo (solo visualmente): los lectores de pantalla la leen igual
-    expect(wrapper.find('.more').text()).toContain('Breve descripción')
-    expect(wrapper.find('.tags').attributes('aria-label')).toBe('Especialidades')
+    expect(detailed.find('.more').text()).toContain('Breve descripción')
+    expect(detailed.find('.tags').attributes('aria-label')).toBe('Especialidades')
   })
 
   it('es enfocable con el teclado y se nombra por el profesional', async () => {
@@ -79,10 +84,11 @@ describe('TeamCard (spec 05 §2): tarjeta compacta', () => {
   })
 
   it('solo muestra el enlace a LinkedIn si la persona lo autoriza', async () => {
-    const member = { ...team[0]!, linkedin: 'https://www.linkedin.com/in/ejemplo' }
-    const wrapper = await mountSuspended(TeamCard, { props: { member } })
-    expect(wrapper.find('a.social').attributes('href')).toBe('https://www.linkedin.com/in/ejemplo')
-    const without = await mountSuspended(TeamCard, { props: { member: team[0]! } })
+    const wrapper = await mountSuspended(TeamCard, { props: { member: team[0]! } })
+    expect(wrapper.find('a.social').attributes('href')).toBe(
+      'https://es.linkedin.com/in/paula-vigara-aranda-569223253',
+    )
+    const without = await mountSuspended(TeamCard, { props: { member: { ...team[0]!, linkedin: null } } })
     expect(without.find('a.social').exists()).toBe(false)
   })
 })

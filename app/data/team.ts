@@ -1,15 +1,14 @@
 /**
- * Equipo (spec 05 §2). Sin datos de la clínica todavía: nombres, cargos y fotos son marcadores
- * inequívocos (spec 09 §2). **No se deduce el equipo de las reseñas** (research §3.2).
- * Fotos: nunca stock; mientras falten, ilustración de marca con "Fotografía pendiente".
+ * Equipo (spec 05 §2): datos confirmados por la clínica. **No se deduce el equipo de las reseñas** (research §3.2).
+ * Fotos reales; LinkedIn autorizado por cada profesional.
  */
-import { pending, type Maybe } from '#shared/utils/pending'
+import type { Maybe } from '#shared/utils/pending'
 
 export interface TeamMember {
   id: string
   name: Maybe<string>
   role: Maybe<string>
-  bio: Maybe<string>
+  bio: Maybe<string> | null
   specialties: readonly Maybe<string>[]
   /** Nº de colegiada: solo si la clínica quiere mostrarlo. */
   license: Maybe<string> | null
@@ -19,27 +18,30 @@ export interface TeamMember {
   photo: { src: string; alt: string } | null
 }
 
-const NOTE = 'Dato del equipo (spec 05 §2): lo facilita la clínica'
+const ROLE = 'Copropietaria y Podóloga'
 
 export const team: readonly TeamMember[] = [
   {
-    id: 'profesional-1',
-    name: pending('Nombre Apellido', NOTE),
-    role: pending('[Cargo pendiente]', NOTE),
-    bio: pending('[Breve descripción profesional pendiente de la clínica]', NOTE),
-    specialties: [pending('[Especialidad]', NOTE), pending('[Especialidad]', NOTE)],
-    license: pending('[Nº de colegiada]', 'Solo si la clínica quiere mostrarlo'),
-    linkedin: null,
-    photo: null,
+    id: 'paula-vigara',
+    name: 'Paula Vigara Aranda',
+    role: ROLE,
+    bio: null,
+    specialties: [],
+    license: null,
+    linkedin: 'https://es.linkedin.com/in/paula-vigara-aranda-569223253',
+    photo: { src: '/images/team/paula-vigara.jpg', alt: 'Paula Vigara Aranda, copropietaria y podóloga' },
   },
   {
-    id: 'profesional-2',
-    name: pending('Nombre Apellido', NOTE),
-    role: pending('[Cargo pendiente]', NOTE),
-    bio: pending('[Breve descripción profesional pendiente de la clínica]', NOTE),
-    specialties: [pending('[Especialidad]', NOTE), pending('[Especialidad]', NOTE)],
-    license: pending('[Nº de colegiada]', 'Solo si la clínica quiere mostrarlo'),
-    linkedin: null,
-    photo: null,
+    id: 'valerie-savignano',
+    name: 'Valerie Savignano Gutiérrez',
+    role: ROLE,
+    bio: null,
+    specialties: [],
+    license: null,
+    linkedin: 'https://es.linkedin.com/in/valerie-savignano-guti%C3%A9rrez-8552b3249',
+    photo: {
+      src: '/images/team/valerie-savignano.jpg',
+      alt: 'Valerie Savignano Gutiérrez, copropietaria y podóloga',
+    },
   },
 ]

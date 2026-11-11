@@ -12,27 +12,22 @@ export interface ClinicPhoto {
 }
 
 const PHOTO = 'Fotografía de la clínica (spec 05 §3): la aporta la clínica, con permisos'
-const NOTE = 'Texto de Conócenos (spec 05): validar con la clínica'
 
 /** Textos compartidos entre la filosofía de la Home (4 verbos) y el método de la clínica (5 fases). */
-const LISTEN = pending('Empezamos por entender qué te pasa y qué necesitas.', NOTE)
-const ANALYSE = pending('Estudiamos tu pie y tu forma de moverte.', NOTE)
-const TREAT = pending('Te proponemos el tratamiento adecuado y te lo explicamos.', NOTE)
+const LISTEN = 'Empezamos por entender qué te pasa y qué necesitas.'
+const ANALYSE = 'Estudiamos tu pie y tu forma de moverte.'
+const TREAT = 'Te proponemos el tratamiento adecuado y te lo explicamos.'
 
 export const clinic = {
-  heroText: pending(
-    'Entendemos la podología como una forma de cuidar a las personas: escuchar, explicar y acompañar en cada paso.',
-    NOTE,
-  ) as Maybe<string>,
   /** Fotografía de equipo del hero (horizontal, ≥ 1600 px). `src: null` = pendiente. */
   teamPhoto: {
-    src: null as string | null,
-    alt: pending('El equipo de Valdepodo en la clínica', 'Fotografía del equipo: la aporta la clínica'),
+    src: '/images/clinic/fachada-equipo.jpg' as string | null,
+    alt: 'Paula y Valerie, el equipo de Valdepodo, ante la fachada de la clínica',
   },
   /** Texto de apoyo de la sección «Un espacio pensado para cuidar de ti». */
   spaceText: pending(
     'Un lugar cálido, limpio y tranquilo, cuidado en cada detalle, para atenderte sin prisas.',
-    NOTE,
+    'Texto de Conócenos (spec 05): validar con la clínica',
   ) as Maybe<string>,
   /** Composición editorial: la primera es la principal (4 imágenes, no una galería). */
   photos: [
@@ -45,10 +40,6 @@ export const clinic = {
     },
     { src: null, alt: pending('Detalle del instrumental', PHOTO), caption: pending('Detalle', PHOTO) },
   ] as readonly ClinicPhoto[],
-  experienceText: pending(
-    '[Trayectoria de la clínica pendiente de redactar con la clínica]',
-    'Texto de trayectoria (spec 05 §4)',
-  ) as Maybe<string>,
   /** Hitos reales. Vacío → la línea temporal no se renderiza (spec 05 §4). */
   milestones: [] as readonly { year: number; text: string }[],
   /** Los cuatro verbos de la Home («Cuatro verbos, un solo paso»). */
@@ -56,7 +47,7 @@ export const clinic = {
     { title: 'Escuchar', text: LISTEN },
     { title: 'Analizar', text: ANALYSE },
     { title: 'Tratar', text: TREAT },
-    { title: 'Prevenir', text: pending('Te damos pautas para que las molestias no vuelvan.', NOTE) },
+    { title: 'Prevenir', text: 'Te damos pautas para que las molestias no vuelvan.' },
   ] as readonly { title: string; text: Maybe<string> }[],
   /** Método de la clínica en cinco fases (línea de tiempo de `/conocenos`). */
   method: [
@@ -64,12 +55,12 @@ export const clinic = {
     { title: 'Analizar', text: ANALYSE },
     {
       title: 'Valorar',
-      text: pending('Valoramos juntos los resultados y te explicamos qué opciones tienes.', NOTE),
+      text: 'Valoramos juntos los resultados y te explicamos qué opciones tienes.',
     },
     { title: 'Tratar', text: TREAT },
     {
       title: 'Acompañar',
-      text: pending('Seguimos a tu lado y te damos pautas para que las molestias no vuelvan.', NOTE),
+      text: 'Seguimos a tu lado y te damos pautas para que las molestias no vuelvan.',
     },
   ] as readonly { title: string; text: Maybe<string> }[],
 }

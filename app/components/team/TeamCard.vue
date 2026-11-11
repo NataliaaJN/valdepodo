@@ -54,10 +54,10 @@ const name = computed(() => resolveValue(props.member.name))
         </h3>
         <ContentValue :value="member.role" as="p" class="role" />
 
-        <div class="more">
+        <div v-if="member.bio || member.specialties.length || member.license" class="more">
           <div class="more__inner">
-            <ContentValue :value="member.bio" as="p" class="bio" />
-            <ul class="tags" role="list" aria-label="Especialidades">
+            <ContentValue v-if="member.bio" :value="member.bio" as="p" class="bio" />
+            <ul v-if="member.specialties.length" class="tags" role="list" aria-label="Especialidades">
               <li v-for="(s, i) in member.specialties" :key="i" class="tag">
                 <ContentValue :value="s" />
               </li>

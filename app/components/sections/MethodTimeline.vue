@@ -55,10 +55,7 @@ useGsapContext(root, (c) => {
   >
     <div class="container-wide">
       <div class="method__head">
-        <p v-reveal class="eyebrow method__eyebrow">Cómo trabajamos</p>
-        <h2 id="method-title" v-reveal class="method__title text-display-m">
-          Cinco pasos, siempre a tu ritmo.
-        </h2>
+        <h2 id="method-title" v-reveal class="method__title text-display-m">Método</h2>
       </div>
 
       <ol ref="list" class="timeline" role="list">
@@ -73,11 +70,7 @@ useGsapContext(root, (c) => {
 </template>
 
 <style scoped>
-.method__eyebrow {
-  color: var(--color-ice-blue);
-}
 .method__title {
-  margin-top: 1rem;
   max-width: 16ch;
 }
 
