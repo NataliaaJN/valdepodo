@@ -15,8 +15,8 @@ import type { FootLayer } from '~/utils/foot-layers'
 import type { SceneStats } from '~/utils/scene-types'
 
 const props = withDefaults(
-  defineProps<{ src?: string; activeLayer: FootLayer; rotationY?: number; idleSpin?: boolean; glass?: boolean }>(),
-  { src: undefined, rotationY: FOOT_VIEW.rotationY, idleSpin: false, glass: false },
+  defineProps<{ src?: string; activeLayer: FootLayer; rotationY?: number; idleSpin?: boolean; studio?: boolean }>(),
+  { src: undefined, rotationY: FOOT_VIEW.rotationY, idleSpin: false, studio: false },
 )
 const emit = defineEmits<{
   ready: []
@@ -105,6 +105,12 @@ onBeforeUnmount(() => {
       :intensity="lights.rim.intensity"
       :color="lights.rim.color"
     />
+    <template v-if="studio">
+      <!-- Iluminación de estudio: principal cálida suave, relleno frío y contraluz -->
+      <TresDirectionalLight :position="[-3, 4, 3]" :intensity="1.6" color="#fff3e8" />
+      <TresDirectionalLight :position="[4, 1, 2.5]" :intensity="0.55" color="#d3ebf6" />
+      <TresDirectionalLight :position="[2, 3, -4]" :intensity="0.9" color="#e8f7ff" />
+    </template>
     <FootAnatomyModel
       v-if="model"
       :model="model"
@@ -112,7 +118,7 @@ onBeforeUnmount(() => {
       :rotation-y="rotationY"
       :idle-spin="idleSpin"
       :fit="FOOT_VIEW.fit"
-      :glass="glass"
+      :studio="studio"
       @layers="(l) => emit('layers', l)"
     />
   </TresCanvas>
