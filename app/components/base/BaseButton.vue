@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Botón del sistema de diseño. Rectángulo de 8 px (nunca píldora). Al pasar el cursor, el texto «rueda»:
+ * Botón del sistema de diseño. Píldora totalmente redondeada (como el «Pedir cita» de la navbar). Al pasar el cursor, el texto «rueda»:
  * sale hacia arriba y entra su copia desde abajo, y la flecha cruza el cuadro de lado a lado.
  * Renderiza <NuxtLink> si recibe `to`/`href`, o <button> en caso contrario. Nunca un <div> clicable.
  *
@@ -97,7 +97,7 @@ const rolls = computed(() => props.variant !== 'ghost' && !props.loading)
   justify-content: center;
   gap: 0.875rem;
   border: 1px solid transparent;
-  border-radius: var(--radius-m);
+  border-radius: 999px;
   font-weight: 500;
   letter-spacing: 0.005em;
   cursor: pointer;
@@ -118,7 +118,7 @@ const rolls = computed(() => props.variant !== 'ghost' && !props.loading)
 
 .btn--md {
   min-height: 3.25rem;
-  padding-inline: 1.375rem;
+  padding-inline: 1.75rem;
   font-size: 0.9375rem;
 }
 .btn--sm {

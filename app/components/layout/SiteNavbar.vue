@@ -282,15 +282,15 @@ onBeforeUnmount(() => {
   justify-self: start;
 }
 .brand__symbol {
-  width: 26px;
+  width: 36px;
   flex: none;
   transition: width var(--dur-base) var(--ease-out-soft);
 }
 .brand__text {
   display: block;
   overflow: hidden;
-  max-width: 11rem;
-  margin-left: 0.875rem;
+  max-width: 14rem;
+  margin-left: 1rem;
   opacity: 1;
   transition:
     max-width var(--dur-base) var(--ease-out-soft),
@@ -299,11 +299,11 @@ onBeforeUnmount(() => {
 }
 .brand__wordmark {
   display: block;
-  width: 150px;
+  width: 196px;
   max-width: none;
 }
 .is-scrolled .brand__symbol {
-  width: 20px;
+  width: 28px;
 }
 .is-scrolled .brand__text {
   max-width: 0;
