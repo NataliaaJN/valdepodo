@@ -56,13 +56,19 @@ const items = computed(() =>
   content: '';
   position: absolute;
   inset: auto 0 100%;
+  /* En móvil el titular está pegado al pie del hero: el fundido es más corto para no velarlo */
   height: 4rem;
   pointer-events: none;
+  /* Rampa en S (ease-in-out) para que no haya ningún escalón perceptible */
   background: linear-gradient(
     180deg,
     rgb(217 240 250 / 0) 0%,
-    rgb(217 240 250 / 0.35) 55%,
-    rgb(217 240 250 / 0.85) 85%,
+    rgb(217 240 250 / 0.03) 15%,
+    rgb(217 240 250 / 0.12) 30%,
+    rgb(217 240 250 / 0.3) 45%,
+    rgb(217 240 250 / 0.55) 60%,
+    rgb(217 240 250 / 0.8) 75%,
+    rgb(217 240 250 / 0.94) 88%,
     #d9f0fa 100%
   );
 }
@@ -102,6 +108,12 @@ const items = computed(() =>
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.25;
+}
+
+@media (min-width: 768px) {
+  .facts::before {
+    height: clamp(8rem, 18vw, 11rem);
+  }
 }
 
 @media (min-width: 1024px) {
