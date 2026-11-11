@@ -86,19 +86,18 @@ export const site: SiteData = {
     'Plazo real de respuesta a las solicitudes',
   ),
 
-  // Spec 02 §2: Servicios · La clínica · Equipo · Contacto · Pedir cita
+  // Spec 02 §2: Servicios · La clínica (equipo incluido) · Contacto · Pedir cita
   nav: [
     { label: 'Servicios', to: '/servicios' },
     { label: 'La clínica', to: '/conocenos' },
-    { label: 'Equipo', to: '/conocenos#equipo' },
     { label: 'Contacto', to: '/contacto' },
   ],
   // Spec 02 §3
   footerNav: [
     { label: 'Inicio', to: '/' },
     { label: 'Servicios', to: '/servicios' },
-    { label: 'Conócenos', to: '/conocenos' },
-    { label: 'Pedir cita', to: '/pedir-cita' },
+    { label: 'La clínica', to: '/conocenos' },
+    { label: 'Pedir cita', to: '/contacto#cita' },
     { label: 'Contacto', to: '/contacto' },
   ],
   legalNav: [
@@ -107,5 +106,5 @@ export const site: SiteData = {
     { label: 'Política de cookies', to: '/cookies' },
     { label: 'Créditos', to: '/creditos' },
   ],
-  cta: { label: 'Pedir cita', to: '/pedir-cita' },
+  cta: { label: 'Pedir cita', to: '/contacto#cita' },
 }

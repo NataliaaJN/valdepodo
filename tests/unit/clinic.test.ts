@@ -96,7 +96,7 @@ describe('contenido (spec 09)', () => {
       expect(s.needs.length).toBeGreaterThanOrEqual(2)
       expect(s.needs.length).toBeLessThanOrEqual(4)
       for (const r of s.related) expect(getService(r).slug).not.toBe(s.slug)
-      expect(bookingPath(s.slug)).toBe(`/pedir-cita?motivo=${s.slug}`)
+      expect(bookingPath(s.slug)).toBe(`/contacto?motivo=${s.slug}#cita`)
     }
   })
 

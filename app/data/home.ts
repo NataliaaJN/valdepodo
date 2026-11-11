@@ -11,7 +11,7 @@ export const hero = {
     'Analizamos cómo está construido tu pie y cómo se mueve para cuidarlo en cada paso.',
     'Propuesta de valor provisional (spec 03 §1): validar con la clínica',
   ) as Maybe<string>,
-  primaryCta: { label: 'Pedir cita', to: '/pedir-cita' },
+  primaryCta: { label: 'Pedir cita', to: '/contacto#cita' },
   secondaryCta: { label: 'Descubrir servicios', to: '#servicios' },
 }
 

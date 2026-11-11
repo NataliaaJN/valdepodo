@@ -1,115 +1,54 @@
 <script setup lang="ts">
 /**
- * Cierre conceptual de la web: «Da el próximo paso.» en tres líneas cuya escala crece (como una pisada que
- * se acerca) sobre el azul Valdepodo, con el pie —el póster del 3D— entrando por abajo y un único botón
- * magnético. Se usa al final de TODAS las páginas: lo que cambia es la línea de contexto (`title`) que
- * la antecede, no el cierre.
+ * Pre-footer global: «Da el próximo paso.» + una frase de apoyo + «Pedir cita». Una banda azul Valdepodo de
+ * altura contenida (no es un hero), con un trazo orgánico discreto de pasos que cruza por detrás. Lo pinta
+ * el layout al final de todas las páginas (salvo en `/contacto`, donde ya está el formulario).
+ * Estático a propósito: sin GSAP ni WebGL; solo la entrada `v-reveal` y el «rodar» del botón.
  */
-import { gsap } from 'gsap'
-import type { Maybe } from '#shared/utils/pending'
-
-const props = defineProps<{
-  /** Línea de contexto de la página (p. ej. «¿No sabes qué necesita tu pie?»). */
-  title?: { before: string; accent: string; after?: string }
-  text?: Maybe<string>
-  cta: { label: string; to: string }
-  /** Enlace secundario opcional (p. ej. llamar). */
-  secondary?: { label: string; to?: string; href?: string }
-}>()
-
-const lead = computed(() =>
-  props.title ? `${props.title.before}${props.title.accent}${props.title.after ?? ''}` : '',
+withDefaults(
+  defineProps<{
+    title?: string
+    text?: string
+    cta?: { label: string; to: string }
+  }>(),
+  {
+    title: 'Da el próximo paso',
+    text: 'Cuéntanos cómo caminas y te acompañamos desde el primer paso.',
+    cta: () => ({ label: 'Pedir cita', to: '/contacto#cita' }),
+  },
 )
-
-const root = ref<HTMLElement | null>(null)
-const orb = ref<{ $el: HTMLElement } | HTMLElement | null>(null)
-const orbEl = () => (orb.value && '$el' in orb.value ? orb.value.$el : orb.value) as HTMLElement | null
-
-useGsapContext(root, (c) => {
-  if (c.reduce || !root.value) return undefined
-  const lines = root.value.querySelectorAll('[data-line] > span')
-  gsap.from(lines, {
-    yPercent: 110,
-    duration: 1.3,
-    ease: 'expo.out',
-    stagger: 0.14,
-    scrollTrigger: { trigger: root.value, start: 'top 55%', once: true },
-  })
-  if (c.desktop) {
-    gsap.fromTo(
-      root.value.querySelector('[data-foot]'),
-      { yPercent: 14 },
-      {
-        yPercent: -8,
-        ease: 'none',
-        scrollTrigger: { trigger: root.value, start: 'top bottom', end: 'bottom bottom', scrub: 0.6 },
-      },
-    )
-  }
-  return undefined
-})
-
-/* Botón magnético: sigue al puntero un máximo de 14 px (solo ratón) */
-function onMove(e: PointerEvent) {
-  const el = orbEl()
-  if (!el || e.pointerType !== 'mouse') return
-  const r = el.getBoundingClientRect()
-  const x = (e.clientX - (r.left + r.width / 2)) / r.width
-  const y = (e.clientY - (r.top + r.height / 2)) / r.height
-  el.style.setProperty('--mx', `${(x * 28).toFixed(1)}px`)
-  el.style.setProperty('--my', `${(y * 28).toFixed(1)}px`)
-}
-function onLeave() {
-  orbEl()?.style.setProperty('--mx', '0px')
-  orbEl()?.style.setProperty('--my', '0px')
-}
 </script>
 
 <template>
   <section
-    ref="root"
     class="cta chapter-blue section-clip relative isolate"
     data-nav-theme="blue"
     aria-labelledby="cta-title"
   >
-    <!-- El pie del 3D (póster estático): entra por abajo y se recorta -->
-    <picture class="cta__foot" data-foot aria-hidden="true">
-      <source srcset="/images/3d-fallbacks/foot/skin.avif" type="image/avif" />
-      <img
-        src="/images/3d-fallbacks/foot/skin.webp"
-        alt=""
-        width="1600"
-        height="1600"
-        loading="lazy"
-        decoding="async"
+    <!-- Trazo abstracto: un camino con pasos (puntos) que entra por la derecha. Decorativo. -->
+    <svg class="cta__path" viewBox="0 0 900 320" fill="none" aria-hidden="true" focusable="false">
+      <path
+        class="cta__path-solid"
+        d="M-20 252 C 150 282, 230 112, 420 150 S 700 268, 920 84"
+        vector-effect="non-scaling-stroke"
       />
-    </picture>
+      <path
+        class="cta__path-dots"
+        d="M-20 214 C 150 244, 240 84, 430 118 S 700 230, 920 48"
+        vector-effect="non-scaling-stroke"
+      />
+      <circle cx="420" cy="150" r="5" class="cta__path-node" />
+      <circle cx="660" cy="232" r="3.5" class="cta__path-node" />
+    </svg>
 
     <div class="container-wide cta__inner">
-      <p v-if="lead" v-reveal class="cta__lead text-heading-s">{{ lead }}</p>
-
-      <h2 id="cta-title" class="cta__claim mega" aria-label="Da el próximo paso.">
-        <span class="line line--1" data-line aria-hidden="true"><span>Da el</span></span>
-        <span class="line line--2" data-line aria-hidden="true"><span>próximo</span></span>
-        <span class="line line--3" data-line aria-hidden="true"><span>paso.</span></span>
+      <h2 id="cta-title" v-reveal class="cta__title">
+        {{ title }}<span class="cta__stop" aria-hidden="true">.</span>
       </h2>
 
-      <div class="cta__actions">
-        <NuxtLink ref="orb" :to="cta.to" class="orb" @pointermove="onMove" @pointerleave="onLeave">
-          <span class="orb__in">
-            {{ cta.label }}
-            <BaseIcon name="arrow-right" class="size-5" />
-          </span>
-        </NuxtLink>
-        <BaseButton
-          v-if="secondary"
-          variant="ghost"
-          :to="secondary.to"
-          :href="secondary.href"
-          class="cta__secondary"
-        >
-          {{ secondary.label }}
-        </BaseButton>
+      <div v-reveal="1" class="cta__side">
+        <p class="cta__text">{{ text }}</p>
+        <BaseButton variant="on-blue" :to="cta.to" arrow class="cta__button">{{ cta.label }}</BaseButton>
       </div>
     </div>
   </section>
@@ -117,136 +56,80 @@ function onLeave() {
 
 <style scoped>
 .cta {
-  min-height: min(100svh, 62rem);
-  display: flex;
-  align-items: flex-end;
-  padding-block: clamp(5rem, 9vw, 9rem) clamp(2rem, 4vw, 4rem);
+  padding-block: clamp(3.5rem, 6vw, 6rem);
 }
-.cta__foot {
+.cta__path {
   position: absolute;
   z-index: -1;
-  right: -14vw;
-  bottom: -18vw;
-  width: min(78vw, 1200px);
+  inset-block: 0;
+  right: 0;
+  width: min(100%, 70rem);
+  height: 100%;
   pointer-events: none;
-  opacity: 0.96;
 }
-.cta__foot img {
-  width: 100%;
-  height: auto;
+.cta__path path {
+  stroke: var(--color-ice-blue);
+  stroke-width: 1.25;
+  stroke-linecap: round;
 }
-.cta__inner {
-  position: relative;
-  display: grid;
-  gap: 2rem;
+.cta__path-solid {
+  opacity: 0.22;
 }
-.cta__lead {
-  max-width: 24ch;
-  color: var(--color-ice-blue);
-  font-family: var(--font-display);
-  font-weight: 500;
-  letter-spacing: -0.02em;
+.cta__path-dots {
+  stroke-dasharray: 1 9;
+  opacity: 0.5;
+}
+.cta__path-node {
+  fill: var(--color-ice-blue);
+  opacity: 0.55;
 }
 
-/* Escala progresiva por línea: cada «paso» es más grande que el anterior */
-.cta__claim {
+.cta__inner {
+  display: grid;
+  gap: 1.75rem;
+  align-items: end;
+}
+.cta__title {
+  font-family: var(--font-display);
+  font-weight: 650;
+  font-stretch: 75%;
+  font-size: clamp(3rem, 1rem + 9vw, 8.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.025em;
+  max-width: 11ch;
+}
+.cta__stop {
+  color: var(--color-ice-blue);
+}
+.cta__side {
   display: grid;
   justify-items: start;
-  font-size: inherit;
-  line-height: 1;
+  gap: 1.5rem;
 }
-.line {
-  display: block;
-  overflow: hidden;
-  /* Aire arriba para que no se recorten las tildes con el interlineado compacto */
-  padding-block: 0.14em 0.2em;
-  margin-block: -0.14em -0.2em;
-  line-height: 0.84;
-}
-.line > span {
-  display: block;
-}
-.line--1 {
-  font-size: clamp(3.25rem, 1rem + 11vw, 11rem);
-  padding-left: 0;
-}
-.line--2 {
-  font-size: clamp(4.5rem, 1rem + 17vw, 17rem);
-  padding-left: clamp(0.5rem, 5vw, 6rem);
-}
-.line--3 {
-  font-size: clamp(6rem, 1rem + 25vw, 25rem);
-  padding-left: clamp(1rem, 12vw, 16rem);
-}
-
-.cta__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem 2rem;
-}
-
-/* Botón magnético circular: el único CTA */
-.orb {
-  --mx: 0px;
-  --my: 0px;
-  display: grid;
-  place-items: center;
-  width: clamp(7.5rem, 5rem + 8vw, 11rem);
-  aspect-ratio: 1;
-  border-radius: 999px;
-  background: var(--color-bone);
-  color: var(--color-ink);
-  font-weight: 500;
-  font-size: 1rem;
-  translate: var(--mx) var(--my);
-  transition:
-    translate 600ms var(--ease-out-soft),
-    background-color var(--dur-base) var(--ease-out-soft),
-    color var(--dur-base) var(--ease-out-soft),
-    scale var(--dur-base) var(--ease-out-soft);
-}
-.orb__in {
-  display: grid;
-  justify-items: center;
-  gap: 0.375rem;
-}
-@media (hover: hover) and (pointer: fine) {
-  .orb:hover {
-    background: var(--color-ink);
-    color: var(--color-bone);
-    scale: 1.08;
-  }
-}
-.cta__secondary {
+.cta__text {
+  max-width: 30ch;
+  font-size: var(--text-body-l);
+  line-height: var(--text-body-l--line-height);
   color: var(--color-bone);
 }
 
 @media (min-width: 1024px) {
   .cta__inner {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-    column-gap: 3rem;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.5rem;
   }
-  .cta__lead {
-    grid-column: 1 / -1;
+  .cta__title {
+    grid-column: 1 / span 7;
+    max-width: none;
   }
-  .cta__actions {
-    flex-direction: column;
-    align-items: flex-end;
-    padding-bottom: 1rem;
+  .cta__side {
+    grid-column: 9 / span 4;
+    padding-bottom: 0.5rem;
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .orb {
-    transition:
-      background-color 150ms linear,
-      color 150ms linear;
-    translate: none;
-  }
-  .orb:hover {
-    scale: 1;
+@media (max-width: 479px) {
+  .cta__button {
+    width: 100%;
   }
 }
 </style>

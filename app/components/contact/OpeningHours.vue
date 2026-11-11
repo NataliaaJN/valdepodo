@@ -7,6 +7,8 @@ import { isPending, resolveValue } from '#shared/utils/pending'
 import { site } from '~/data/site'
 import { DAY_NAMES, groupHours, openStatus, type OpenStatus } from '~/utils/clinic'
 
+withDefaults(defineProps<{ columns?: boolean }>(), { columns: false })
+
 const hours = resolveValue(site.hours)
 const rows = groupHours(hours)
 const confirmed = !isPending(site.hours)
@@ -29,7 +31,7 @@ onMounted(() => {
       </span>
     </p>
     <PendingBadge v-if="!confirmed" label="Horario por confirmar" :note="pendingNote" />
-    <dl class="mt-3">
+    <dl class="mt-3" :class="{ 'hours-columns': columns }">
       <div v-for="row in rows" :key="row.label" class="hours-row">
         <dt class="font-semibold text-deep-blue">{{ row.label }}</dt>
         <dd class="text-text-secondary">
@@ -44,6 +46,20 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* Variante en columnas (Contacto): grupos de días lado a lado, sin filetes */
+.hours-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.25rem 2rem;
+}
+.hours-columns .hours-row {
+  display: block;
+  border-bottom: 0;
+  padding-block: 0.35rem;
+}
+.hours-columns .hours-row dd {
+  text-align: left;
+}
 .hours-row {
   display: flex;
   justify-content: space-between;

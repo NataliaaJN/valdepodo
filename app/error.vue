@@ -38,7 +38,7 @@ const trail = [
           </p>
           <div class="mt-8 flex flex-wrap gap-3">
             <BaseButton to="/" arrow @click="clearError()">Volver al inicio</BaseButton>
-            <BaseButton to="/pedir-cita" variant="secondary" @click="clearError()">Pedir cita</BaseButton>
+            <BaseButton to="/contacto#cita" variant="secondary" @click="clearError()">Pedir cita</BaseButton>
           </div>
         </div>
         <svg

@@ -3,7 +3,10 @@
  * Layout base (spec 02). La navbar es fija: `main` deja su altura arriba y las páginas con hero a sangre la
  * recuperan con `.under-navbar` (el hero queda debajo de la navbar transparente).
  * `data-page-root` marca lo que se vuelve `inert` mientras el menú móvil está abierto.
+ * El CTA global «Da el próximo paso.» cierra todas las páginas; una página lo omite con
+ * `definePageMeta({ hideCta: true })`.
  */
+const route = useRoute()
 </script>
 
 <template>
@@ -20,6 +23,7 @@
 
     <main id="contenido" class="flex-1 pt-(--nav-h)" tabindex="-1" data-page-root>
       <slot />
+      <CtaBlock v-if="!route.meta.hideCta" />
     </main>
 
     <SiteFooter />

@@ -1,22 +1,29 @@
 <script setup lang="ts">
 /**
- * Contacto (spec 07): datos como lista tipográfica con filetes (sin cajas) y mapa con fachada. Mismos datos
- * que el footer y el schema (`site.ts`), en `pending()` hasta confirmarlos. Prioriza claridad y uso.
- * Escritorio: lista 6 col + mapa fijo 5 col · tablet y móvil: apilado.
+ * Contacto (spec 07) + solicitud de cita. Lectura en tres tiempos: cómo contactar (composición de cards de
+ * distinto peso) → dónde estamos (mapa) → cómo pedir cita (formulario `#cita`, destino de todos los CTA).
+ * Mismos datos que el footer y el schema (`site.ts`), en `pending()` hasta confirmarlos.
  */
 import { resolveValue } from '#shared/utils/pending'
 import { site } from '~/data/site'
 
+// El formulario ya está en la página: sin el CTA global de cierre
+definePageMeta({ hideCta: true })
+
 const clinic = useClinic()
 const city = resolveValue(site.city)
+const googleUrl = resolveValue(site.googleProfileUrl)
 
 usePageSeo({
-  title: `Contacto · Podología en ${city}`,
-  description: `Dirección, teléfono, horario y cómo llegar a Valdepodo, clínica de podología en ${city}.`,
+  title: `Contacto y cita · Podología en ${city}`,
+  description: `Teléfono, email, horario, cómo llegar y solicitud de cita en Valdepodo, clínica de podología en ${city}.`,
   path: '/contacto',
 })
 
-/* Copiar al portapapeles con aviso para lectores de pantalla (spec 07 §2) */
+/* Datos de la propia clínica (site.ts), no entrada de usuario: seguro en v-html */
+const noscriptHtml = `<p class="rounded-m border border-border bg-white p-6">Para enviar la solicitud online necesitas JavaScript. También puedes llamarnos al <a href="${clinic.phoneHref}" class="font-semibold underline">${clinic.phone}</a> o escribirnos a <a href="${clinic.mailHref}" class="font-semibold underline">${clinic.email}</a>.</p>`
+
+/* Copiar al portapapeles con aviso para lectores de pantalla */
 const copied = ref('')
 async function copy(text: string, what: string) {
   try {
@@ -31,111 +38,151 @@ async function copy(text: string, what: string) {
 
 <template>
   <div>
-    <PageHeader id="contact-title" title="Estamos aquí para ayudarte." eyebrow="Contacto" />
+    <PageHeader id="contact-title" title="Estamos aquí para ayudarte." eyebrow="Contacto">
+      Llámanos, escríbenos o pasa por la clínica. Y si prefieres, pide tu cita online más abajo.
+      <template #actions>
+        <BaseButton to="#cita" arrow>Pedir cita</BaseButton>
+      </template>
+    </PageHeader>
 
-    <section
-      class="container-wide pb-(--space-section)"
-      aria-label="Datos de contacto y mapa"
-      data-nav-theme="bone"
-    >
-      <div class="contact-grid">
-        <dl class="info-list">
-          <div v-reveal class="info-row">
-            <dt class="eyebrow text-primary-strong">Dirección</dt>
-            <dd>
-              <address class="info-value not-italic">
-                <ContentValue :value="site.address.street" /><br />
-                <ContentValue :value="site.address.postalCode" />{{ ' ' }}
-                <ContentValue :value="site.address.locality" />
-              </address>
-              <div class="info-actions">
-                <BaseButton variant="ghost" :href="clinic.directions" target="_blank" rel="noopener">
-                  Cómo llegar<span class="sr-only"> (se abre en Google Maps)</span>
-                </BaseButton>
-                <button type="button" class="copy-btn" @click="copy(clinic.addressLine, 'Dirección')">
-                  <BaseIcon name="copy" class="size-4" /> Copiar
-                  <span class="sr-only">dirección</span>
-                </button>
-              </div>
-            </dd>
+    <!-- 1 · Cómo contactar -->
+    <section class="container-wide pb-(--space-section)" aria-label="Datos de contacto" data-nav-theme="bone">
+      <div class="bento">
+        <!-- Ubicación: la pieza destacada -->
+        <article v-reveal class="card card-place chapter-blue" aria-labelledby="c-place">
+          <div>
+            <p id="c-place" class="card-label"><BaseIcon name="map-pin" /> Dónde estamos</p>
+            <address class="place-address not-italic">
+              <ContentValue :value="site.address.street" /><br />
+              <ContentValue :value="site.address.postalCode" />{{ ' ' }}
+              <ContentValue :value="site.address.locality" />
+            </address>
           </div>
-
-          <div v-reveal="1" class="info-row">
-            <dt class="eyebrow text-primary-strong">Teléfono</dt>
-            <dd>
-              <p class="info-value"><ContentValue :value="site.phone" /></p>
-              <div class="info-actions">
-                <span class="phone-cta"
-                  ><BaseButton :href="clinic.phoneHref" size="sm">Llamar</BaseButton></span
-                >
-                <button type="button" class="copy-btn" @click="copy(clinic.phone, 'Teléfono')">
-                  <BaseIcon name="copy" class="size-4" /> Copiar
-                  <span class="sr-only">teléfono</span>
-                </button>
-              </div>
-            </dd>
+          <div class="card-actions">
+            <BaseButton variant="on-blue" :href="clinic.directions" target="_blank" rel="noopener" arrow>
+              Cómo llegar<span class="sr-only"> (se abre en Google Maps)</span>
+            </BaseButton>
+            <button type="button" class="copy-btn" @click="copy(clinic.addressLine, 'Dirección')">
+              <BaseIcon name="copy" class="size-4" /> Copiar dirección
+            </button>
           </div>
+        </article>
 
-          <div v-reveal="2" class="info-row">
-            <dt class="eyebrow text-primary-strong">Email</dt>
-            <dd>
-              <p class="info-value break-all"><ContentValue :value="site.email" /></p>
-              <div class="info-actions">
-                <BaseButton variant="ghost" :href="clinic.mailHref">Escribir un correo</BaseButton>
-              </div>
-            </dd>
-          </div>
+        <!-- Teléfono -->
+        <article v-reveal="1" class="card card-phone" aria-labelledby="c-phone">
+          <p id="c-phone" class="card-label"><BaseIcon name="phone" /> Teléfono</p>
+          <a :href="clinic.phoneHref" class="card-value link-quiet">
+            <ContentValue :value="site.phone" />
+            <span class="sr-only"> (llamar)</span>
+          </a>
+          <button type="button" class="copy-btn" @click="copy(clinic.phone, 'Teléfono')">
+            <BaseIcon name="copy" class="size-4" /> Copiar<span class="sr-only"> teléfono</span>
+          </button>
+        </article>
 
-          <div v-reveal="3" class="info-row">
-            <dt class="eyebrow text-primary-strong">Instagram</dt>
-            <dd>
-              <p class="info-value">
-                <ContentValue v-slot="{ value }" :value="site.instagram">{{ value.handle }}</ContentValue>
-              </p>
-              <div class="info-actions">
-                <BaseButton variant="ghost" :href="clinic.instagram.url" target="_blank" rel="noopener">
-                  Ver perfil<span class="sr-only"> de Instagram (se abre en una pestaña nueva)</span>
-                </BaseButton>
-              </div>
-            </dd>
-          </div>
+        <!-- Email -->
+        <article v-reveal="2" class="card card-mail" aria-labelledby="c-mail">
+          <p id="c-mail" class="card-label"><BaseIcon name="mail" /> Email</p>
+          <a :href="clinic.mailHref" class="card-value card-value--mail link-quiet">
+            <ContentValue :value="site.email" />
+          </a>
+        </article>
 
-          <div v-reveal="4" class="info-row">
-            <dt class="eyebrow text-primary-strong">Horario</dt>
-            <dd><OpeningHours /></dd>
-          </div>
-        </dl>
+        <!-- Horario -->
+        <article v-reveal="3" class="card card-hours" aria-labelledby="c-hours">
+          <p id="c-hours" class="card-label"><BaseIcon name="clock" /> Horario</p>
+          <OpeningHours columns />
+        </article>
 
-        <MapFacade v-reveal class="map" />
+        <!-- Redes: bloque compacto sin caja -->
+        <div v-reveal="4" class="social" role="group" aria-labelledby="c-social">
+          <p id="c-social" class="card-label">Síguenos</p>
+          <a
+            :href="clinic.instagram.url"
+            target="_blank"
+            rel="noopener"
+            class="social-link link-quiet"
+          >
+            <BaseIcon name="instagram" />
+            <ContentValue v-slot="{ value }" :value="site.instagram">{{ value.handle }}</ContentValue>
+            <span class="sr-only"> en Instagram (se abre en una pestaña nueva)</span>
+          </a>
+          <a :href="googleUrl" target="_blank" rel="noopener" class="social-link link-quiet">
+            Ficha de Google<BaseIcon name="arrow-up-right" class="size-4" />
+            <span class="sr-only"> (se abre en una pestaña nueva)</span>
+          </a>
+        </div>
       </div>
       <p class="sr-only" aria-live="polite">{{ copied }}</p>
       <p v-if="copied" class="toast" aria-hidden="true">{{ copied }}</p>
     </section>
 
-    <CtaBlock
-      :title="{ before: '¿Prefieres pedir tu cita ', accent: 'online', after: '?' }"
-      :cta="{ label: 'Pedir cita', to: '/pedir-cita' }"
-      :secondary="{ label: 'Llamar', href: clinic.phoneHref }"
-    />
+    <!-- 2 · Formulario de cita + mapa. `#cita`: destino de todos los botones «Pedir cita» -->
+    <section
+      id="cita"
+      class="cita chapter-bone-2"
+      aria-labelledby="cita-title"
+      data-nav-theme="bone"
+    >
+      <div class="container-wide">
+        <div class="cita-head">
+          <SectionHeading
+            id="cita-title"
+            eyebrow="Pedir cita"
+            :title="{ before: 'Cuéntanos qué necesitas.' }"
+          />
+          <p v-reveal="1" class="cita-intro">
+            Rellena estos pasos y te contactaremos para confirmar día y hora. Es una solicitud, no una
+            reserva.
+          </p>
+        </div>
+
+        <div class="cita-grid">
+          <div class="cita-form">
+            <!-- v-html: el contenido de <noscript> no se puede hidratar como nodos (spec 10 §6) -->
+            <!-- eslint-disable-next-line vue/no-v-html -- contenido estático de site.ts -->
+            <noscript v-html="noscriptHtml" />
+            <BookingWizard />
+          </div>
+          <MapFacade v-reveal class="cita-map" />
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
-.contact-grid {
+/* ---------- Composición de cards ---------- */
+.bento {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 3rem;
-}
-.info-list {
-  border-bottom: 1px solid var(--color-border);
-}
-.info-row {
-  display: grid;
   gap: 0.75rem;
-  border-top: 1px solid var(--color-border);
-  padding-block: 1.5rem;
 }
-.info-value {
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border-radius: var(--radius-l);
+  background: var(--color-white);
+  box-shadow: var(--shadow-soft);
+  padding: 1.25rem 1.5rem;
+}
+.card-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+.card-label :deep(.base-icon) {
+  width: 1.1em;
+  height: 1.1em;
+  color: var(--color-primary);
+}
+.card-value {
   font-family: var(--font-display);
   font-weight: 600;
   font-size: var(--text-heading-s);
@@ -143,18 +190,63 @@ async function copy(text: string, what: string) {
   letter-spacing: -0.025em;
   color: var(--color-ink);
 }
-.info-actions {
-  margin-top: 0.75rem;
+.card-value--mail {
+  font-size: clamp(1rem, 1.3vw, 1.25rem);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.link-quiet {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color var(--dur-fast), color var(--dur-fast);
+}
+.link-quiet:hover {
+  color: var(--color-primary-strong);
+  text-decoration-color: currentColor;
+}
+
+/* Ubicación: capítulo azul, la pieza de mayor peso */
+.card-place {
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  box-shadow: none;
+  background: var(--color-primary);
+  color: var(--color-bone);
+}
+.card-place .card-label,
+.card-place .card-label :deep(.base-icon) {
+  color: var(--color-ice-blue);
+}
+.place-address {
+  margin-top: 1.25rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-display-s, var(--text-heading-l, 2rem));
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--color-bone);
+}
+.card-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem 1.5rem;
 }
+.card-place .copy-btn {
+  color: var(--color-ice-blue);
+}
+.card-place .copy-btn:hover {
+  color: var(--color-bone);
+}
+
 .copy-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  min-height: 44px;
+  align-self: flex-start;
+  min-height: 32px;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-text-secondary);
@@ -163,6 +255,27 @@ async function copy(text: string, what: string) {
 .copy-btn:hover {
   color: var(--color-primary-strong);
 }
+
+/* Redes: sin caja, alineadas con la rejilla */
+.social {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 1.75rem;
+  padding: 0.75rem 0.5rem 0;
+}
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.social-link :deep(.base-icon) {
+  color: var(--color-primary);
+}
+
 .toast {
   position: fixed;
   left: 50%;
@@ -178,30 +291,82 @@ async function copy(text: string, what: string) {
 }
 
 @media (min-width: 640px) {
-  .info-row {
-    grid-template-columns: 9rem minmax(0, 1fr);
-    column-gap: 1.5rem;
+  .bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .card-place,
+  .card-hours,
+  .social {
+    grid-column: 1 / -1;
   }
 }
 @media (min-width: 1024px) {
-  .contact-grid {
+  .bento {
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: 1.5rem;
-    align-items: start;
+    gap: 1rem;
   }
-  .info-list {
-    grid-column: 1 / span 6;
+  /* Ubicación a la izquierda (alta) · teléfono + email arriba a la derecha · horario debajo · redes */
+  .card-place {
+    grid-column: 1 / span 5;
+    grid-row: 1 / span 2;
   }
-  .map {
-    grid-column: 8 / span 5;
-    position: sticky;
-    top: calc(var(--nav-h-compact) + 1.5rem);
+  .card-phone {
+    grid-column: 6 / span 3;
+    grid-row: 1;
+  }
+  .card-mail {
+    grid-column: 9 / span 4;
+    grid-row: 1;
+  }
+  .card-hours {
+    grid-column: 6 / span 7;
+    grid-row: 2;
+  }
+  .social {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    padding-top: 0.5rem;
   }
 }
-/* "Llamar" grande solo en móvil (en el contenedor: el CSS con ámbito pisaría una utilidad hidden) */
-@media (min-width: 768px) {
-  .phone-cta {
-    display: none;
+
+/* ---------- Cita + mapa ---------- */
+.cita {
+  scroll-margin-top: calc(var(--nav-h-compact) + 8px);
+  padding-block: clamp(2.5rem, 5vw, 4.5rem) var(--space-section);
+}
+.cita-head {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: clamp(2rem, 4vw, 3.5rem);
+}
+.cita-intro {
+  max-width: 44ch;
+  color: var(--color-text-secondary);
+}
+.cita-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+}
+@media (min-width: 1024px) {
+  .cita-head {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+    gap: 1.5rem;
+  }
+  .cita-intro {
+    justify-self: end;
+  }
+  .cita-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+  .cita-map {
+    position: sticky;
+    top: calc(var(--nav-h-compact) + 1.5rem);
+    align-self: start;
+    height: min(40rem, calc(100vh - var(--nav-h-compact) - 3rem));
   }
 }
 </style>
