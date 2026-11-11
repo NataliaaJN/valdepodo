@@ -76,10 +76,11 @@ export const site: SiteData = {
     'Plazo real de respuesta a las solicitudes',
   ),
 
-  // Spec 02 §2: Servicios · La clínica (equipo incluido) · Contacto · Pedir cita
+  // Navbar: Inicio · Servicios · Sobre nosotros (clínica y equipo) · Contacto · Pedir cita
   nav: [
+    { label: 'Inicio', to: '/' },
     { label: 'Servicios', to: '/servicios' },
-    { label: 'La clínica', to: '/conocenos' },
+    { label: 'Sobre nosotros', to: '/conocenos' },
     { label: 'Contacto', to: '/contacto' },
   ],
   // Spec 02 §3
