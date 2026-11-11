@@ -167,23 +167,24 @@ const isInactive = computed(() => props.disabled || props.loading)
   transition: transform var(--dur-base) var(--ease-out-soft);
 }
 
-/* Hover sutil: un cambio de tono casi imperceptible y la flecha avanza un par de píxeles */
+/* Hover claro pero contenido: cambio de color de marca y la flecha avanza unos píxeles */
 @media (hover: hover) and (pointer: fine) {
   .btn--primary:hover {
-    background: color-mix(in srgb, var(--color-ink) 84%, var(--color-primary));
+    background: var(--color-primary);
   }
   .btn--on-blue:hover,
   .btn--on-dark:hover {
-    background: color-mix(in srgb, var(--color-bone) 65%, #fff);
+    background: var(--color-ice-blue);
+    color: var(--color-ink);
   }
   .btn--secondary:hover {
-    background: color-mix(in srgb, var(--color-ink) 7%, transparent);
+    background: color-mix(in srgb, var(--color-ink) 12%, transparent);
   }
   .btn--ghost:hover {
     text-decoration-color: currentColor;
   }
   .btn:hover .btn__arrow svg:first-child {
-    transform: translateX(2px);
+    transform: translateX(3px);
   }
 }
 
