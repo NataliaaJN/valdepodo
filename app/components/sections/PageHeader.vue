@@ -9,7 +9,7 @@ defineProps<{
   eyebrow?: string
   /** Capítulo de color de la cabecera. */
   tone?: 'bone' | 'bone-2' | 'ink' | 'blue'
-  size?: 'xl' | 'mega'
+  size?: 'l' | 'xl' | 'mega'
   crumbs?: readonly { name: string; to?: string }[]
   id?: string
 }>()
@@ -31,7 +31,7 @@ defineSlots<{ default?: () => unknown; actions?: () => unknown }>()
           :id="id ?? 'page-title'"
           v-reveal
           class="page-header__title"
-          :class="[size === 'mega' ? 'mega' : 'text-display-xl', { 'no-eyebrow': !eyebrow }]"
+          :class="[size === 'mega' ? 'mega' : size === 'l' ? 'size-l' : 'text-display-xl', { 'no-eyebrow': !eyebrow }]"
         >
           {{ title }}
         </h1>
@@ -70,6 +70,11 @@ defineSlots<{ default?: () => unknown; actions?: () => unknown }>()
 .page-header__title.mega {
   max-width: none;
   font-size: min(var(--text-mega), 22vw);
+}
+.page-header__title.size-l {
+  font-size: var(--text-display-l);
+  line-height: 0.95;
+  max-width: none;
 }
 .page-header__side {
   display: grid;

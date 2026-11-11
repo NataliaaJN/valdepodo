@@ -42,7 +42,7 @@ if (confirmedPeople.length) {
 <template>
   <div>
     <!-- Cabecera común + foto del equipo -->
-    <PageHeader id="about-title" title="La clínica" size="mega" />
+    <PageHeader id="about-title" title="La clínica" size="l" />
     <div v-if="clinic.teamPhoto.src" class="container-wide team-photo-wrap" data-nav-theme="bone">
       <img
         :src="clinic.teamPhoto.src"

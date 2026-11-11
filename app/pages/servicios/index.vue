@@ -17,7 +17,7 @@ useBreadcrumbSchema([
 
 <template>
   <div>
-    <PageHeader id="services-title" title="Servicios" size="mega" />
+    <PageHeader id="services-title" title="Servicios" size="l" />
 
     <section aria-label="Los cinco servicios" data-nav-theme="bone">
       <ServiceScroll />
