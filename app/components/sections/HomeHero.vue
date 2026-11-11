@@ -19,6 +19,12 @@ import type { FootLayer } from '~/utils/foot-layers'
 const section = ref<HTMLElement | null>(null)
 const { tier, resolved } = useDeviceTier()
 
+// Fondo del hero: fluido-celeste (elegido entre las pruebas de feature/hero-background-pruebas)
+const reduceMotion = ref(false)
+onMounted(() => {
+  reduceMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+})
+
 const progress = ref(0)
 const sceneReady = ref(false)
 
@@ -65,6 +71,8 @@ useGsapContext(section, (c) => {
 
 <template>
   <section ref="section" class="hero section-clip relative isolate" data-nav-theme="bone" aria-labelledby="hero-title">
+    <HeroBackdrop variant="fluido-celeste" :animate="!isStatic && !reduceMotion" />
+
     <!-- Luz ambiental: halo cian tras el pie y velo de luz arriba a la izquierda -->
     <div class="hero__glow" aria-hidden="true" />
 
