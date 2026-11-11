@@ -29,7 +29,7 @@ export const team: readonly TeamMember[] = [
     specialties: [],
     license: null,
     linkedin: 'https://es.linkedin.com/in/paula-vigara-aranda-569223253',
-    photo: { src: '/images/team/paula-vigara.jpg', alt: 'Paula Vigara Aranda, copropietaria y podóloga' },
+    photo: { src: '/images/team/valerie-savignano.jpg', alt: 'Paula Vigara Aranda, copropietaria y podóloga' },
   },
   {
     id: 'valerie-savignano',
@@ -40,7 +40,7 @@ export const team: readonly TeamMember[] = [
     license: null,
     linkedin: 'https://es.linkedin.com/in/valerie-savignano-guti%C3%A9rrez-8552b3249',
     photo: {
-      src: '/images/team/valerie-savignano.jpg',
+      src: '/images/team/paula-vigara.jpg',
       alt: 'Valerie Savignano Gutiérrez, copropietaria y podóloga',
     },
   },

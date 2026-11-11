@@ -90,7 +90,7 @@ if (confirmedPeople.length) {
 }
 .team__cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
   gap: 1rem;
 }
 @media (min-width: 1024px) {
@@ -105,8 +105,8 @@ if (confirmedPeople.length) {
     top: calc(var(--nav-h-compact) + 2rem);
   }
   .team__cards {
-    grid-column: 6 / span 7;
-    grid-template-columns: repeat(auto-fill, minmax(15rem, 18.5rem));
+    grid-column: 5 / span 8;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 23rem));
   }
 }
 </style>

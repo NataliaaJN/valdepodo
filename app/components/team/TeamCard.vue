@@ -32,8 +32,7 @@ const name = computed(() => resolveValue(props.member.name))
       <PhotoPlaceholder v-else ratio="4 / 5" variant="portrait" class="photo" />
 
       <div class="scrim scrim--base" aria-hidden="true" />
-      <div class="scrim scrim--full" aria-hidden="true" />
-
+      
       <a
         v-if="member.linkedin"
         :href="resolveValue(member.linkedin)"
@@ -113,19 +112,14 @@ img.photo {
   inset: 0;
   pointer-events: none;
 }
+/* Velo mínimo, solo en la franja inferior donde va el texto; aparece con el hover / foco */
 .scrim--base {
-  background: linear-gradient(to top, rgb(6 26 44 / 0.8) 0%, rgb(6 26 44 / 0) 46%);
+  background: linear-gradient(to top, rgb(6 26 44 / 0.78) 0%, rgb(6 26 44 / 0) 30%);
+  opacity: 0;
+  transition: opacity 500ms var(--ease-out-soft);
 }
 .scrim--full {
-  background: linear-gradient(
-    to top,
-    rgb(6 26 44 / 0.96) 0%,
-    rgb(6 26 44 / 0.88) 42%,
-    rgb(6 26 44 / 0.4) 68%,
-    rgb(6 26 44 / 0) 92%
-  );
-  opacity: 0;
-  transition: opacity 600ms var(--ease-out-soft);
+  display: none;
 }
 
 .social {
@@ -152,6 +146,14 @@ img.photo {
   bottom: 0;
   z-index: 1;
   padding: 1.25rem;
+}
+.name,
+.role {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 450ms var(--ease-out-soft),
+    transform 450ms var(--ease-out-soft);
 }
 .name {
   font-size: var(--text-heading-s);
@@ -209,10 +211,16 @@ img.photo {
   .team-card:focus-visible .photo {
     transform: scale(1.04);
   }
-  .team-card:hover .scrim--full,
-  .team-card:focus-within .scrim--full,
-  .team-card:focus-visible .scrim--full {
+  .team-card:hover .scrim--base,
+  .team-card:focus-within .scrim--base,
+  .team-card:focus-visible .scrim--base {
     opacity: 1;
+  }
+  .team-card:hover :is(.name, .role),
+  .team-card:focus-within :is(.name, .role),
+  .team-card:focus-visible :is(.name, .role) {
+    opacity: 1;
+    transform: none;
   }
   .team-card:hover .more,
   .team-card:focus-within .more,
@@ -222,10 +230,13 @@ img.photo {
   }
 }
 
-/* Táctil: sin hover, la información ampliada queda siempre visible */
+/* Táctil: sin hover, la información queda siempre visible */
 @media (hover: none), (pointer: coarse) {
-  .scrim--full {
+  .scrim--base,
+  .name,
+  .role {
     opacity: 1;
+    transform: none;
   }
   .more {
     grid-template-rows: 1fr;
@@ -235,7 +246,9 @@ img.photo {
 
 @media (prefers-reduced-motion: reduce) {
   .photo,
-  .scrim--full,
+  .scrim--base,
+  .name,
+  .role,
   .more {
     transition-duration: 1ms;
   }
