@@ -125,6 +125,9 @@ useGsapContext(section, (c) => {
   width: min(120vw, 34rem);
   translate: -50% 0;
   filter: drop-shadow(0 30px 36px rgb(18 112 182 / 0.3));
+  /* Degradado superior: el corte del tobillo se funde con el fondo */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 14%, #000 46%);
+  mask-image: linear-gradient(to bottom, transparent 14%, #000 46%);
   animation: model-in 1.8s var(--ease-out-soft) both;
   animation-delay: 0.3s;
 }

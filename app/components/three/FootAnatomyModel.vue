@@ -29,7 +29,7 @@ const props = withDefaults(
     rotationY: number
     idleSpin: boolean
     fit?: number
-    /** Acabado cristalino (hero): piel de vidrio translúcido iridiscente. */
+    /** Acabado cristalino (hero): piel de vidrio translúcido con tono de piel. */
     glass?: boolean
   }>(),
   { fit: 2.2, glass: false },
@@ -70,18 +70,18 @@ const shellMaterial = new ShaderMaterial({
 const activeMaterials: Record<FootLayer, Material> = {
   skin: props.glass
     ? new MeshPhysicalMaterial({
-        color: '#BFEAFF',
+        color: '#EDB394',
         roughness: 0.06,
         metalness: 0.05,
         transparent: true,
-        opacity: 0.68,
+        opacity: 0.82,
         clearcoat: 1,
         clearcoatRoughness: 0.04,
-        iridescence: 1,
+        iridescence: 0.35,
         iridescenceIOR: 1.35,
         iridescenceThicknessRange: [180, 520],
         sheen: 1,
-        sheenColor: new Color('#9fe4ff'),
+        sheenColor: new Color('#ffd9c9'),
         envMapIntensity: 2.2,
       })
     : new MeshPhysicalMaterial({
