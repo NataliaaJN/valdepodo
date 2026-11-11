@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
- * Datos de la clínica, FUERA del hero: una fila minimalista (sin tarjetas) con icono de línea en un círculo
- * suave, título y apoyo, separados por filetes finos. El hero no se toca: la sección sube un poco sobre su
- * pie con esquinas superiores muy redondeadas y una sombra suave, en un cian clarito de la misma familia, así
- * se lee como otra sección sin un corte duro. El contenido son los `values`.
+ * Datos de la clínica, FUERA del hero: una cápsula de vidrio (glassmorphism) con cuatro elementos en línea,
+ * icono de línea azul + texto corto en dos líneas, todo con el mismo peso y tamaño, sin tarjetas.
+ * La cápsula cabalga sobre el borde del hero (mitad sobre él, mitad sobre esta sección), de modo que el
+ * cambio de fondo queda cubierto sin tocar el hero. El contenido son los `values`.
  */
 import type { IconName } from '~/components/base/BaseIcon.vue'
 import { site } from '~/data/site'
@@ -17,17 +17,12 @@ const icons: Record<ValueIcon, IconName> = {
   location: 'map-pin',
 }
 
-/** «Trato cercano» → «Trato» (fuerte) + «cercano» (pequeño). «{years} años de experiencia» → «N años» + «de experiencia». */
-function split(title: string): [string, string] {
-  const words = title.split(' ')
-  const n = title.startsWith('{years}') ? 2 : 1
-  return [words.slice(0, n).join(' '), words.slice(n).join(' ')]
-}
+/** «Trato cercano» tal cual; «{years} años de experiencia» → «de experiencia» tras «N años» (ContentValue). */
 const items = computed(() =>
-  values.map((v) => {
-    const [main, sub] = split(v.title)
-    return { id: v.id, main, sub }
-  }),
+  values.map((v) => ({
+    id: v.id,
+    rest: v.title.startsWith('{years}') ? v.title.split(' ').slice(2).join(' ') : v.title,
+  })),
 )
 </script>
 
@@ -35,19 +30,14 @@ const items = computed(() =>
   <section class="facts relative" data-nav-theme="bone" aria-labelledby="datos-title">
     <h2 id="datos-title" class="sr-only">Valdepodo en datos</h2>
     <div class="container-wide">
-      <ul class="facts__row" role="list">
+      <ul class="facts__capsule" role="list">
         <li v-for="(item, i) in items" :key="item.id" v-reveal="i" class="fact">
-          <span class="fact__icon-wrap" aria-hidden="true">
-            <BaseIcon :name="icons[item.id]" class="fact__icon" />
-          </span>
+          <BaseIcon :name="icons[item.id]" class="fact__icon" aria-hidden="true" />
           <span class="fact__text">
-            <span class="fact__main">
-              <template v-if="item.id === 'years'">
-                <ContentValue :value="site.foundedYear" as="span">{{ clinic.years }}</ContentValue> años
-              </template>
-              <template v-else>{{ item.main }}</template>
-            </span>
-            <span class="fact__sub">{{ item.sub }}</span>
+            <template v-if="item.id === 'years'">
+              <ContentValue :value="site.foundedYear" as="span">{{ clinic.years }}</ContentValue> años
+            </template>
+            {{ item.rest }}
           </span>
         </li>
       </ul>
@@ -58,70 +48,67 @@ const items = computed(() =>
 <style scoped>
 .facts {
   z-index: 2;
-  margin-top: calc(-1 * clamp(1.75rem, 3.5vw, 3rem));
-  padding-block: clamp(3rem, 5vw, 4.5rem) clamp(2.25rem, 4vw, 3.5rem);
-  border-radius: clamp(1.75rem, 3.5vw, 3rem) clamp(1.75rem, 3.5vw, 3rem) 0 0;
-  /* Cian clarito de la familia del hero, algo más luminoso para separarse de él */
-  background: linear-gradient(180deg, #eef9fd 0%, #e3f5fb 100%);
-  box-shadow:
-    0 -1px 0 rgb(255 255 255 / 0.9),
-    0 -24px 48px -20px rgb(18 112 182 / 0.22);
+  /* Hueco para la mitad inferior de la cápsula; la superior queda sobre el pie del hero */
+  padding-block: 0 clamp(2.5rem, 4vw, 3.5rem);
+  /* Cian clarito de la familia del hero */
+  background: linear-gradient(180deg, #d9f0fa 0%, #e6f6fc 100%);
 }
-.facts__row {
+.facts__capsule {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.5rem 1rem;
+  gap: 1.25rem 1rem;
+  max-width: 62rem;
+  margin-inline: auto;
+  padding: 1.5rem 1.5rem;
+  /* En móvil solo asoma un poco sobre el hero (el titular queda justo encima) */
+  transform: translateY(-1rem);
+  margin-bottom: 0;
+  border-radius: 1.75rem;
+  border: 1px solid rgb(255 255 255 / 0.8);
+  background: rgb(255 255 255 / 0.5);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow:
+    0 20px 44px -22px rgb(18 112 182 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.7);
 }
 .fact {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
+  gap: 0.75rem;
   color: var(--color-ink);
 }
-.fact__icon-wrap {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 999px;
-  border: 1px solid rgb(6 26 44 / 0.18);
-  background: rgb(255 255 255 / 0.45);
-}
 .fact__icon {
-  width: 1.2rem;
-  height: 1.2rem;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--color-primary);
 }
+/* Un solo estilo para todo el texto: mismo tamaño y peso en las dos líneas */
 .fact__text {
-  display: grid;
-  gap: 0.15rem;
-  min-width: 0;
-}
-.fact__main {
-  font-family: var(--font-display);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.005em;
-}
-.fact__sub {
-  font-size: 0.8125rem;
+  max-width: 9.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   line-height: 1.25;
-  color: var(--color-text-secondary);
 }
 
 @media (min-width: 1024px) {
-  .facts__row {
-    grid-template-columns: repeat(4, auto);
-    justify-content: center;
-    gap: 0;
+  .facts__capsule {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.5rem 3rem;
+    /* Desde escritorio, la mitad de su alto cabalga sobre el hero */
+    transform: translateY(-50%);
+    margin-bottom: -2.75rem;
+    border-radius: 999px;
   }
   .fact {
-    padding-inline: clamp(1.5rem, 3vw, 3rem);
+    gap: 0.875rem;
   }
-  /* Filete fino entre elementos */
-  .fact + .fact {
-    border-left: 1px solid rgb(6 26 44 / 0.12);
+  .fact__icon {
+    width: 2rem;
+    height: 2rem;
   }
 }
 </style>
