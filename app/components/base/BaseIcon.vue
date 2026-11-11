@@ -21,6 +21,8 @@ export type IconName =
   | 'info'
   | 'copy'
   | 'route'
+  | 'heart'
+  | 'spark'
 
 withDefaults(defineProps<{ name: IconName; label?: string }>(), { label: undefined })
 
@@ -58,6 +60,8 @@ const paths: Record<IconName, string[]> = {
   alert: ['M12 3.8 21 19.5H3Z', 'M12 10v4.2', 'M12 17v.01'],
   info: ['M12 3.5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17Z', 'M12 11v5', 'M12 8v.01'],
   copy: ['M9 9h10v11H9Z', 'M5 15V4h10'],
+  heart: ['M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z'],
+  spark: ['M12 3.5 13.8 10 20.5 12 13.8 14 12 20.5 10.2 14 3.5 12 10.2 10Z'],
   route: [
     'M6 19a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z',
     'M18 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z',

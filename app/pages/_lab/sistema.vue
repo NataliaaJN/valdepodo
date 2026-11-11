@@ -78,9 +78,7 @@ const loading = ref(false)
   <div class="container-site grid gap-20 py-16">
     <header>
       <p class="eyebrow text-primary-strong">Solo desarrollo · spec 01</p>
-      <h1 class="mt-3 font-display text-display-l text-deep-blue">
-        Sistema de <em class="text-primary">diseño</em>
-      </h1>
+      <h1 class="mt-3 font-display text-display-l text-deep-blue">Sistema de <em>diseño</em></h1>
     </header>
 
     <section aria-labelledby="s-color">

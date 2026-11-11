@@ -7,6 +7,10 @@
  *   reduced motion → `data-intro="play"`.
  * - Schema.org de la clínica (spec 03 SEO, spec 07 §5), común a todas las páginas.
  */
+// Fuentes autoalojadas: se precargan los subconjuntos latinos (el resto se descarga solo si hace falta)
+import bricolageLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2?url'
+import instrumentLatin from '@fontsource-variable/instrument-sans/files/instrument-sans-latin-standard-normal.woff2?url'
+
 const config = useRuntimeConfig()
 const isProduction = config.public.siteEnv === 'production'
 
@@ -15,6 +19,13 @@ const INTRO_SCRIPT = `(function(){var d=document.documentElement;try{var r=windo
 useHead({
   titleTemplate: (title) => (title ? `${title} · Valdepodo` : 'Valdepodo · Clínica de podología'),
   script: [{ key: 'vp-intro', innerHTML: INTRO_SCRIPT, tagPosition: 'head' }],
+  link: [bricolageLatin, instrumentLatin].map((href) => ({
+    rel: 'preload',
+    as: 'font',
+    type: 'font/woff2',
+    href,
+    crossorigin: 'anonymous' as const,
+  })),
 })
 
 useSeoMeta({
@@ -33,5 +44,4 @@ useClinicSchema()
     <NuxtPage />
   </NuxtLayout>
   <BrandIntro />
-  <ProposalToolbar />
 </template>

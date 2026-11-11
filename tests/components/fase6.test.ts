@@ -3,6 +3,7 @@ import { flushPromises } from '@vue/test-utils'
 import { mountSuspended, registerEndpoint } from '@nuxt/test-utils/runtime'
 import BookingWizard from '~/components/booking/BookingWizard.vue'
 import MapFacade from '~/components/contact/MapFacade.vue'
+import CtaBlock from '~/components/sections/CtaBlock.vue'
 import TeamCard from '~/components/team/TeamCard.vue'
 import { team } from '~/data/team'
 
@@ -60,17 +61,45 @@ describe('BookingWizard (spec 06)', () => {
   })
 })
 
-describe('TeamCard (spec 05 §2): disclosure accesible', () => {
-  it('el botón alterna aria-expanded y el contenido siempre está en el DOM', async () => {
+describe('TeamCard (spec 05 §2): tarjeta compacta', () => {
+  it('muestra nombre y cargo y mantiene siempre en el DOM la información ampliada si la hay', async () => {
     const wrapper = await mountSuspended(TeamCard, { props: { member: team[0]! } })
-    const button = wrapper.find('button[aria-controls]')
-    expect(button.attributes('aria-expanded')).toBe('false')
-    const panel = wrapper.find(`#${button.attributes('aria-controls')}`)
-    expect(panel.exists()).toBe(true)
-    expect(panel.text()).toContain('Breve descripción')
-    await button.trigger('click')
-    expect(button.attributes('aria-expanded')).toBe('true')
-    expect(button.attributes('aria-label')).toContain('Ver menos')
+    expect(wrapper.find('h3').text()).toContain('Paula Vigara Aranda')
+    expect(wrapper.find('.role').text()).toContain('Podóloga')
+    // Sin descripción ni especialidades no hay bloque ampliado
+    expect(wrapper.find('.more').exists()).toBe(false)
+    const detailed = await mountSuspended(TeamCard, {
+      props: { member: { ...team[0]!, bio: 'Breve descripción', specialties: ['Biomecánica'] } },
+    })
+    // Plegada en reposo (solo visualmente): los lectores de pantalla la leen igual
+    expect(detailed.find('.more').text()).toContain('Breve descripción')
+    expect(detailed.find('.tags').attributes('aria-label')).toBe('Especialidades')
+  })
+
+  it('es enfocable con el teclado y se nombra por el profesional', async () => {
+    const wrapper = await mountSuspended(TeamCard, { props: { member: team[0]! } })
+    const card = wrapper.find('article')
+    expect(card.attributes('tabindex')).toBe('0')
+    expect(card.attributes('aria-labelledby')).toBe(wrapper.find('h3').attributes('id'))
+  })
+
+  it('solo muestra el enlace a LinkedIn si la persona lo autoriza', async () => {
+    const wrapper = await mountSuspended(TeamCard, { props: { member: team[0]! } })
+    expect(wrapper.find('a.social').attributes('href')).toBe(
+      'https://es.linkedin.com/in/paula-vigara-aranda-569223253',
+    )
+    const without = await mountSuspended(TeamCard, { props: { member: { ...team[0]!, linkedin: null } } })
+    expect(without.find('a.social').exists()).toBe(false)
+  })
+})
+
+describe('CtaBlock (pre-footer global)', () => {
+  it('lleva a la solicitud de cita de Contacto', async () => {
+    const wrapper = await mountSuspended(CtaBlock)
+    expect(wrapper.find('h2').text()).toContain('Da el próximo paso')
+    const link = wrapper.find('a')
+    expect(link.attributes('href')).toBe('/contacto#cita')
+    expect(link.text()).toContain('Pedir cita')
   })
 })
 

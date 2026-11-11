@@ -36,7 +36,7 @@ onBeforeUnmount(finish)
 <template>
   <div ref="root" class="brand-intro" aria-hidden="true">
     <div class="brand-intro__logo">
-      <BrandLogo variant="full" label="" class="w-[min(38vw,168px)]" />
+      <BrandLogo variant="full" mono label="" class="w-[min(38vw,168px)] text-bone" />
     </div>
   </div>
 </template>
@@ -53,8 +53,7 @@ html[data-intro='play'] .brand-intro {
   display: grid;
   place-items: center;
   pointer-events: none;
-  background:
-    radial-gradient(50% 50% at 50% 50%, rgb(185 229 243 / 0.55), transparent 70%), var(--color-surface);
+  background: var(--color-primary);
   animation: intro-out 380ms var(--ease-in-out-soft) 950ms both;
 }
 html[data-intro='play'] .brand-intro__logo {

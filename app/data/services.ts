@@ -127,4 +127,4 @@ export function getService(slug: string): Service {
 }
 
 /** Enlace a pedir cita con el motivo preseleccionado (spec 04 §6). */
-export const bookingPath = (slug: string) => `/pedir-cita?motivo=${slug}`
+export const bookingPath = (slug: string) => `/contacto?motivo=${slug}#cita`

@@ -37,6 +37,7 @@ const CLINIC_ID = '#clinica'
 export function useClinicSchema() {
   const geo = r(site.geo)
   const instagram = r(site.instagram)
+  const linkedin = r(site.linkedin)
   const siteUrl = useRuntimeConfig().public.siteUrl || undefined
   useHead({
     script: [
@@ -61,9 +62,8 @@ export function useClinicSchema() {
             addressCountry: 'ES',
           },
           geo: { '@type': 'GeoCoordinates', latitude: geo.lat, longitude: geo.lng },
-          hasMap: r(site.googleProfileUrl),
           openingHoursSpecification: openingHoursSchema(r(site.hours)),
-          sameAs: [instagram.url],
+          sameAs: [instagram.url, linkedin.url],
         }),
       },
     ],

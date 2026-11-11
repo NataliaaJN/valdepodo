@@ -74,16 +74,18 @@ describe('horario y "abierto ahora" (Europe/Madrid)', () => {
 })
 
 describe('contenido (spec 09)', () => {
-  it('los datos de contacto sin confirmar siguen marcados como pendientes', () => {
-    for (const value of [site.phone, site.email, site.address.street, site.hours, site.foundedYear]) {
-      expect(isPending(value)).toBe(true)
+  it('los datos de contacto confirmados ya no son pendientes; también el año de apertura', () => {
+    for (const value of [site.phone, site.email, site.address.street, site.hours, site.instagram, site.linkedin, site.foundedYear]) {
+      expect(isPending(value)).toBe(false)
     }
   })
 
-  it('valores provisionales inequívocos en el equipo', () => {
+  it('equipo confirmado: Paula primero, ambas copropietarias y podólogas con foto y LinkedIn', () => {
+    expect(team.map((m) => resolveValue(m.name))).toEqual(['Paula Vigara Aranda', 'Valerie Savignano Gutiérrez'])
     for (const member of team) {
-      expect(resolveValue(member.name)).toBe('Nombre Apellido')
-      expect(member.photo).toBeNull()
+      expect(resolveValue(member.role)).toBe('Copropietaria y Podóloga')
+      expect(member.photo).not.toBeNull()
+      expect(member.linkedin).toMatch(/^https:\/\/es\.linkedin\.com\/in\//)
     }
   })
 
@@ -96,12 +98,12 @@ describe('contenido (spec 09)', () => {
       expect(s.needs.length).toBeGreaterThanOrEqual(2)
       expect(s.needs.length).toBeLessThanOrEqual(4)
       for (const r of s.related) expect(getService(r).slug).not.toBe(s.slug)
-      expect(bookingPath(s.slug)).toBe(`/pedir-cita?motivo=${s.slug}`)
+      expect(bookingPath(s.slug)).toBe(`/contacto?motivo=${s.slug}#cita`)
     }
   })
 
   it('collectPending encuentra las notas del sitio', () => {
-    expect(collectPending(site).length).toBeGreaterThan(5)
+    expect(collectPending(site).length).toBeGreaterThan(2)
   })
 })
 

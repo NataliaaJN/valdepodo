@@ -89,7 +89,8 @@ onMounted(() => {
 @media (min-width: 1024px) {
   .map-facade {
     aspect-ratio: auto;
-    height: 520px;
+    height: 100%;
+    min-height: 560px;
   }
 }
 .map-frame {

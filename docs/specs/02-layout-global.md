@@ -31,13 +31,12 @@
 
 ### Elementos
 
-Logo (enlace a `/`, `aria-label="Valdepodo, inicio"`) · Servicios · La clínica · Equipo · Contacto · **Pedir cita** (BaseButton primary, tamaño compacto).
+Logo (enlace a `/`, `aria-label="Valdepodo, inicio"`) · Servicios · La clínica · Contacto · **Pedir cita** (BaseButton primary, tamaño compacto).
 
 | Ítem       | Destino                                                           |
 | ---------- | ----------------------------------------------------------------- |
 | Servicios  | `/servicios` (escritorio: submenú con los 5 servicios, ver abajo) |
 | La clínica | `/conocenos`                                                      |
-| Equipo     | `/conocenos#equipo`                                               |
 | Contacto   | `/contacto`                                                       |
 | Pedir cita | `/pedir-cita`                                                     |
 
@@ -48,7 +47,7 @@ Submenú de Servicios (escritorio): panel desplegable glass con los 5 servicios 
 - `position: sticky; top: 0`. Altura 88 px → 68 px tras 24 px de scroll (transición `dur-base`).
 - Al inicio: fondo transparente integrado con el hero. Tras el umbral: fondo `surface` 85 % + blur + borde inferior `border`.
 - Opcional: se oculta al hacer scroll hacia abajo y reaparece hacia arriba (**desactivado durante secuencias pineadas** para no tapar contenido; decidir en propuesta).
-- Estado activo: `aria-current="page"` + subrayado/indicador (punto cian). "Equipo" activo cuando el hash es `#equipo` y la sección está en viewport.
+- Estado activo: `aria-current="page"` + subrayado/indicador (punto cian). (La clínica y el equipo son una sola página: `/conocenos`, con `#equipo` como ancla.)
 - `scroll-margin-top` global = altura compacta + 16 px.
 
 ### Móvil (< 1024 px)
@@ -66,7 +65,7 @@ Fondo **deep-blue** (única gran superficie oscura, cierra la página) con huell
 Columnas (escritorio 4 · tablet 2 · móvil 1, con acordeón **no**: todo visible):
 
 1. Logo + frase de marca ("Salud desde la base." u otra validada) + "9 años cuidando de la salud de tus pies" (calculado desde año de apertura).
-2. Navegación: Inicio, Servicios, Conócenos, Pedir cita, Contacto.
+2. Navegación: Inicio, Servicios, La clínica, Pedir cita, Contacto.
 3. Servicios: los 5.
 4. Contacto: dirección, teléfono (`tel:`), email (`mailto:`), Instagram.
 
@@ -93,3 +92,7 @@ Todos los datos vienen de `app/data/site.ts` (con `pending()` hasta confirmarlos
 - `SkipLink` "Saltar al contenido" como primer elemento enfocable.
 - `error.vue`: 404 con huella "perdida" ("Este camino no lleva a ninguna parte") + enlaces a Inicio y Pedir cita.
 - Banner de cookies: **solo** si hay cookies no esenciales. Con la arquitectura propuesta (fuentes autoalojadas, mapa con fachada, sin analítica) no hace falta banner global; el mapa pide consentimiento en su propia fachada.
+
+## CTA global (pre-footer)
+
+`CtaBlock` cierra todas las páginas desde el layout `default` (excepto las que declaran `definePageMeta({ hideCta: true })`, hoy `/pedir-cita`). Banda azul Valdepodo de altura contenida: titular «Da el próximo paso.», una frase de apoyo y el botón «Pedir cita» → `/contacto#cita` (formulario de solicitud embebido en Contacto). Sin 3D ni GSAP; trazo orgánico discreto de fondo.

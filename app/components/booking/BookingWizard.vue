@@ -304,7 +304,7 @@ onMounted(async () => {
         tabindex="-1"
         class="mt-6 font-display text-display-m text-deep-blue"
       >
-        Hemos recibido tu <em class="text-primary">solicitud</em>.
+        Hemos recibido tu <em>solicitud</em>.
       </h2>
       <p class="mt-4 text-body-l text-text-secondary">
         Te contactaremos en <ContentValue :value="site.responseTime" /> para confirmar el día y la hora.
