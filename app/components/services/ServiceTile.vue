@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Pieza visual de un servicio: fotografía + número + nombre. Sin descripción. Un único enlace a su página.
+ * Pieza visual de un servicio: fotografía + nombre. Sin descripción. Un único enlace a su página.
  *
  * Interacción (referencia de ritmo: galerías de imagen de Kexsio, sin copiar su diseño):
  *  - Reposo: foto en monocromo azul de marca (tratamiento común, independiente de la foto de origen).
@@ -92,7 +92,6 @@ function onPointerLeave() {
     </span>
 
     <span class="tile__top">
-      <span class="tile__num">({{ service.number }})</span>
       <span class="tile__go">
         <BaseIcon name="arrow-up-right" class="tile__go-icon" />
       </span>
@@ -113,7 +112,7 @@ function onPointerLeave() {
   justify-content: space-between;
   width: 100%;
   height: 100%;
-  min-height: 16rem;
+  min-height: 12rem;
   overflow: hidden;
   border-radius: var(--radius-m);
   background: var(--color-ink);
@@ -166,7 +165,7 @@ function onPointerLeave() {
 .tile__top {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 1rem;
 }
 .tile__num {
@@ -206,13 +205,13 @@ function onPointerLeave() {
     transform var(--dur-image) var(--ease-out-soft);
 }
 .tile--xl .tile__title {
-  font-size: clamp(2.25rem, 1.2rem + 3.6vw, 4.75rem);
+  font-size: clamp(2rem, 1rem + 2.6vw, 3.5rem);
 }
 .tile--l .tile__title {
-  font-size: clamp(2rem, 1.1rem + 2.8vw, 3.75rem);
+  font-size: clamp(1.75rem, 1rem + 2vw, 2.75rem);
 }
 .tile--m .tile__title {
-  font-size: clamp(1.75rem, 1.1rem + 1.8vw, 2.75rem);
+  font-size: clamp(1.5rem, 1rem + 1.3vw, 2.25rem);
 }
 
 /* ---------- Estado activo (hover, foco o centro de pantalla en táctil) ---------- */

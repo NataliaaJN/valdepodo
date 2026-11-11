@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Home: hero azul con el claim y el pie 3D, pausa de datos, servicios (fotografía), manifiesto + método,
+ * Home: hero azul con el claim y el pie 3D, pausa de datos, servicios (fotografía),
  * reseñas (solo si hay reales) y cierre «Da el próximo paso.».
  */
 import { resolveValue } from '#shared/utils/pending'
@@ -23,8 +23,6 @@ useHead({ titleTemplate: `Valdepodo · Clínica de podología en ${city}` })
     <HomeHero />
     <HomeFacts />
     <HomeServices />
-    <HomeMethod />
     <ReviewsSection />
-    <CtaBlock :cta="{ label: site.cta.label, to: site.cta.to }" />
   </div>
 </template>

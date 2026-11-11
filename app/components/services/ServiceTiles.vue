@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Composición editorial de los cinco servicios (sin forzar una rejilla 3×2):
- *   [   01   ][  02  ]
+ *   [   1   ][  2  ]
  *   [ 03 ][ 04 ][ 05 ]   ← el 04, más bajo y apoyado abajo, rompe la línea superior
  * Escritorio: 12 columnas con alturas de fila fijas · Tablet: 01 a todo el ancho y el resto de dos en dos ·
  * Móvil: una columna con proporciones alternas. `variant="index"` la agranda para la página de servicios.
@@ -46,10 +46,10 @@ const placement = [
 }
 .tiles__item {
   min-width: 0;
-  aspect-ratio: 5 / 6;
+  aspect-ratio: 4 / 3;
 }
 .tiles__item--1 {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 3;
 }
 
 @media (min-width: 768px) {
@@ -67,8 +67,8 @@ const placement = [
 
 @media (min-width: 1024px) {
   .tiles {
-    --row-a: clamp(26rem, 37vw, 44rem);
-    --row-b: clamp(22rem, 29vw, 36rem);
+    --row-a: clamp(16rem, 21vw, 22rem);
+    --row-b: clamp(14rem, 17vw, 18rem);
     grid-template-columns: repeat(12, minmax(0, 1fr));
     grid-template-rows: var(--row-a) var(--row-b);
   }
@@ -93,7 +93,7 @@ const placement = [
   .tiles__item--4 {
     grid-column: 5 / span 4;
     align-self: end;
-    height: calc(100% - clamp(2.5rem, 5vw, 5rem));
+    height: calc(100% - clamp(1.5rem, 2.5vw, 2.5rem));
   }
   .tiles__item--5 {
     grid-column: 9 / span 4;
