@@ -112,7 +112,7 @@ const items = computed(() =>
 
 @media (min-width: 768px) {
   .facts::before {
-    height: clamp(8rem, 18vw, 11rem);
+    height: clamp(4.5rem, 6.5vw, 5.5rem);
   }
 }
 
