@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /**
- * Datos de la clínica, FUERA del hero: cuatro tarjetas pequeñas en vertical (icono arriba, texto abajo),
- * de vidrio claro sobre un fondo pálido. Solo el diseño sigue la referencia; el contenido son los `values`.
+ * Datos de la clínica, FUERA del hero: una cápsula de vidrio (glassmorphism) con cuatro elementos en línea,
+ * icono de línea azul + texto corto en dos líneas, todo con el mismo peso y tamaño, sin tarjetas.
+ * El borde con el hero se funde con una capa propia de esta sección (`::before`); el hero no se toca. El contenido son los `values`.
  */
 import type { IconName } from '~/components/base/BaseIcon.vue'
 import { site } from '~/data/site'
@@ -15,17 +16,12 @@ const icons: Record<ValueIcon, IconName> = {
   location: 'map-pin',
 }
 
-/** «Trato cercano» → «Trato» (fuerte) + «cercano» (pequeño). «{years} años de experiencia» → «N años» + «de experiencia». */
-function split(title: string): [string, string] {
-  const words = title.split(' ')
-  const n = title.startsWith('{years}') ? 2 : 1
-  return [words.slice(0, n).join(' '), words.slice(n).join(' ')]
-}
-const cards = computed(() =>
-  values.map((v) => {
-    const [main, sub] = split(v.title)
-    return { id: v.id, main, sub }
-  }),
+/** «Trato cercano» tal cual; «{years} años de experiencia» → «de experiencia» tras «N años» (ContentValue). */
+const items = computed(() =>
+  values.map((v) => ({
+    id: v.id,
+    rest: v.title.startsWith('{years}') ? v.title.split(' ').slice(2).join(' ') : v.title,
+  })),
 )
 </script>
 
@@ -33,18 +29,15 @@ const cards = computed(() =>
   <section class="facts relative" data-nav-theme="bone" aria-labelledby="datos-title">
     <h2 id="datos-title" class="sr-only">Valdepodo en datos</h2>
     <div class="container-wide">
-      <ul class="facts__row" role="list">
-        <li v-for="(card, i) in cards" :key="card.id" v-reveal="i" class="fact">
-          <span class="fact__bubble" aria-hidden="true">
-            <BaseIcon :name="icons[card.id]" class="fact__icon" />
-          </span>
-          <span class="fact__main">
-            <template v-if="card.id === 'years'">
+      <ul class="facts__capsule" role="list">
+        <li v-for="(item, i) in items" :key="item.id" v-reveal="i" class="fact">
+          <BaseIcon :name="icons[item.id]" class="fact__icon" aria-hidden="true" />
+          <span class="fact__text">
+            <template v-if="item.id === 'years'">
               <ContentValue :value="site.foundedYear" as="span">{{ clinic.years }}</ContentValue> años
             </template>
-            <template v-else>{{ card.main }}</template>
+            {{ item.rest }}
           </span>
-          <span class="fact__sub">{{ card.sub }}</span>
         </li>
       </ul>
     </div>
@@ -53,71 +46,93 @@ const cards = computed(() =>
 
 <style scoped>
 .facts {
-  padding-block: clamp(2.5rem, 5vw, 4.5rem);
-  background:
-    radial-gradient(60% 120% at 20% 0%, rgb(191 216 234 / 0.55), rgb(191 216 234 / 0) 70%),
-    radial-gradient(50% 120% at 85% 100%, rgb(30 171 225 / 0.12), rgb(30 171 225 / 0) 70%),
-    var(--color-surface);
+  z-index: 2;
+  padding-block: clamp(1rem, 2vw, 1.5rem) clamp(2.5rem, 4vw, 3.5rem);
+  /* Cian clarito de la familia del hero */
+  background: linear-gradient(180deg, #d9f0fa 0%, #e6f6fc 100%);
 }
-.facts__row {
+/* Funde el borde superior con el pie del hero (sin tocar el hero): la capa vive en esta sección */
+.facts::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 100%;
+  /* En móvil el titular está pegado al pie del hero: el fundido es más corto para no velarlo */
+  height: 4rem;
+  pointer-events: none;
+  /* Rampa en S (ease-in-out) para que no haya ningún escalón perceptible */
+  background: linear-gradient(
+    180deg,
+    rgb(217 240 250 / 0) 0%,
+    rgb(217 240 250 / 0.03) 15%,
+    rgb(217 240 250 / 0.12) 30%,
+    rgb(217 240 250 / 0.3) 45%,
+    rgb(217 240 250 / 0.55) 60%,
+    rgb(217 240 250 / 0.8) 75%,
+    rgb(217 240 250 / 0.94) 88%,
+    #d9f0fa 100%
+  );
+}
+.facts__capsule {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  justify-content: center;
-  gap: 0.75rem;
+  gap: 1.25rem 1rem;
+  max-width: 62rem;
+  margin-inline: auto;
+  padding: 1.5rem 1.5rem;
+  transform: none;
+  margin-bottom: 0;
+  border-radius: 1.75rem;
+  border: 1px solid rgb(255 255 255 / 0.8);
+  background: rgb(255 255 255 / 0.5);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow:
+    0 20px 44px -22px rgb(18 112 182 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.7);
 }
 .fact {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.2rem;
-  padding: 1.25rem 0.75rem 1.1rem;
-  text-align: center;
+  gap: 0.75rem;
   color: var(--color-ink);
-  border-radius: 1.5rem;
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.5));
-  border: 1px solid rgb(255 255 255 / 0.9);
-  box-shadow:
-    0 1px 0 rgb(255 255 255 / 0.9) inset,
-    0 14px 30px -18px rgb(18 112 182 / 0.35);
-  backdrop-filter: blur(14px);
-}
-.fact__bubble {
-  display: grid;
-  place-items: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  margin-bottom: 0.7rem;
-  border-radius: 999px;
-  color: #fff;
-  background:
-    radial-gradient(circle at 32% 26%, rgb(255 255 255 / 0.75) 0 12%, rgb(255 255 255 / 0) 38%),
-    radial-gradient(circle at 50% 60%, #35b9ea 0%, var(--color-primary) 78%);
-  box-shadow:
-    0 10px 18px -8px rgb(18 112 182 / 0.65),
-    inset 0 -6px 10px rgb(6 26 44 / 0.18);
 }
 .fact__icon {
-  width: 1.5rem;
-  height: 1.5rem;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--color-primary);
 }
-.fact__main {
-  font-family: var(--font-display);
-  font-size: 1.0625rem;
-  font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-}
-.fact__sub {
-  min-height: 1.1em;
-  font-size: 0.8125rem;
-  line-height: 1.2;
-  color: var(--color-text-secondary);
+/* Un solo estilo para todo el texto: mismo tamaño y peso en las dos líneas */
+.fact__text {
+  max-width: 9.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25;
 }
 
 @media (min-width: 768px) {
-  .facts__row {
-    grid-template-columns: repeat(4, minmax(0, 11.5rem));
-    gap: 1rem;
+  .facts::before {
+    height: clamp(4.5rem, 6.5vw, 5.5rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .facts__capsule {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.5rem 3rem;
+    /* Desde escritorio solo asoma un poco sobre el borde: deja aire entre el pie y la cápsula */
+    transform: none;
+    margin-bottom: 0;
+    border-radius: 999px;
+  }
+  .fact {
+    gap: 0.875rem;
+  }
+  .fact__icon {
+    width: 2rem;
+    height: 2rem;
   }
 }
 </style>
