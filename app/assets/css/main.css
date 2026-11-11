@@ -11,7 +11,6 @@
 /* Tipografías autoalojadas (OFL 1.1), sin peticiones a Google: Bricolage Grotesque (peso + ancho) e Instrument Sans */
 @import '@fontsource-variable/bricolage-grotesque/standard.css';
 @import '@fontsource-variable/instrument-sans/standard.css';
-@import '@fontsource-variable/manrope/index.css';
 
 /* Hover solo con puntero fino: en táctil no hay estados "pegados" */
 @custom-variant hover-fine {

@@ -137,8 +137,8 @@ onBeforeUnmount(() => {
     <div class="container-wide flex h-full items-center justify-between gap-6">
       <NuxtLink to="/" class="brand relative z-10 flex items-center gap-3" aria-label="Valdepodo, inicio">
         <!-- El símbolo (262 × 472) se dimensiona por anchura: BrandLogo fija height: auto -->
-        <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="w-[23px]" />
-        <BrandLogo variant="wordmark" label="" :mono="theme !== 'bone'" class="w-[124px]" />
+        <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="w-[20px]" />
+        <BrandLogo variant="wordmark" label="" :mono="theme !== 'bone'" class="w-[108px]" />
       </NuxtLink>
 
       <nav class="hidden lg:block" aria-label="Principal">
@@ -252,31 +252,12 @@ onBeforeUnmount(() => {
   background-color: transparent;
 }
 
-/* Botón en azul profundo sobre capítulos claros; hover discreto hacia el azul principal */
-.site-navbar > .container-wide {
-  padding-inline: var(--gutter);
-}
-.theme-bone :deep(.btn--primary) {
-  background: #163c63;
-  transition:
-    background-color var(--dur-base) var(--ease-out-soft),
-    transform var(--dur-base) var(--ease-out-soft);
-}
-@media (hover: hover) and (pointer: fine) {
-  .theme-bone :deep(.btn--primary:hover) {
-    background: #087ead;
-  }
-}
-
 .nav-link {
   position: relative;
   display: inline-block;
   font-size: 0.9375rem;
   font-weight: 500;
-  letter-spacing: 0.005em;
   padding-block: 0.5rem;
-  opacity: 0.86;
-  transition: opacity var(--dur-base) var(--ease-out-soft);
 }
 .nav-link::after {
   content: '';
@@ -294,9 +275,6 @@ onBeforeUnmount(() => {
   transform: scaleX(1);
 }
 @media (hover: hover) and (pointer: fine) {
-  .nav-link:hover {
-    opacity: 1;
-  }
   .nav-link:hover::after {
     transform: scaleX(1);
     transform-origin: left;
