@@ -282,14 +282,14 @@ onBeforeUnmount(() => {
   justify-self: start;
 }
 .brand__symbol {
-  width: 36px;
+  width: 46px;
   flex: none;
   transition: width var(--dur-base) var(--ease-out-soft);
 }
 .brand__text {
   display: block;
   overflow: hidden;
-  max-width: 14rem;
+  max-width: 16rem;
   margin-left: 1rem;
   opacity: 1;
   transition:
@@ -299,11 +299,11 @@ onBeforeUnmount(() => {
 }
 .brand__wordmark {
   display: block;
-  width: 196px;
+  width: 230px;
   max-width: none;
 }
 .is-scrolled .brand__symbol {
-  width: 28px;
+  width: 38px;
 }
 .is-scrolled .brand__text {
   max-width: 0;
