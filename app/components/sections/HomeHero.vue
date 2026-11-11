@@ -63,7 +63,7 @@ useGsapContext(section, (c) => {
 </script>
 
 <template>
-  <section ref="section" class="hero section-clip relative isolate" data-nav-theme="blue" aria-labelledby="hero-title">
+  <section ref="section" class="hero section-clip relative isolate" data-nav-theme="bone" aria-labelledby="hero-title">
     <!-- Luz ambiental: halo cian tras el pie y velo de luz arriba a la izquierda -->
     <div class="hero__glow" aria-hidden="true" />
 
@@ -95,18 +95,19 @@ useGsapContext(section, (c) => {
   align-items: end;
   min-height: max(100svh, 40rem);
   padding-top: var(--nav-h);
-  color: var(--color-bone);
+  color: var(--color-ink);
+  /* Pastel etéreo como las referencias: rosa pálido arriba-derecha, lavanda y azul periwinkle abajo */
   background:
-    radial-gradient(120% 80% at 82% 38%, #2f9fe0 0%, rgb(47 159 224 / 0) 60%),
-    radial-gradient(70% 60% at 8% 8%, rgb(191 216 234 / 0.35) 0%, rgb(191 216 234 / 0) 70%),
-    linear-gradient(160deg, #0f5f9f 0%, #1270b6 45%, #0a4d82 100%);
+    radial-gradient(60% 50% at 88% 6%, rgb(255 214 236 / 0.95), rgb(255 214 236 / 0) 70%),
+    radial-gradient(70% 60% at 6% 4%, rgb(236 226 250 / 0.9), rgb(236 226 250 / 0) 70%),
+    linear-gradient(180deg, #e9e3f7 0%, #c9cff5 45%, #9fb6ee 100%);
 }
 .hero__glow {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: radial-gradient(38% 46% at 74% 46%, rgb(160 228 250 / 0.38), rgb(160 228 250 / 0) 70%);
+  background: radial-gradient(40% 48% at 74% 46%, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 70%);
   animation: glow-in 2.4s var(--ease-out-soft) both;
 }
 @keyframes glow-in {
@@ -123,6 +124,7 @@ useGsapContext(section, (c) => {
   left: 50%;
   width: min(120vw, 34rem);
   translate: -50% 0;
+  filter: drop-shadow(0 30px 36px rgb(70 80 190 / 0.35));
   animation: model-in 1.8s var(--ease-out-soft) both;
   animation-delay: 0.3s;
 }
@@ -144,7 +146,7 @@ html[data-intro='play'] .hero__model {
 }
 .hero__eyebrow {
   margin-bottom: 1rem;
-  color: rgb(241 239 233 / 0.85);
+  color: rgb(6 26 44 / 0.7);
   animation: fade-up 1.2s var(--ease-out-soft) both;
   animation-delay: 0.2s;
 }
@@ -162,7 +164,7 @@ html[data-intro='play'] .hero__model {
 .hero__accent {
   font-style: normal;
   font-weight: 600;
-  color: #8fe3ff;
+  color: var(--color-primary);
 }
 html[data-intro='play'] .hero__eyebrow {
   animation-delay: 1.3s;
