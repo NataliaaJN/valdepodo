@@ -105,12 +105,6 @@ onBeforeUnmount(() => {
       :intensity="lights.rim.intensity"
       :color="lights.rim.color"
     />
-    <template v-if="studio">
-      <!-- Iluminación de estudio: principal cálida suave, relleno frío y contraluz -->
-      <TresDirectionalLight :position="[-3, 4, 3]" :intensity="1.6" color="#fff3e8" />
-      <TresDirectionalLight :position="[4, 1, 2.5]" :intensity="0.55" color="#d3ebf6" />
-      <TresDirectionalLight :position="[2, 3, -4]" :intensity="0.9" color="#e8f7ff" />
-    </template>
     <FootAnatomyModel
       v-if="model"
       :model="model"
