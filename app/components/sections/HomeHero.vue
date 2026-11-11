@@ -69,6 +69,9 @@ useGsapContext(section, (c) => {
     <!-- Luz ambiental: halo cian tras el pie y velo de luz arriba a la izquierda -->
     <div class="hero__glow" aria-hidden="true" />
 
+    <!-- Puente al cian de la sección siguiente: funde el pie del hero, sin corte -->
+    <div class="hero__bridge" aria-hidden="true" />
+
     <div class="hero__model" aria-hidden="true">
       <div class="hero__fade">
       <SceneGate
@@ -123,6 +126,20 @@ useGsapContext(section, (c) => {
   from {
     opacity: 0;
   }
+}
+
+.hero__bridge {
+  position: absolute;
+  z-index: 0;
+  inset: auto 0 0;
+  height: clamp(10rem, 28svh, 18rem);
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgb(217 240 250 / 0) 0%,
+    rgb(217 240 250 / 0.55) 55%,
+    #d9f0fa 100%
+  );
 }
 
 /* ---------- Pie ---------- */
