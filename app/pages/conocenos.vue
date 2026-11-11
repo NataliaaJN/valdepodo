@@ -55,6 +55,7 @@ if (confirmedPeople.length) {
         <SectionHeading
           id="team-title"
           :title="{ before: 'Equipo' }"
+          intro="Profesionales que te escuchan y te explican cada paso."
         />
         <div class="team__cards">
           <TeamCard v-for="(member, i) in team" :key="member.id" v-reveal="i" :member="member" />
@@ -101,8 +102,6 @@ if (confirmedPeople.length) {
   }
   .team__grid > :first-child {
     grid-column: 1 / span 4;
-    position: sticky;
-    top: calc(var(--nav-h-compact) + 2rem);
   }
   .team__cards {
     grid-column: 5 / span 8;

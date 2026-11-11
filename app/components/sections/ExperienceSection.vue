@@ -56,8 +56,8 @@ const { years } = useClinic()
   color: var(--color-primary-strong);
 }
 .exp__rest {
-  max-width: 14ch;
-  font-size: clamp(1.25rem, 1rem + 0.9vw, 1.75rem);
+  white-space: nowrap;
+  font-size: clamp(1rem, 0.7rem + 1.4vw, 1.75rem);
   line-height: 1.08;
   letter-spacing: -0.03em;
 }
