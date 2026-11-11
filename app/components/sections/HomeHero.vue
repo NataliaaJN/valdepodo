@@ -96,10 +96,10 @@ useGsapContext(section, (c) => {
   min-height: max(100svh, 40rem);
   padding-top: var(--nav-h);
   color: var(--color-ink);
-  /* Fondo de Mind AI: rosa-lila muy pálido, casi plano, con un velo de luz tras el pie */
+  /* Cian clarito, etéreo: velo de luz tras el pie y un poco más de cian abajo */
   background:
-    radial-gradient(50% 60% at 74% 50%, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 70%),
-    linear-gradient(180deg, #f8e8f2 0%, #f6e4f0 100%);
+    radial-gradient(50% 60% at 74% 50%, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 70%),
+    linear-gradient(180deg, #e3f6fc 0%, #cdeefa 100%);
 }
 .hero__glow {
   position: absolute;
@@ -123,7 +123,7 @@ useGsapContext(section, (c) => {
   left: 50%;
   width: min(120vw, 34rem);
   translate: -50% 0;
-  filter: drop-shadow(0 30px 36px rgb(70 80 190 / 0.35));
+  filter: drop-shadow(0 30px 36px rgb(18 112 182 / 0.3));
   animation: model-in 1.8s var(--ease-out-soft) both;
   animation-delay: 0.3s;
 }
