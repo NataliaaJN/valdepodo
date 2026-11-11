@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Botón del sistema de diseño. Píldora totalmente redondeada (como el «Pedir cita» de la navbar). Al pasar el cursor, el texto «rueda»:
- * sale hacia arriba y entra su copia desde abajo, y la flecha cruza el cuadro de lado a lado.
+ * Botón del sistema de diseño. Píldora totalmente redondeada (como el «Pedir cita» de la navbar). Hover sutil:
+ * ligero cambio de tono y la flecha avanza un par de píxeles.
  * Renderiza <NuxtLink> si recibe `to`/`href`, o <button> en caso contrario. Nunca un <div> clicable.
  *
  * - `primary`: tinta sobre hueso (hover: azul Valdepodo). El azul es un capítulo, no el color del botón.
@@ -44,7 +44,6 @@ const props = withDefaults(
 const NuxtLinkComponent = resolveComponent('NuxtLink')
 const isLink = computed(() => props.to !== undefined || props.href !== undefined)
 const isInactive = computed(() => props.disabled || props.loading)
-const rolls = computed(() => props.variant !== 'ghost' && !props.loading)
 </script>
 
 <template>
@@ -56,7 +55,7 @@ const rolls = computed(() => props.variant !== 'ghost' && !props.loading)
     :aria-disabled="isInactive ? 'true' : undefined"
     :aria-busy="loading ? 'true' : undefined"
     class="btn"
-    :class="[`btn--${variant}`, `btn--${size}`, { 'is-roll': rolls }]"
+    :class="[`btn--${variant}`, `btn--${size}`]"
   >
     <span
       v-if="loading"
@@ -66,17 +65,8 @@ const rolls = computed(() => props.variant !== 'ghost' && !props.loading)
     <span v-if="loading">{{ loadingLabel }}</span>
     <span v-else class="btn__label">
       <span class="btn__text"><slot /></span>
-      <span v-if="rolls" class="btn__text btn__text--copy" aria-hidden="true"><slot /></span>
     </span>
     <span v-if="arrow && !loading" class="btn__arrow" aria-hidden="true">
-      <svg viewBox="0 0 16 16" fill="none">
-        <path
-          d="M2 8h11M9 3.5 13.5 8 9 12.5"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="square"
-        />
-      </svg>
       <svg viewBox="0 0 16 16" fill="none">
         <path
           d="M2 8h11M9 3.5 13.5 8 9 12.5"
@@ -163,9 +153,6 @@ const rolls = computed(() => props.variant !== 'ghost' && !props.loading)
   grid-area: 1 / 1;
   transition: transform var(--dur-base) var(--ease-out-soft);
 }
-.btn__text--copy {
-  transform: translateY(115%);
-}
 
 .btn__arrow {
   display: inline-grid;
@@ -179,37 +166,24 @@ const rolls = computed(() => props.variant !== 'ghost' && !props.loading)
   height: 1rem;
   transition: transform var(--dur-base) var(--ease-out-soft);
 }
-.btn__arrow svg:last-child {
-  transform: translateX(-130%);
-}
 
+/* Hover sutil: un cambio de tono casi imperceptible y la flecha avanza un par de píxeles */
 @media (hover: hover) and (pointer: fine) {
   .btn--primary:hover {
-    background: var(--color-primary);
+    background: color-mix(in srgb, var(--color-ink) 84%, var(--color-primary));
   }
   .btn--on-blue:hover,
   .btn--on-dark:hover {
-    background: var(--color-ink);
-    color: var(--color-bone);
+    background: color-mix(in srgb, var(--color-bone) 65%, #fff);
   }
   .btn--secondary:hover {
-    background: var(--color-ink);
-    color: var(--color-bone);
+    background: color-mix(in srgb, var(--color-ink) 7%, transparent);
   }
   .btn--ghost:hover {
     text-decoration-color: currentColor;
   }
-  .is-roll:hover .btn__text:first-child {
-    transform: translateY(-115%);
-  }
-  .is-roll:hover .btn__text--copy {
-    transform: none;
-  }
   .btn:hover .btn__arrow svg:first-child {
-    transform: translateX(130%);
-  }
-  .btn:hover .btn__arrow svg:last-child {
-    transform: none;
+    transform: translateX(2px);
   }
 }
 
