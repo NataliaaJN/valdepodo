@@ -16,7 +16,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { site } from '~/data/site'
 import { hero } from '~/data/home'
 /** Casi de perfil (3/4 abierto): la puntera apunta a la izquierda y algo hacia la cámara */
-const HERO_ROTATION_Y = 0.075
+const HERO_ROTATION_Y = 0.25
 
 const section = ref<HTMLElement | null>(null)
 const { tier, resolved } = useDeviceTier()
@@ -43,7 +43,7 @@ const sceneProps = computed(() => ({
   step: progress.value,
   studio: true,
   // De perfil el pie ocupa más ancho que de frente: se reduce un poco para que quepa entero
-  fit: 2.0,
+  fit: 2.3,
 }))
 
 useGsapContext(section, (c) => {
