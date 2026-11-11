@@ -17,12 +17,7 @@ useBreadcrumbSchema([
 
 <template>
   <div>
-    <PageHeader
-      id="services-title"
-      title="Servicios"
-      size="mega"
-      :crumbs="[{ name: 'Inicio', to: '/' }, { name: 'Servicios' }]"
-    />
+    <PageHeader id="services-title" title="Servicios" size="mega" />
 
     <section aria-label="Los cinco servicios" data-nav-theme="bone">
       <ServiceScroll />

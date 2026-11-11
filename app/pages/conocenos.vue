@@ -6,7 +6,7 @@
  * Sin fotos reales todavía: placeholders ilustrados marcados ("Fotografía pendiente"), nunca stock.
  * Schema `Person`: solo con datos confirmados (ahora ninguno).
  */
-import { isPending } from '#shared/utils/pending'
+import { isPending, resolveValue } from '#shared/utils/pending'
 import { clinic } from '~/data/clinic'
 import { team } from '~/data/team'
 
@@ -41,13 +41,19 @@ if (confirmedPeople.length) {
 
 <template>
   <div>
-    <!-- Hero: foto del equipo -->
-    <ClinicHero
-      id="about-title"
-      title="Detrás de cada paso, hay personas."
-      eyebrow="La clínica"
-      :photo="clinic.teamPhoto"
-    />
+    <!-- Cabecera común + foto del equipo -->
+    <PageHeader id="about-title" title="La clínica" size="mega" />
+    <div v-if="clinic.teamPhoto.src" class="container-wide team-photo-wrap" data-nav-theme="bone">
+      <img
+        :src="clinic.teamPhoto.src"
+        :alt="resolveValue(clinic.teamPhoto.alt)"
+        width="1600"
+        height="900"
+        fetchpriority="high"
+        decoding="async"
+        class="team-photo"
+      />
+    </div>
 
     <!-- 1. Personas -->
     <section id="equipo" class="team py-(--space-section)" aria-labelledby="team-title" data-nav-theme="bone">
@@ -84,6 +90,23 @@ if (confirmedPeople.length) {
 </template>
 
 <style scoped>
+.team-photo-wrap {
+  padding-bottom: var(--space-section);
+}
+.team-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 44rem;
+  object-fit: cover;
+  object-position: 50% 58%;
+  border-radius: var(--radius-m);
+}
+@media (min-width: 1024px) {
+  .team-photo {
+    aspect-ratio: 21 / 9;
+  }
+}
 .team__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
