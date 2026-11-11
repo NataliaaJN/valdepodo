@@ -15,7 +15,8 @@
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { site } from '~/data/site'
 import { hero } from '~/data/home'
-import { FOOT_VIEW } from '~/utils/foot-layers'
+/** Casi de perfil (3/4 abierto): la puntera apunta a la derecha y algo hacia la cámara */
+const HERO_ROTATION_Y = 1.95
 
 const section = ref<HTMLElement | null>(null)
 const { tier, resolved } = useDeviceTier()
@@ -38,9 +39,11 @@ const poster = computed(
 const loader = () => import('~/components/three/FootAnatomy.client.vue')
 const sceneProps = computed(() => ({
   activeLayer: 'muscles',
-  rotationY: FOOT_VIEW.rotationY,
+  rotationY: HERO_ROTATION_Y,
   step: progress.value,
   studio: true,
+  // De perfil el pie ocupa más ancho que de frente: se reduce un poco para que quepa entero
+  fit: 2.0,
 }))
 
 useGsapContext(section, (c) => {

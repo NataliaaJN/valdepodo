@@ -23,8 +23,10 @@ const props = withDefaults(
     studio?: boolean
     /** Progreso 0..1 del paso del pie (hero); sin definir, no hay paso ni suelo. */
     step?: number
+    /** Tamaño del modelo en la escena (por defecto, el del encuadre compartido). */
+    fit?: number
   }>(),
-  { src: undefined, rotationY: FOOT_VIEW.rotationY, idleSpin: false, studio: false, step: undefined },
+  { src: undefined, rotationY: FOOT_VIEW.rotationY, idleSpin: false, studio: false, step: undefined, fit: undefined },
 )
 const emit = defineEmits<{
   ready: []
@@ -119,7 +121,7 @@ onBeforeUnmount(() => {
       :active-layer="activeLayer"
       :rotation-y="rotationY"
       :idle-spin="idleSpin"
-      :fit="FOOT_VIEW.fit"
+      :fit="fit ?? FOOT_VIEW.fit"
       :studio="studio"
       :step="step"
       @layers="(l) => emit('layers', l)"
