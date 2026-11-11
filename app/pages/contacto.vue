@@ -4,7 +4,6 @@
  * distinto peso) → dónde estamos (mapa) → cómo pedir cita (formulario `#cita`, destino de todos los CTA).
  * Mismos datos que el footer y el schema (`site.ts`), en `pending()` hasta confirmarlos.
  */
-import { resolveValue } from '#shared/utils/pending'
 import { site } from '~/data/site'
 
 // El formulario ya está en la página: sin el CTA global de cierre
@@ -12,7 +11,6 @@ definePageMeta({ hideCta: true })
 
 const clinic = useClinic()
 const city = resolveValue(site.city)
-const googleUrl = resolveValue(site.googleProfileUrl)
 
 usePageSeo({
   title: `Contacto y cita · Podología en ${city}`,
@@ -75,9 +73,14 @@ async function copy(text: string, what: string) {
             <ContentValue :value="site.phone" />
             <span class="sr-only"> (llamar)</span>
           </a>
-          <button type="button" class="copy-btn" @click="copy(clinic.phone, 'Teléfono')">
-            <BaseIcon name="copy" class="size-4" /> Copiar<span class="sr-only"> teléfono</span>
-          </button>
+          <div class="phone-actions">
+            <button type="button" class="copy-btn" @click="copy(clinic.phone, 'Teléfono')">
+              <BaseIcon name="copy" class="size-4" /> Copiar<span class="sr-only"> teléfono</span>
+            </button>
+            <a :href="clinic.whatsappHref" target="_blank" rel="noopener" class="copy-btn">
+              WhatsApp<span class="sr-only"> (se abre en una pestaña nueva)</span>
+            </a>
+          </div>
         </article>
 
         <!-- Email -->
@@ -94,36 +97,29 @@ async function copy(text: string, what: string) {
           <OpeningHours columns />
         </article>
 
-        <!-- Redes: bloque compacto sin caja -->
-        <div v-reveal="4" class="social" role="group" aria-labelledby="c-social">
+        <!-- Redes -->
+        <article v-reveal="4" class="card card-social" aria-labelledby="c-social">
           <p id="c-social" class="card-label">Síguenos</p>
-          <a
-            :href="clinic.instagram.url"
-            target="_blank"
-            rel="noopener"
-            class="social-link link-quiet"
-          >
-            <BaseIcon name="instagram" />
-            <ContentValue v-slot="{ value }" :value="site.instagram">{{ value.handle }}</ContentValue>
-            <span class="sr-only"> en Instagram (se abre en una pestaña nueva)</span>
-          </a>
-          <a :href="googleUrl" target="_blank" rel="noopener" class="social-link link-quiet">
-            Ficha de Google<BaseIcon name="arrow-up-right" class="size-4" />
-            <span class="sr-only"> (se abre en una pestaña nueva)</span>
-          </a>
-        </div>
+          <div class="social-list">
+            <a :href="clinic.instagram.url" target="_blank" rel="noopener" class="social-link link-quiet">
+              <BaseIcon name="instagram" />
+              <ContentValue v-slot="{ value }" :value="site.instagram">{{ value.handle }}</ContentValue>
+              <span class="sr-only"> en Instagram (se abre en una pestaña nueva)</span>
+            </a>
+            <a :href="clinic.linkedin.url" target="_blank" rel="noopener" class="social-link link-quiet">
+              <BaseIcon name="linkedin" />
+              <ContentValue v-slot="{ value }" :value="site.linkedin">{{ value.label }}</ContentValue>
+              <span class="sr-only"> en LinkedIn (se abre en una pestaña nueva)</span>
+            </a>
+          </div>
+        </article>
       </div>
       <p class="sr-only" aria-live="polite">{{ copied }}</p>
       <p v-if="copied" class="toast" aria-hidden="true">{{ copied }}</p>
     </section>
 
     <!-- 2 · Formulario de cita + mapa. `#cita`: destino de todos los botones «Pedir cita» -->
-    <section
-      id="cita"
-      class="cita chapter-bone-2"
-      aria-labelledby="cita-title"
-      data-nav-theme="bone"
-    >
+    <section id="cita" class="cita chapter-bone-2" aria-labelledby="cita-title" data-nav-theme="bone">
       <div class="container-wide">
         <div class="cita-head">
           <SectionHeading
@@ -199,7 +195,9 @@ async function copy(text: string, what: string) {
   text-decoration: underline;
   text-decoration-color: transparent;
   text-underline-offset: 0.25em;
-  transition: text-decoration-color var(--dur-fast), color var(--dur-fast);
+  transition:
+    text-decoration-color var(--dur-fast),
+    color var(--dur-fast);
 }
 .link-quiet:hover {
   color: var(--color-primary-strong);
@@ -256,24 +254,44 @@ async function copy(text: string, what: string) {
   color: var(--color-primary-strong);
 }
 
-/* Redes: sin caja, alineadas con la rejilla */
-.social {
+/* Redes: card con más presencia */
+.card-social {
+  justify-content: space-between;
+  background: var(--color-ice-blue, var(--color-white));
+}
+.social-list {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem 1.75rem;
-  padding: 0.75rem 0.5rem 0;
+  gap: 0.25rem 1.5rem;
 }
 .social-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   min-height: 44px;
-  font-weight: 500;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-heading-s);
+  letter-spacing: -0.02em;
   color: var(--color-ink);
 }
 .social-link :deep(.base-icon) {
+  width: 1.4em;
+  height: 1.4em;
   color: var(--color-primary);
+}
+.phone-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+}
+.card-phone,
+.card-mail {
+  padding: 1rem 1.25rem;
+  gap: 0.4rem;
+}
+.card-phone .card-value {
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
 }
 
 .toast {
@@ -296,7 +314,7 @@ async function copy(text: string, what: string) {
   }
   .card-place,
   .card-hours,
-  .social {
+  .card-social {
     grid-column: 1 / -1;
   }
 }
@@ -305,27 +323,26 @@ async function copy(text: string, what: string) {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: 1rem;
   }
-  /* Ubicación a la izquierda (alta) · teléfono + email arriba a la derecha · horario debajo · redes */
-  .card-place {
-    grid-column: 1 / span 5;
-    grid-row: 1 / span 2;
-  }
+  /* Fila 1: teléfono · email · redes. Fila 2: ubicación (destacada) + horario */
   .card-phone {
-    grid-column: 6 / span 3;
+    grid-column: 1 / span 3;
     grid-row: 1;
   }
   .card-mail {
-    grid-column: 9 / span 4;
+    grid-column: 4 / span 4;
     grid-row: 1;
+  }
+  .card-social {
+    grid-column: 8 / span 5;
+    grid-row: 1;
+  }
+  .card-place {
+    grid-column: 1 / span 5;
+    grid-row: 2;
   }
   .card-hours {
     grid-column: 6 / span 7;
     grid-row: 2;
-  }
-  .social {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    padding-top: 0.5rem;
   }
 }
 

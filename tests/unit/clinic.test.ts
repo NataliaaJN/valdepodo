@@ -74,10 +74,11 @@ describe('horario y "abierto ahora" (Europe/Madrid)', () => {
 })
 
 describe('contenido (spec 09)', () => {
-  it('los datos de contacto sin confirmar siguen marcados como pendientes', () => {
-    for (const value of [site.phone, site.email, site.address.street, site.hours, site.foundedYear]) {
-      expect(isPending(value)).toBe(true)
+  it('los datos de contacto confirmados ya no son pendientes; el año de apertura sí', () => {
+    for (const value of [site.phone, site.email, site.address.street, site.hours, site.instagram, site.linkedin]) {
+      expect(isPending(value)).toBe(false)
     }
+    expect(isPending(site.foundedYear)).toBe(true)
   })
 
   it('valores provisionales inequívocos en el equipo', () => {
@@ -101,7 +102,7 @@ describe('contenido (spec 09)', () => {
   })
 
   it('collectPending encuentra las notas del sitio', () => {
-    expect(collectPending(site).length).toBeGreaterThan(5)
+    expect(collectPending(site).length).toBeGreaterThan(2)
   })
 })
 
