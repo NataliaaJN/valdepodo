@@ -6,7 +6,7 @@ import { pending, type Maybe } from '#shared/utils/pending'
 import type { FootLayer } from '~/utils/foot-layers'
 
 export const hero = {
-  title: { before: 'Todo empieza por tus ', accent: 'pies', after: '.' },
+  title: { before: 'Todo empieza por ', accent: 'tus pies', after: '' },
   description: pending(
     'Analizamos cómo está construido tu pie y cómo se mueve para cuidarlo en cada paso.',
     'Propuesta de valor provisional (spec 03 §1): validar con la clínica',

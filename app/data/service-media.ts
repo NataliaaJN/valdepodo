@@ -3,7 +3,8 @@
  * (`ServiceTile`, cabeceras de servicio, relacionados) leen de aquí y aplican el mismo tratamiento
  * (monocromo azul en reposo, color al acercarse), así que las fotos definitivas se cambian editando solo `src`.
  *
- * ⚠️ PLACEHOLDERS. Las cinco URL de Unsplash son provisionales para desarrollar el diseño y las
+ * Fotos locales en `public/images/servicios/` (biomecánico, general, infantil, pie diabético).
+ * ⚠️ PLACEHOLDER: «plantillas-personalizadas» sigue con una URL de Unsplash provisional para desarrollar el diseño y las
  * interacciones; no son la dirección fotográfica definitiva. Para las definitivas: guardar los archivos en
  * `public/images/servicios/` y poner aquí `src: '/images/servicios/estudio-biomecanico.jpg'` (al ser local,
  * se sirve sin parámetros de tamaño: conviene exportarlas ya a ≤ 1600 px de ancho, WebP/AVIF).
@@ -19,24 +20,24 @@ export interface ServiceMedia {
 
 export const serviceMedia: Record<string, ServiceMedia> = {
   'estudio-biomecanico': {
-    src: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&w=1600&q=85',
-    focus: '50% 55%',
+    src: '/images/servicios/estudio-biomecanico.webp',
+    focus: '35% 60%',
   },
   'plantillas-personalizadas': {
     src: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=1600&q=85',
     focus: '50% 60%',
   },
   'podologia-general': {
-    src: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=1600&q=85',
-    focus: '50% 50%',
+    src: '/images/servicios/podologia-general.jpg',
+    focus: '40% 50%',
   },
   'podologia-infantil': {
-    src: 'https://images.unsplash.com/photo-1540479859555-17af45c78602?auto=format&fit=crop&w=1600&q=85',
-    focus: '50% 45%',
+    src: '/images/servicios/podologia-infantil.jpg',
+    focus: '55% 55%',
   },
   'pie-diabetico': {
-    src: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1600&q=85',
-    focus: '50% 50%',
+    src: '/images/servicios/pie-diabetico.webp',
+    focus: '50% 45%',
   },
 }
 
