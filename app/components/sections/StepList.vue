@@ -19,8 +19,8 @@ withDefaults(
     <li v-for="(step, i) in steps" :key="step.title" v-reveal="i" class="step">
       <span class="step-line" aria-hidden="true" />
       <span class="step-dot" aria-hidden="true" />
-      <span class="font-display text-heading-s text-primary">{{ String(i + 1).padStart(2, '0') }}</span>
-      <h3 class="mt-2 text-heading-s font-semibold text-deep-blue">{{ step.title }}</h3>
+      <span class="eyebrow text-primary-strong">{{ String(i + 1).padStart(2, '0') }}</span>
+      <h3 class="mt-2 text-heading-s text-deep-blue">{{ step.title }}</h3>
       <ContentValue :value="step.text" as="p" class="mt-2 max-w-[34ch] text-text-secondary" />
       <NuxtLink
         v-if="step.link"
@@ -50,8 +50,7 @@ withDefaults(
   height: 13px;
   border-radius: 999px;
   border: 1.5px solid var(--color-primary);
-  background: var(--color-white);
-  box-shadow: 0 0 0 4px rgb(185 229 243 / 0.6);
+  background: var(--color-surface);
 }
 .step-line {
   position: absolute;
@@ -59,8 +58,8 @@ withDefaults(
   top: 1.6rem;
   bottom: -2.5rem;
   width: 1.5px;
-  background: linear-gradient(var(--color-primary), var(--color-cyan));
-  opacity: 0.45;
+  background: var(--color-primary);
+  opacity: 0.4;
   transform-origin: top;
   transition: transform 900ms var(--ease-out-soft) 200ms;
 }
@@ -90,7 +89,7 @@ withDefaults(
     bottom: auto;
     width: auto;
     height: 1.5px;
-    background: linear-gradient(90deg, var(--color-primary), var(--color-cyan));
+    background: var(--color-primary);
     transform-origin: left;
   }
   .is-horizontal[data-rv='out'] > .step-line,

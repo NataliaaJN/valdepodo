@@ -7,7 +7,7 @@ const enableLab = process.env.NODE_ENV !== 'production' || process.env.NUXT_PUBL
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-01',
 
-  modules: ['@nuxt/fonts', '@nuxt/eslint'],
+  modules: ['@nuxt/eslint'],
 
   devtools: { enabled: true },
 
@@ -30,7 +30,7 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'es' },
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
-      meta: [{ name: 'theme-color', content: '#F5F8FC' }],
+      meta: [{ name: 'theme-color', content: '#F1EFE9' }],
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     },
     pageTransition: { name: 'page', mode: 'out-in' },
@@ -47,22 +47,6 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: ['three', '@tresjs/core', 'gsap', 'gsap/ScrollTrigger'],
     },
-  },
-
-  fonts: {
-    defaults: {
-      weights: [400, 500, 600, 700],
-      styles: ['normal', 'italic'],
-      subsets: ['latin', 'latin-ext'],
-    },
-    families: [
-      // Propuesta A (por defecto)
-      { name: 'Instrument Serif', provider: 'google', weights: [400], styles: ['normal', 'italic'] },
-      { name: 'Manrope', provider: 'google', weights: [400, 500, 600, 700], styles: ['normal'] },
-      // Propuesta B (comparación en la propuesta visual)
-      { name: 'DM Serif Display', provider: 'google', weights: [400], styles: ['normal', 'italic'] },
-      { name: 'DM Sans', provider: 'google', weights: [400, 500, 600, 700], styles: ['normal', 'italic'] },
-    ],
   },
 
   routeRules: {

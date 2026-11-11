@@ -21,14 +21,12 @@ const intro = pending(
       :title="{ before: 'Cuidar tus pies también es ', accent: 'prevenir', after: '.' }"
       :description="service.description"
     >
-      <div
-        class="mx-auto aspect-[200/170] w-full max-w-[22rem] rounded-[var(--radius-organic)] bg-white/70 p-8"
-      >
+      <div class="mx-auto aspect-[200/170] w-full max-w-[22rem] rounded-m bg-white p-8">
         <TreatmentIllustration kind="ingrown" />
       </div>
     </ServiceHero>
 
-    <section class="bg-white py-(--space-section)" aria-labelledby="treatments-title">
+    <section class="chapter-bone-2 py-(--space-section)" aria-labelledby="treatments-title">
       <div class="container-site">
         <SectionHeading
           id="treatments-title"

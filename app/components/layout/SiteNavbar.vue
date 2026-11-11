@@ -1,12 +1,15 @@
 <script setup lang="ts">
 /**
- * Navbar global (spec 02 §2). Propuesta visual (Fase 5).
- * - Fija; 88 px → 68 px y fondo glass a partir de 24 px de scroll. Arriba es transparente sobre el hero.
- * - ≥ 1024 px: enlaces + "Pedir cita". < 1024 px: logo, "Pedir cita" compacto y menú a pantalla completa
+ * Navbar global. Fija y casi invisible: logo, cuatro enlaces y la acción. Cambia de tema (hueso / azul / tinta)
+ * según el capítulo que tiene debajo (`data-nav-theme` en cada sección), así que siempre se lee sin caja ni
+ * sombra; con scroll compacta su altura y toma un vidrio sutil del color del capítulo.
+ * - ≥ 1024 px: enlaces en línea + «Pedir cita».
+ * - < 1024 px: «Menú» abre un panel de tinta a pantalla completa con los enlaces en tipografía monumental
  *   (foco atrapado, Esc, resto de la página `inert`, scroll bloqueado, se cierra al navegar).
- * - Servicios es un enlace directo (spec 02 §2: el submenú se decide en la propuesta; aquí, simplicidad).
  */
 import { site } from '~/data/site'
+
+type NavTheme = 'blue' | 'ink' | 'bone'
 
 const route = useRoute()
 const clinic = useClinic()
@@ -16,8 +19,33 @@ const menuButton = ref<HTMLButtonElement | null>(null)
 const panel = ref<HTMLElement | null>(null)
 const header = ref<HTMLElement | null>(null)
 
+// SSR y primer pintado: la Home abre en azul; el resto, en hueso. El cliente corrige con lo que hay debajo.
+const detected = ref<NavTheme>(route.path === '/' ? 'blue' : 'bone')
+const theme = computed<NavTheme>(() => (open.value ? 'ink' : detected.value))
+
+function detectTheme() {
+  if (!header.value) return
+  const x = window.innerWidth / 2
+  const y = Math.min(40, window.innerHeight / 2)
+  for (const el of document.elementsFromPoint(x, y)) {
+    if (header.value.contains(el)) continue
+    const host = el.closest<HTMLElement>('[data-nav-theme]')
+    if (host) {
+      detected.value = host.dataset.navTheme as NavTheme
+      return
+    }
+  }
+  detected.value = 'bone'
+}
+
+let frame = 0
 function onScroll() {
   scrolled.value = window.scrollY > 24
+  if (frame) return
+  frame = requestAnimationFrame(() => {
+    frame = 0
+    detectTheme()
+  })
 }
 
 function isActive(to: string) {
@@ -74,7 +102,13 @@ function onKeydown(e: KeyboardEvent) {
 
 watch(
   () => route.fullPath,
-  () => closeMenu(false),
+  async () => {
+    closeMenu(false)
+    await nextTick()
+    // La página nueva se monta tras la transición: se comprueba también un poco después
+    detectTheme()
+    setTimeout(detectTheme, 700)
+  },
 )
 
 const mq = import.meta.client ? window.matchMedia('(min-width: 1024px)') : undefined
@@ -82,11 +116,15 @@ const onBreakpoint = (e: MediaQueryListEvent) => e.matches && closeMenu(false)
 
 onMounted(() => {
   onScroll()
+  detectTheme()
   window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', onScroll, { passive: true })
   mq?.addEventListener('change', onBreakpoint)
 })
 onBeforeUnmount(() => {
+  cancelAnimationFrame(frame)
   window.removeEventListener('scroll', onScroll)
+  window.removeEventListener('resize', onScroll)
   mq?.removeEventListener('change', onBreakpoint)
   setPageInert(false)
 })
@@ -96,18 +134,18 @@ onBeforeUnmount(() => {
   <header
     ref="header"
     class="site-navbar fixed inset-x-0 top-0 z-40"
-    :class="{ 'is-scrolled': scrolled || open, 'is-open': open }"
+    :class="[`theme-${theme}`, { 'is-scrolled': scrolled && !open, 'is-open': open }]"
     @keydown="onKeydown"
   >
-    <div class="container-site flex h-full items-center justify-between gap-6">
-      <NuxtLink to="/" class="relative z-10 flex items-center gap-3" aria-label="Valdepodo, inicio">
+    <div class="container-wide flex h-full items-center justify-between gap-6">
+      <NuxtLink to="/" class="brand relative z-10 flex items-center gap-3" aria-label="Valdepodo, inicio">
         <!-- El símbolo (262 × 472) se dimensiona por anchura: BrandLogo fija height: auto -->
-        <BrandLogo variant="symbol" label="" class="w-[22px]" />
-        <BrandLogo variant="wordmark" label="" class="w-[112px]" />
+        <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="w-[20px]" />
+        <BrandLogo variant="wordmark" label="" :mono="theme !== 'bone'" class="w-[108px]" />
       </NuxtLink>
 
       <nav class="hidden lg:block" aria-label="Principal">
-        <ul class="flex items-center gap-8">
+        <ul class="flex items-center gap-9">
           <li v-for="item in site.nav" :key="item.to">
             <NuxtLink :to="item.to" class="nav-link" :aria-current="isActive(item.to) ? 'page' : undefined">{{
               item.label
@@ -116,21 +154,25 @@ onBeforeUnmount(() => {
         </ul>
       </nav>
 
-      <div class="relative z-10 flex items-center gap-2">
-        <BaseButton size="sm" :to="site.cta.to" :arrow="true" class="max-lg:min-h-10! max-lg:px-4!">
-          {{ site.cta.label }}
-        </BaseButton>
+      <div class="relative z-10 flex items-center gap-3">
+        <div class="hidden lg:block">
+          <BaseButton size="sm" :variant="theme === 'bone' ? 'primary' : 'on-blue'" :to="site.cta.to">
+            {{ site.cta.label }}
+          </BaseButton>
+        </div>
         <button
           ref="menuButton"
           type="button"
           class="menu-button lg:hidden"
           aria-controls="site-menu"
           :aria-expanded="open"
-          :aria-label="open ? 'Cerrar menú' : 'Abrir menú'"
           @click="open ? closeMenu() : openMenu()"
         >
-          <span class="menu-bar" aria-hidden="true" />
-          <span class="menu-bar" aria-hidden="true" />
+          <span class="menu-label">{{ open ? 'Cerrar' : 'Menú' }}</span>
+          <span class="menu-bars" aria-hidden="true">
+            <span class="menu-bar" />
+            <span class="menu-bar" />
+          </span>
         </button>
       </div>
     </div>
@@ -146,9 +188,9 @@ onBeforeUnmount(() => {
         aria-modal="true"
         aria-label="Menú"
       >
-        <div class="container-site flex h-full flex-col pt-28 pb-10">
+        <div class="container-wide flex h-full flex-col pt-28 pb-8">
           <nav aria-label="Principal (móvil)">
-            <ul class="grid gap-2">
+            <ul class="grid">
               <li
                 v-for="(item, i) in [{ label: 'Inicio', to: '/' }, ...site.nav]"
                 :key="item.to"
@@ -157,25 +199,21 @@ onBeforeUnmount(() => {
               >
                 <NuxtLink
                   :to="item.to"
-                  class="font-display text-display-m text-deep-blue"
+                  class="menu-link"
                   :aria-current="isActive(item.to) ? 'page' : undefined"
-                  >{{ item.label }}</NuxtLink
                 >
+                  <span class="menu-link__n">0{{ i + 1 }}</span
+                  >{{ item.label }}
+                </NuxtLink>
               </li>
             </ul>
           </nav>
-          <div class="mt-auto grid gap-3 pt-10 text-deep-blue">
-            <a :href="clinic.phoneHref" class="inline-flex items-center gap-3 font-semibold">
-              <BaseIcon name="phone" class="text-primary" />
+          <div class="menu-foot mt-auto grid gap-3 pt-10">
+            <BaseButton variant="on-blue" :to="site.cta.to" arrow>{{ site.cta.label }}</BaseButton>
+            <a :href="clinic.phoneHref" class="menu-contact">
               <ContentValue :value="site.phone" />
             </a>
-            <a
-              :href="clinic.instagram.url"
-              target="_blank"
-              rel="noopener"
-              class="inline-flex items-center gap-3 font-semibold"
-            >
-              <BaseIcon name="instagram" class="text-primary" />
+            <a :href="clinic.instagram.url" target="_blank" rel="noopener" class="menu-contact">
               <ContentValue v-slot="{ value }" :value="site.instagram">{{ value.handle }}</ContentValue>
               <span class="sr-only">(Instagram, se abre en una pestaña nueva)</span>
             </a>
@@ -188,67 +226,71 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .site-navbar {
+  --nav-fg: var(--color-ink);
+  --nav-bg: rgb(241 239 233 / 0.8);
   height: var(--nav-h);
+  color: var(--nav-fg);
+  border-bottom: 1px solid transparent;
   transition:
     height var(--dur-base) var(--ease-out-soft),
     background-color var(--dur-base) var(--ease-out-soft),
+    color var(--dur-base) var(--ease-out-soft),
     border-color var(--dur-base) var(--ease-out-soft);
-  border-bottom: 1px solid transparent;
+}
+.theme-blue {
+  --nav-fg: var(--color-bone);
+  --nav-bg: rgb(18 112 182 / 0.72);
+}
+.theme-ink {
+  --nav-fg: var(--color-bone);
+  --nav-bg: rgb(6 26 44 / 0.72);
 }
 .site-navbar.is-scrolled {
   height: var(--nav-h-compact);
-  background-color: rgb(245 248 252 / 0.85);
-  backdrop-filter: blur(14px) saturate(1.3);
-  border-bottom-color: var(--color-border);
+  background-color: var(--nav-bg);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom-color: color-mix(in srgb, var(--nav-fg) 14%, transparent);
 }
 .site-navbar.is-open {
-  border-bottom-color: transparent;
   background-color: transparent;
-  backdrop-filter: none;
 }
 
 .nav-link {
   position: relative;
+  display: inline-block;
   font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--color-deep-blue);
+  font-weight: 500;
   padding-block: 0.5rem;
-  transition: color var(--dur-fast) var(--ease-out-soft);
 }
 .nav-link::after {
   content: '';
   position: absolute;
-  left: 50%;
-  bottom: -2px;
-  width: 6px;
-  height: 6px;
-  margin-left: -3px;
-  border-radius: 999px;
-  background: var(--color-cyan);
-  opacity: 0;
-  transform: translateY(4px);
-  transition:
-    opacity var(--dur-fast) var(--ease-out-soft),
-    transform var(--dur-fast) var(--ease-out-soft);
+  left: 0;
+  right: 0;
+  bottom: 0.2rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-base) var(--ease-out-soft);
 }
-.nav-link[aria-current='page']::after,
-.nav-link:hover::after {
-  opacity: 1;
-  transform: none;
+.nav-link[aria-current='page']::after {
+  transform: scaleX(1);
 }
-.nav-link:hover {
-  color: var(--color-primary-strong);
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 }
 
 .menu-button {
-  display: inline-grid;
-  place-content: center;
-  gap: 6px;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  border: 1.5px solid var(--color-border-strong);
-  background: rgb(255 255 255 / 0.6);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px;
+  font-size: 0.9375rem;
+  font-weight: 500;
 }
 /* El CSS con ámbito no está en una capa y ganaría a la utilidad lg:hidden */
 @media (min-width: 1024px) {
@@ -256,11 +298,15 @@ onBeforeUnmount(() => {
     display: none;
   }
 }
+.menu-bars {
+  display: grid;
+  gap: 6px;
+}
 .menu-bar {
   display: block;
-  width: 18px;
+  width: 22px;
   height: 1.5px;
-  background: var(--color-deep-blue);
+  background: currentColor;
   transition: transform var(--dur-base) var(--ease-out-soft);
 }
 .is-open .menu-bar:first-child {
@@ -274,45 +320,78 @@ onBeforeUnmount(() => {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background:
-    radial-gradient(60% 45% at 85% 20%, rgb(185 229 243 / 0.7), transparent 70%),
-    radial-gradient(50% 40% at 10% 90%, rgb(30 171 225 / 0.18), transparent 70%), var(--color-surface);
+  background: var(--color-ink);
+  color: var(--color-bone);
   overflow-y: auto;
 }
+.menu-link {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  border-bottom: 1px solid rgb(241 239 233 / 0.18);
+  padding-block: 0.6rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.75rem, 1.5rem + 7vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.menu-link[aria-current='page'] {
+  color: var(--color-cyan);
+}
+.menu-link__n {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: rgb(241 239 233 / 0.6);
+}
+.menu-contact {
+  font-weight: 500;
+  color: var(--color-ice-blue);
+}
+
 .menu-enter-active,
 .menu-leave-active {
-  transition:
-    opacity var(--dur-base) var(--ease-out-soft),
-    transform var(--dur-base) var(--ease-out-soft);
+  transition: clip-path 700ms var(--ease-in-out-soft);
 }
 .menu-enter-from,
 .menu-leave-to {
-  opacity: 0;
-  transform: translateY(-12px);
+  clip-path: inset(0 0 100% 0);
 }
-.menu-enter-active .menu-item {
-  animation: menu-item var(--dur-reveal) var(--ease-out-soft) both;
-  animation-delay: calc(var(--i) * 40ms + 80ms);
+.menu-enter-to,
+.menu-leave-from {
+  clip-path: inset(0 0 0 0);
+}
+.menu-enter-active .menu-item,
+.menu-enter-active .menu-foot {
+  animation: menu-item 900ms var(--ease-out-soft) both;
+  animation-delay: calc(var(--i, 6) * 60ms + 260ms);
 }
 @keyframes menu-item {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(24px);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .site-navbar,
   .menu-bar,
+  .nav-link::after {
+    transition: none;
+  }
   .menu-enter-active,
   .menu-leave-active {
     transition: opacity 120ms linear;
   }
   .menu-enter-from,
   .menu-leave-to {
-    transform: none;
+    clip-path: none;
+    opacity: 0;
   }
-  .menu-enter-active .menu-item {
+  .menu-enter-active .menu-item,
+  .menu-enter-active .menu-foot {
     animation: none;
   }
 }

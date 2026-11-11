@@ -32,7 +32,7 @@ const name = computed(() => resolveValue(props.member.name))
 
       <div class="card-overlay" aria-hidden="true" />
       <div class="card-heading">
-        <h3 :id="`${panelId}-name`" class="font-display text-display-m">
+        <h3 :id="`${panelId}-name`" class="text-display-m">
           <ContentValue :value="member.name" />
         </h3>
         <ContentValue :value="member.role" as="p" class="mt-1 font-semibold" />
@@ -43,7 +43,7 @@ const name = computed(() => resolveValue(props.member.name))
           :href="resolveValue(member.linkedin)"
           target="_blank"
           rel="noopener"
-          class="glass grid size-11 place-items-center rounded-full text-deep-blue"
+          class="glass grid size-11 place-items-center rounded-m text-deep-blue"
         >
           <BaseIcon name="linkedin" :label="`LinkedIn de ${name} (se abre en una pestaña nueva)`" />
         </a>
@@ -103,7 +103,7 @@ const name = computed(() => resolveValue(props.member.name))
 }
 .tag {
   border-radius: var(--radius-s);
-  background: var(--color-light-blue);
+  background: var(--color-bone-2);
   padding: 0.3rem 0.75rem;
   font-size: 0.875rem;
   font-weight: 600;
@@ -126,7 +126,7 @@ const name = computed(() => resolveValue(props.member.name))
     display: block;
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgb(22 60 99 / 0.7), rgb(22 60 99 / 0) 45%);
+    background: linear-gradient(to top, rgb(6 26 44 / 0.78), rgb(6 26 44 / 0) 50%);
     pointer-events: none;
   }
   .card-heading {
@@ -153,7 +153,7 @@ const name = computed(() => resolveValue(props.member.name))
     z-index: 2;
     width: 48px;
     height: 48px;
-    border-radius: 999px;
+    border-radius: var(--radius-m);
     color: var(--color-deep-blue);
     cursor: pointer;
   }

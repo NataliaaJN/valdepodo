@@ -14,7 +14,7 @@ const secondary = computed(() => reviews.slice(1, 5))
   <section v-if="featured" class="py-(--space-section)" aria-labelledby="resenas-title">
     <div class="container-site">
       <h2 id="resenas-title" v-reveal class="max-w-[18ch] font-display text-display-m text-deep-blue">
-        La confianza se construye <em class="text-primary">paso a paso</em>.
+        La confianza se construye <em>paso a paso</em>.
       </h2>
       <div class="mt-12 grid gap-12 lg:grid-cols-12">
         <figure v-reveal class="lg:col-span-7">

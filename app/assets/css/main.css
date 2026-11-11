@@ -1,12 +1,18 @@
 /*
- * Valdepodo — tokens de diseño (fuente única).
- * Fase 1: tokens provisionales. Colores de marca tomados del SVG del logo
- * (research/valdepodo_logo.svg): azul #1270B6, cian #1EABE1, gris #565656.
- * Spec: docs/specs/01-sistema-diseno.md
+ * Valdepodo — tokens de diseño (fuente única). Rediseño global: docs/rediseno/01-direccion-de-arte.md
+ *
+ * Idea: «Paso a paso». Capítulos de color a sangre (azul Valdepodo · hueso · tinta), tipografía monumental
+ * (Bricolage Grotesque + Instrument Sans), radio único de 8 px, líneas finas en lugar de cajas y sin sombras.
+ * Los nombres de token históricos (primary, deep-blue, surface…) se conservan para que gráficos SVG, escenas
+ * 3D y formularios adopten la paleta nueva sin reescribirse.
  */
 @import 'tailwindcss';
 
-/* Hover solo con puntero fino: en táctil no hay estados "pegados" (spec 01 §3) */
+/* Tipografías autoalojadas (OFL 1.1), sin peticiones a Google: Bricolage Grotesque (peso + ancho) e Instrument Sans */
+@import '@fontsource-variable/bricolage-grotesque/standard.css';
+@import '@fontsource-variable/instrument-sans/standard.css';
+
+/* Hover solo con puntero fino: en táctil no hay estados "pegados" */
 @custom-variant hover-fine {
   @media (hover: hover) and (pointer: fine) {
     &:hover {
@@ -17,124 +23,125 @@
 
 /* `static`: todos los tokens se emiten como variables CSS (los gráficos SVG los usan con var()). */
 @theme static {
-  /* ---------- Color: marca (logo) ---------- */
-  --color-primary: #1270b6; /* 5.23:1 sobre blanco */
-  --color-primary-strong: #0b5e99; /* 6.83:1 · hover y texto azul pequeño en fondos tintados */
-  --color-cyan: #1eabe1; /* 2.64:1 · NUNCA texto sobre claro; acentos, trazos, degradados */
-  --color-cyan-ink: #007e9e; /* 4.69:1 · "texto cian" pequeño si hiciera falta */
+  /* ---------- Color: marca ---------- */
+  --color-primary: #1270b6; /* Azul Valdepodo · 5.2:1 sobre blanco, 4.6:1 sobre hueso */
+  --color-primary-strong: #0b5e99; /* 6.1:1 sobre hueso · enlaces y texto azul pequeño */
+  --color-cyan: #1eabe1; /* único acento vivo · NUNCA texto sobre claro (2.4:1) */
+  --color-cyan-ink: #007e9e; /* "texto cian" pequeño sobre claro (4.5:1) */
   --color-logo-gray: #565656;
 
-  /* ---------- Color: apoyo (especificación) ---------- */
-  --color-deep-blue: #163c63;
-  --color-ice-blue: #b9e5f3;
-  --color-light-blue: #eaf5fa;
-  --color-surface: #f5f8fc;
+  /* ---------- Color: capítulos ---------- */
+  --color-deep-blue: #061a2c; /* TINTA: texto y capítulo oscuro */
+  --color-ink: #061a2c;
+  --color-surface: #f1efe9; /* HUESO: papel base */
+  --color-bone: #f1efe9;
+  --color-light-blue: #e7e4dc; /* hueso 2: segundo plano de papel */
+  --color-bone-2: #e7e4dc;
+  --color-ice-blue: #bfd8ea; /* texto de apoyo sobre azul/tinta · selección */
   --color-white: #ffffff;
 
   /* ---------- Color: neutros ---------- */
-  --color-text: #24364b;
-  --color-text-secondary: #617386;
-  --color-text-secondary-strong: #5a6c80;
-  --color-border: #dce8ef;
-  --color-border-strong: #7a8fa3;
+  --color-text: #14283a;
+  --color-text-secondary: #4c5d6c; /* 5.9:1 sobre hueso */
+  --color-text-secondary-strong: #435564;
+  --color-border: rgb(6 26 44 / 0.16);
+  --color-border-strong: #6e7e8c; /* 3.6:1 · bordes de controles */
 
-  /* ---------- Color: estados (no son de marca; tonos fríos) ---------- */
-  --color-error: #b42335; /* 6.4:1 sobre blanco */
-  --color-success: #1f7a5a; /* 5.4:1 sobre blanco */
+  /* ---------- Color: estados ---------- */
+  --color-error: #b42335;
+  --color-success: #1f7a5a;
 
   /* ---------- Tipografía ---------- */
-  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
-  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Arial Narrow', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Instrument Sans Variable', ui-sans-serif, system-ui, sans-serif;
 
-  --text-display-xl: clamp(2.75rem, 1.4rem + 6vw, 7rem);
-  --text-display-xl--line-height: 0.95;
-  --text-display-l: clamp(2.375rem, 1.5rem + 3.9vw, 5rem);
-  --text-display-l--line-height: 1;
-  --text-display-m: clamp(2rem, 1.5rem + 2.2vw, 3.5rem);
-  --text-display-m--line-height: 1.05;
-  --text-heading-s: clamp(1.375rem, 1.24rem + 0.55vw, 1.75rem);
-  --text-heading-s--line-height: 1.2;
-  --text-body-l: clamp(1.125rem, 1.08rem + 0.2vw, 1.25rem);
-  --text-body-l--line-height: 1.6;
-  --text-body: clamp(1rem, 0.98rem + 0.09vw, 1.0625rem);
-  --text-body--line-height: 1.65;
+  --text-mega: clamp(4.75rem, 1.2rem + 17.5vw, 16rem);
+  --text-mega--line-height: 0.82;
+  --text-display-xl: clamp(3.5rem, 1.4rem + 8.4vw, 9.5rem);
+  --text-display-xl--line-height: 0.88;
+  --text-display-l: clamp(2.75rem, 1.4rem + 5.4vw, 6.25rem);
+  --text-display-l--line-height: 0.92;
+  --text-display-m: clamp(2.125rem, 1.4rem + 2.9vw, 3.875rem);
+  --text-display-m--line-height: 1;
+  --text-heading-s: clamp(1.375rem, 1.2rem + 0.7vw, 1.875rem);
+  --text-heading-s--line-height: 1.15;
+  --text-body-l: clamp(1.125rem, 1.07rem + 0.25vw, 1.3125rem);
+  --text-body-l--line-height: 1.55;
+  --text-body: clamp(1rem, 0.98rem + 0.1vw, 1.0625rem);
+  --text-body--line-height: 1.62;
   --text-small: 0.875rem;
   --text-small--line-height: 1.5;
-  --text-numeral: clamp(4rem, 1.4rem + 11.5vw, 12.5rem);
-  --text-numeral--line-height: 0.85;
+  --text-numeral: clamp(7rem, 2rem + 24vw, 24rem);
+  --text-numeral--line-height: 0.8;
   --text-eyebrow: clamp(0.75rem, 0.73rem + 0.09vw, 0.8125rem);
   --text-eyebrow--line-height: 1.3;
-  --text-eyebrow--letter-spacing: 0.14em;
+  --text-eyebrow--letter-spacing: 0.08em;
 
-  /* ---------- Breakpoints (spec 01 §3) ---------- */
+  /* ---------- Breakpoints ---------- */
   --breakpoint-sm: 30.0625rem; /* 481px */
   --breakpoint-md: 48rem; /* 768px */
   --breakpoint-lg: 64rem; /* 1024px */
   --breakpoint-xl: 90rem; /* 1440px */
   --breakpoint-2xl: 120rem; /* 1920px */
 
-  /* ---------- Radios ---------- */
-  --radius-s: 10px;
-  --radius-m: 18px;
-  --radius-l: 28px;
-  --radius-pill: 999px;
+  /* ---------- Radios: único de 8 px ---------- */
+  --radius-s: 6px;
+  --radius-m: 8px;
+  --radius-l: 8px;
+  --radius-pill: 999px; /* solo puntos y chips mínimos */
   --radius-organic: 42% 58% 63% 37% / 41% 44% 56% 59%;
 
-  /* ---------- Sombras (tinte azul profundo, nunca negras) ---------- */
-  --shadow-soft: 0 1px 2px rgb(22 60 99 / 0.06), 0 8px 24px rgb(22 60 99 / 0.06);
-  --shadow-float: 0 24px 60px -12px rgb(22 60 99 / 0.18);
-  --shadow-glow: 0 0 0 1px rgb(30 171 225 / 0.25), 0 12px 40px -8px rgb(30 171 225 / 0.35);
+  /* ---------- Sombras: sin sombra; la profundidad sale de la composición. Filetes en su lugar ---------- */
+  --shadow-soft: 0 0 0 1px rgb(6 26 44 / 0.1);
+  --shadow-float: 0 0 0 1px rgb(6 26 44 / 0.16);
+  --shadow-glow: 0 0 0 1px rgb(18 112 182 / 0.5);
 
   /* ---------- Movimiento ---------- */
-  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1); /* expo-out: entradas, zoom, hover */
+  --ease-in-out-soft: cubic-bezier(0.76, 0, 0.24, 1); /* quart in-out: cierres y capítulos */
 }
 
 :root {
-  --dur-fast: 160ms;
-  --dur-base: 320ms;
-  --dur-reveal: 700ms;
+  --dur-fast: 180ms;
+  --dur-base: 450ms;
+  --dur-reveal: 900ms;
+  --dur-image: 1400ms;
+  --dur-chapter: 1200ms;
 
-  --nav-h: 88px;
-  --nav-h-compact: 68px;
+  --nav-h: 80px;
+  --nav-h-compact: 64px;
 
-  --container-max: 1320px;
-  --container-wide: 1600px;
-  --gutter: clamp(16px, 4vw, 48px);
-  --space-section: clamp(72px, 10vw, 160px);
+  --container-max: 1360px;
+  --container-wide: 1760px;
+  --gutter: clamp(16px, 3.6vw, 56px);
+  --space-section: clamp(88px, 12vw, 200px);
 
-  --grad-atmosphere: radial-gradient(60% 60% at 70% 40%, rgb(185 229 243 / 0.55), transparent 70%);
-  --grad-mist: linear-gradient(180deg, #ffffff 0%, #eaf5fa 100%);
+  /* Sin degradados decorativos (se conservan los nombres por compatibilidad) */
+  --grad-atmosphere: none;
+  --grad-mist: none;
   --grad-brand: linear-gradient(135deg, #1270b6 0%, #1eabe1 100%);
-  --grad-glass: linear-gradient(135deg, rgb(30 171 225 / 0.12) 0%, rgb(185 229 243 / 0.3) 100%);
+  --grad-glass: none;
 
-  /* Entrada estándar `reveal` (spec 01 §8) */
-  --reveal-shift: 16px;
+  /* Entrada estándar `reveal` */
+  --reveal-shift: 18px;
 
-  --focus-ring:
-    0 0 0 2px var(--color-white), 0 0 0 4px var(--color-primary-strong), 0 0 0 8px rgb(185 229 243 / 0.7);
+  --focus-ring: 0 0 0 2px var(--color-bone), 0 0 0 4px var(--color-primary-strong);
 
   color-scheme: light;
 }
 
 @media (min-width: 768px) {
   :root {
-    --reveal-shift: 24px;
+    --reveal-shift: 28px;
   }
-}
-
-/* Propuesta tipográfica B (comparación en la propuesta visual) */
-.type-b {
-  --font-display: 'DM Serif Display', Georgia, serif;
-  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
-    /* Anclas por debajo de la navbar compacta (spec 02 §2) */
     scroll-padding-top: calc(var(--nav-h-compact) + 16px);
+    background-color: var(--color-surface);
   }
 
   body {
@@ -144,12 +151,23 @@
     font-size: var(--text-body);
     line-height: var(--text-body--line-height);
     -webkit-font-smoothing: antialiased;
+    font-optical-sizing: auto;
   }
 
+  /* Display: Bricolage Grotesque (sin cursiva: el énfasis es de color, no de estilo) */
   h1,
   h2,
   h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.035em;
     text-wrap: balance;
+  }
+  h1 em,
+  h2 em,
+  h3 em,
+  .font-display em {
+    font-style: normal;
   }
 
   p {
@@ -163,8 +181,8 @@
   }
 
   ::selection {
-    background-color: var(--color-ice-blue);
-    color: var(--color-deep-blue);
+    background-color: var(--color-primary);
+    color: var(--color-bone);
   }
 }
 
@@ -176,13 +194,36 @@
     padding-inline: var(--gutter);
   }
 
+  .container-wide {
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .font-display {
+    font-weight: 600;
+    letter-spacing: -0.035em;
+  }
+
+  /* Etiqueta: Instrument Sans, mayúsculas, con índice entre paréntesis cuando procede */
   .eyebrow {
     font-family: var(--font-sans);
     font-size: var(--text-eyebrow);
     line-height: var(--text-eyebrow--line-height);
     letter-spacing: var(--text-eyebrow--letter-spacing);
-    font-weight: 600;
+    font-weight: 500;
     text-transform: uppercase;
+  }
+
+  /* Titular monumental condensado (claim, cierre, cifras) */
+  .mega {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: var(--text-mega);
+    line-height: var(--text-mega--line-height);
+    letter-spacing: -0.02em;
+    font-stretch: 75%;
   }
 
   /* Hero a sangre bajo la navbar fija y transparente */
@@ -191,29 +232,50 @@
     padding-top: var(--nav-h);
   }
 
-  /* Contenedor ancho para composiciones editoriales (spec 01 §3) */
-  .container-wide {
-    width: 100%;
-    max-width: var(--container-wide);
-    margin-inline: auto;
-    padding-inline: var(--gutter);
-  }
-
-  /* Medida máxima de párrafo (spec 01 §2) */
+  /* Medida máxima de párrafo */
   .measure {
     max-width: 62ch;
   }
 
-  /* Superficie translúcida (spec 01 §1.5). Máximo 2-3 simultáneas en viewport. */
+  /* ---------- Capítulos de color ---------- */
+  .chapter-bone {
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+  .chapter-bone-2 {
+    background: var(--color-bone-2);
+    color: var(--color-text);
+  }
+  .chapter-ink {
+    background: var(--color-ink);
+    color: var(--color-bone);
+    --color-text-secondary: rgb(241 239 233 / 0.72);
+    --color-border: rgb(241 239 233 / 0.2);
+  }
+  .chapter-blue {
+    background: var(--color-primary);
+    color: var(--color-bone);
+    --color-text-secondary: rgb(255 255 255 / 0.82);
+    --color-border: rgb(241 239 233 / 0.32);
+  }
+  .chapter-ink h1,
+  .chapter-ink h2,
+  .chapter-ink h3,
+  .chapter-blue h1,
+  .chapter-blue h2,
+  .chapter-blue h3 {
+    color: var(--color-bone);
+  }
+
+  /* Superficie translúcida: solo en las micro-tarjetas de datos y la navbar con scroll. */
   .glass {
-    background: color-mix(in oklab, white 62%, transparent);
-    backdrop-filter: blur(16px) saturate(1.2);
-    border: 1px solid rgb(255 255 255 / 0.7);
-    box-shadow: var(--shadow-float);
+    background: rgb(255 255 255 / 0.42);
+    backdrop-filter: blur(18px) saturate(1.25);
+    border: 1px solid rgb(255 255 255 / 0.55);
   }
   @supports not (backdrop-filter: blur(1px)) {
     .glass {
-      background: rgb(255 255 255 / 0.92);
+      background: rgb(255 255 255 / 0.9);
     }
   }
 
@@ -223,8 +285,7 @@
     color: var(--color-text);
   }
   .prose-site h2 {
-    margin-top: 2.5rem;
-    font-family: var(--font-display);
+    margin-top: 3rem;
     font-size: var(--text-display-m);
     line-height: var(--text-display-m--line-height);
     color: var(--color-deep-blue);
@@ -233,7 +294,6 @@
     margin-top: 2rem;
     font-size: var(--text-heading-s);
     line-height: var(--text-heading-s--line-height);
-    font-weight: 600;
     color: var(--color-deep-blue);
   }
   .prose-site p,
@@ -254,9 +314,40 @@
   .section-clip {
     overflow-x: clip;
   }
+
+  /* Tratamiento fotográfico común: monocromo azul de marca (independiente de la foto de origen) */
+  .photo-duo {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--color-ink);
+  }
+  .photo-duo > img {
+    filter: grayscale(1) contrast(1.08) brightness(1.05);
+  }
+  .photo-duo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-primary);
+    mix-blend-mode: multiply;
+    opacity: 0.92;
+    pointer-events: none;
+  }
+  .photo-duo > .hero__scrim {
+    z-index: 1;
+  }
+
+  /* Filete fino */
+  .hairline-t {
+    border-top: 1px solid var(--color-border);
+  }
+  .hairline-b {
+    border-bottom: 1px solid var(--color-border);
+  }
 }
 
-/* ---------- Entrada `reveal` (directiva v-reveal, spec 01 §8) ----------
+/* ---------- Entrada `reveal` (directiva v-reveal) ----------
  * Sin JS el contenido es visible: el estado oculto lo pone la directiva al montar, y solo en elementos que
  * aún no están en el viewport. */
 [data-rv='out'] {
@@ -270,24 +361,24 @@
   transition-delay: var(--rv-delay, 0ms);
 }
 
-/* ---------- Transición de página (spec 02 §4) ---------- */
+/* ---------- Transición de página ---------- */
 .page-enter-active {
   transition:
-    opacity 280ms var(--ease-out-soft),
-    transform 280ms var(--ease-out-soft);
+    opacity 520ms var(--ease-out-soft),
+    transform 520ms var(--ease-out-soft);
 }
 .page-leave-active {
   transition:
-    opacity 200ms var(--ease-in-out-soft),
-    transform 200ms var(--ease-in-out-soft);
+    opacity 220ms var(--ease-in-out-soft),
+    transform 220ms var(--ease-in-out-soft);
 }
 .page-enter-from {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(14px);
 }
 .page-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateY(-6px);
 }
 
 @media (prefers-reduced-motion: reduce) {

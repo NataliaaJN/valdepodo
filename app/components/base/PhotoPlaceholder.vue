@@ -44,9 +44,7 @@ withDefaults(defineProps<{ label?: string; ratio?: string; variant?: 'portrait' 
   place-items: center;
   width: 100%;
   overflow: hidden;
-  background:
-    radial-gradient(70% 60% at 70% 30%, rgb(185 229 243 / 0.9), transparent 70%),
-    linear-gradient(160deg, var(--color-light-blue), var(--color-surface));
+  background: var(--color-ink);
 }
 .ph-art {
   position: absolute;
@@ -54,11 +52,11 @@ withDefaults(defineProps<{ label?: string; ratio?: string; variant?: 'portrait' 
   width: 100%;
   height: 100%;
   fill: none;
-  stroke: var(--color-primary);
+  stroke: var(--color-ice-blue);
   stroke-width: 1.25;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.35;
+  opacity: 0.4;
 }
 .ph-art * {
   vector-effect: non-scaling-stroke;
@@ -69,11 +67,11 @@ withDefaults(defineProps<{ label?: string; ratio?: string; variant?: 'portrait' 
   align-items: center;
   gap: 0.4rem;
   border: 1px dashed var(--color-cyan);
-  border-radius: var(--radius-pill);
-  background: rgb(255 255 255 / 0.85);
+  border-radius: var(--radius-s);
+  background: var(--color-bone);
   padding: 0.3rem 0.8rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--color-cyan-ink);
+  color: var(--color-ink);
 }
 </style>

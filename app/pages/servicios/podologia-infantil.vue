@@ -13,7 +13,6 @@ const service = useServicePage('podologia-infantil')
   <div>
     <ServiceHero
       :service="service"
-      tone="soft"
       :title="{ before: 'Los pies también ', accent: 'crecen', after: '.' }"
       :description="kids.description"
     >
@@ -52,7 +51,7 @@ const service = useServicePage('podologia-infantil')
             v-reveal="i"
             class="flex gap-4 rounded-l bg-white/80 p-5"
           >
-            <span class="grid size-10 flex-none place-items-center rounded-full bg-light-blue text-primary">
+            <span class="grid size-10 flex-none place-items-center rounded-m bg-light-blue text-primary">
               <BaseIcon name="check" />
             </span>
             <ContentValue :value="item" as="p" class="self-center text-body-l text-text" />
@@ -147,11 +146,10 @@ const service = useServicePage('podologia-infantil')
 
 <style scoped>
 .kids-tint {
-  background:
-    radial-gradient(50% 70% at 0% 100%, rgb(185 229 243 / 0.7), transparent 70%), var(--color-light-blue);
+  background: var(--color-bone-2);
 }
 .kids-advice {
-  background: var(--grad-glass);
-  border: 1px solid var(--color-ice-blue);
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
 }
 </style>

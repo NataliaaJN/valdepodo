@@ -10,7 +10,7 @@
   <div class="flex min-h-dvh flex-col">
     <a
       href="#contenido"
-      class="sr-only z-50 rounded-pill bg-white px-5 py-3 font-semibold text-deep-blue focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+      class="sr-only z-50 rounded-m bg-bone px-5 py-3 font-semibold text-ink focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
       data-page-root
     >
       Saltar al contenido

@@ -25,18 +25,12 @@ const trail = [
 <template>
   <NuxtLayout>
     <section class="section-clip relative isolate py-(--space-section)" aria-labelledby="error-title">
-      <div
-        class="pointer-events-none absolute inset-0 -z-10 bg-(image:--grad-atmosphere)"
-        aria-hidden="true"
-      />
-      <div class="container-site grid items-center gap-12 lg:grid-cols-12">
+      <div class="container-wide grid items-center gap-12 lg:grid-cols-12">
         <div class="lg:col-span-6">
           <p class="eyebrow text-primary-strong">Error {{ error.statusCode }}</p>
-          <h1 id="error-title" class="mt-4 font-display text-display-l text-deep-blue">
-            <template v-if="is404"
-              >Este camino no lleva a <em class="text-primary">ninguna parte</em>.</template
-            >
-            <template v-else>Algo ha fallado en <em class="text-primary">este paso</em>.</template>
+          <h1 id="error-title" class="mt-4 text-display-l text-ink">
+            <template v-if="is404">Este camino no lleva a ninguna parte.</template>
+            <template v-else>Algo ha fallado en este paso.</template>
           </h1>
           <p class="mt-6 max-w-[44ch] text-body-l text-text-secondary">
             <template v-if="is404">La página que buscas no existe o ha cambiado de dirección.</template>
@@ -56,7 +50,7 @@ const trail = [
           <path
             d="M20 290 C 80 240, 120 170, 180 120"
             fill="none"
-            stroke="var(--color-ice-blue)"
+            stroke="var(--color-primary)"
             stroke-width="1.5"
             stroke-dasharray="2 6"
             stroke-linecap="round"
@@ -78,7 +72,7 @@ const trail = [
 
 <style scoped>
 .lost-step {
-  --fp-fill: var(--color-ice-blue);
+  --fp-fill: var(--color-primary);
   animation: step-in 600ms var(--ease-out-soft) both;
   animation-delay: calc(var(--i) * 140ms + 200ms);
 }

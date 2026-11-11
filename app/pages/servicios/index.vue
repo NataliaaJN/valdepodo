@@ -1,11 +1,8 @@
 <script setup lang="ts">
 /**
- * Índice de servicios (spec 04 §0). Cinco bloques editoriales, no una rejilla de tarjetas iguales:
- * alternan el lado del recurso gráfico, uno va a sangre sobre light-blue y el último es compacto.
- * Móvil: lista vertical, recurso arriba y texto debajo, todo visible.
- * Animación: `reveal` + leve parallax del recurso (≤ 40 px, solo ≥ 1024 y sin reduced motion).
+ * Índice de servicios: cabecera monumental, los cinco servicios con la misma composición fotográfica de la
+ * Home (en grande) y, debajo, una lista editorial con la descripción y el «Te ayuda si…» de cada uno.
  */
-import { gsap } from 'gsap'
 import { bookingPath, servicePath, services } from '~/data/services'
 
 usePageSeo({
@@ -18,85 +15,49 @@ useBreadcrumbSchema([
   { name: 'Inicio', path: '/' },
   { name: 'Servicios', path: '/servicios' },
 ])
-
-/* Composición de cada bloque */
-const layout = ['split', 'bleed', 'split-reverse', 'split', 'compact'] as const
-
-const root = ref<HTMLElement | null>(null)
-useGsapContext(root, (c) => {
-  if (!c.desktop || c.reduce) return undefined
-  root.value!.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {
-    gsap.fromTo(
-      el,
-      { y: 40 },
-      {
-        y: -40,
-        ease: 'none',
-        scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 0.6 },
-      },
-    )
-  })
-  return undefined
-})
-
-const hovered = ref<string | null>(null)
 </script>
 
 <template>
-  <div ref="root">
-    <section class="section-clip relative isolate" aria-labelledby="services-title">
-      <div
-        class="pointer-events-none absolute inset-0 -z-10 bg-(image:--grad-atmosphere)"
-        aria-hidden="true"
-      />
-      <div class="container-site pt-8 lg:pt-10">
-        <SiteBreadcrumbs :items="[{ name: 'Inicio', to: '/' }, { name: 'Servicios' }]" />
-      </div>
-      <div class="container-site pt-10 pb-12 lg:pt-16 lg:pb-20">
-        <p class="eyebrow text-primary-strong">Servicios</p>
-        <h1 id="services-title" class="mt-4 max-w-[16ch] font-display text-display-l text-deep-blue">
-          Soluciones para cuidar de tus <em class="text-primary">pies</em>.
-        </h1>
+  <div>
+    <PageHeader
+      id="services-title"
+      title="Servicios"
+      eyebrow="(05) Qué hacemos"
+      size="mega"
+      :crumbs="[{ name: 'Inicio', to: '/' }, { name: 'Servicios' }]"
+    />
+
+    <section
+      class="chapter-ink section-clip py-(--space-section)"
+      data-nav-theme="ink"
+      aria-label="Los cinco servicios"
+    >
+      <div class="container-wide">
+        <ServiceTiles variant="index" />
       </div>
     </section>
 
-    <ol class="service-blocks" role="list">
-      <li
-        v-for="(service, i) in services"
-        :key="service.slug"
-        class="service-block"
-        :class="`is-${layout[i]}`"
-        @pointerenter="hovered = service.slug"
-        @pointerleave="hovered = null"
-      >
-        <div class="container-site block-grid">
-          <div class="block-graphic" aria-hidden="true">
-            <div data-parallax class="h-full">
-              <ServiceGraphic :kind="service.graphic" :active="hovered === service.slug" />
-            </div>
-          </div>
-          <div class="block-text">
-            <span v-reveal class="font-display text-heading-s text-primary">{{ service.number }}</span>
-            <h2 v-reveal class="mt-2 font-display text-display-m text-deep-blue">
-              <NuxtLink :to="servicePath(service.slug)" class="block-title-link">{{ service.name }}</NuxtLink>
-            </h2>
+    <section class="container-wide py-(--space-section)" aria-labelledby="detail-title">
+      <h2 id="detail-title" class="sr-only">Detalle de cada servicio</h2>
+      <ol class="rows" role="list">
+        <li v-for="service in services" :key="service.slug" v-reveal class="row">
+          <span class="row__num eyebrow">({{ service.number }})</span>
+          <h3 class="row__name text-display-m">
+            <NuxtLink :to="servicePath(service.slug)" class="row__link">{{ service.name }}</NuxtLink>
+          </h3>
+          <div class="row__body">
             <ContentValue
-              v-reveal="1"
               :value="service.description"
               as="p"
-              class="measure mt-4 text-body-l text-text-secondary"
+              class="measure text-body-l text-text-secondary"
             />
-            <div v-reveal="2" class="mt-6">
-              <h3 class="eyebrow text-deep-blue">Te ayuda si…</h3>
-              <ul class="needs mt-3 grid gap-2" role="list">
-                <li v-for="(need, n) in service.needs" :key="n" class="flex gap-3">
-                  <BaseIcon name="check" class="mt-1 size-4 text-primary" />
-                  <ContentValue :value="need" />
-                </li>
-              </ul>
-            </div>
-            <div v-reveal="3" class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-              <BaseButton :to="servicePath(service.slug)" variant="secondary" arrow>
+            <ul class="needs" role="list" aria-label="Te ayuda si…">
+              <li v-for="(need, n) in service.needs" :key="n">
+                <ContentValue :value="need" />
+              </li>
+            </ul>
+            <div class="row__actions">
+              <BaseButton :to="servicePath(service.slug)" variant="secondary" size="sm" arrow>
                 Ver servicio<span class="sr-only">: {{ service.name }}</span>
               </BaseButton>
               <BaseButton :to="bookingPath(service.slug)" variant="ghost">
@@ -104,100 +65,81 @@ const hovered = ref<string | null>(null)
               </BaseButton>
             </div>
           </div>
-        </div>
-      </li>
-    </ol>
+        </li>
+      </ol>
+    </section>
 
     <CtaBlock
-      :title="{ before: '¿No sabes qué necesita ', accent: 'tu pie', after: '?' }"
+      :title="{ before: '¿No sabes qué necesita tu pie?', accent: '' }"
       :cta="{ label: 'Pedir cita', to: '/pedir-cita' }"
     />
   </div>
 </template>
 
 <style scoped>
-.service-block {
-  padding-block: clamp(3rem, 6vw, 6rem);
-  border-top: 1px solid var(--color-border);
+.rows {
+  border-bottom: 1px solid var(--color-border);
 }
-.block-grid {
+.row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 2rem;
+  gap: 1.25rem;
+  border-top: 1px solid var(--color-border);
+  padding-block: clamp(2rem, 4vw, 3.5rem);
 }
-.block-graphic {
-  height: clamp(200px, 50vw, 300px);
+.row__num {
+  color: var(--color-primary-strong);
 }
-.is-bleed {
-  background:
-    radial-gradient(60% 80% at 85% 30%, rgb(185 229 243 / 0.65), transparent 70%), var(--color-light-blue);
-  border-top: 0;
+.row__name {
+  color: var(--color-ink);
 }
-.block-title-link {
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 8px;
-  text-decoration-thickness: 1.5px;
-  transition: text-decoration-color var(--dur-fast) var(--ease-out-soft);
+.row__link {
+  transition: color var(--dur-base) var(--ease-out-soft);
 }
-.block-title-link:hover {
-  text-decoration-color: currentColor;
+.needs {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.5rem;
+  color: var(--color-text);
 }
-
-@media (min-width: 768px) {
-  .block-grid {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
-    align-items: center;
-  }
-  .block-graphic {
-    grid-column: 1 / span 3;
-    height: 280px;
-  }
-  .block-text {
-    grid-column: 4 / span 5;
-  }
-  .is-split-reverse .block-graphic {
-    grid-column: 6 / span 3;
-    grid-row: 1;
-  }
-  .is-split-reverse .block-text {
-    grid-column: 1 / span 5;
-    grid-row: 1;
+.needs li {
+  display: flex;
+  gap: 0.75rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.5rem;
+  font-size: 0.9375rem;
+}
+.needs li::before {
+  content: '+';
+  color: var(--color-primary-strong);
+  font-weight: 600;
+}
+.row__actions {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+}
+@media (hover: hover) and (pointer: fine) {
+  .row__link:hover {
+    color: var(--color-primary);
   }
 }
 
 @media (min-width: 1024px) {
-  .block-grid {
+  .row {
     grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.5rem;
   }
-  .block-graphic {
-    grid-column: 1 / span 5;
-    height: 380px;
+  .row__num {
+    grid-column: 1 / span 1;
+    padding-top: 0.9rem;
   }
-  .block-text {
-    grid-column: 7 / span 6;
+  .row__name {
+    grid-column: 2 / span 5;
   }
-  .is-bleed .block-graphic {
-    grid-column: 7 / span 6;
-    grid-row: 1;
-    height: 440px;
-  }
-  .is-bleed .block-text {
-    grid-column: 1 / span 5;
-    grid-row: 1;
-  }
-  .is-split-reverse .block-graphic {
+  .row__body {
     grid-column: 8 / span 5;
-  }
-  .is-split-reverse .block-text {
-    grid-column: 1 / span 6;
-  }
-  .is-compact .block-graphic {
-    grid-column: 2 / span 3;
-    height: 260px;
-  }
-  .is-compact .block-text {
-    grid-column: 6 / span 6;
   }
 }
 </style>

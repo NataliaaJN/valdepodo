@@ -22,32 +22,18 @@ export const assetCredits: readonly Credit[] = [
 
 export const fontCredits: readonly Credit[] = [
   {
-    name: 'Instrument Serif',
-    use: 'Titulares',
-    author: 'Instrument',
+    name: 'Bricolage Grotesque',
+    use: 'Titulares y claim',
+    author: 'Mathieu Triay',
     license: 'SIL Open Font License 1.1',
-    url: 'https://fonts.google.com/specimen/Instrument+Serif',
+    url: 'https://fonts.google.com/specimen/Bricolage+Grotesque',
   },
   {
-    name: 'Manrope',
+    name: 'Instrument Sans',
     use: 'Texto',
-    author: 'Mikhail Sharanda',
+    author: 'Rodrigo Fuenzalida, Jordan Egstad',
     license: 'SIL Open Font License 1.1',
-    url: 'https://fonts.google.com/specimen/Manrope',
-  },
-  {
-    name: 'DM Serif Display',
-    use: 'Propuesta tipográfica B',
-    author: 'Colophon Foundry',
-    license: 'SIL Open Font License 1.1',
-    url: 'https://fonts.google.com/specimen/DM+Serif+Display',
-  },
-  {
-    name: 'DM Sans',
-    use: 'Propuesta tipográfica B',
-    author: 'Colophon Foundry',
-    license: 'SIL Open Font License 1.1',
-    url: 'https://fonts.google.com/specimen/DM+Sans',
+    url: 'https://fonts.google.com/specimen/Instrument+Sans',
   },
 ]
 

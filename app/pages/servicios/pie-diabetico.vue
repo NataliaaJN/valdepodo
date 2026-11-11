@@ -11,10 +11,9 @@ const service = useServicePage('pie-diabetico')
 </script>
 
 <template>
-  <div class="bg-white" style="--reveal-shift: 12px">
+  <div style="--reveal-shift: 12px">
     <ServiceHero
       :service="service"
-      tone="sober"
       :title="{ before: 'Cuidar tus pies es cuidar tu ', accent: 'salud', after: '.' }"
       :description="diabetic.description"
     >

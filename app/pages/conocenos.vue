@@ -39,38 +39,24 @@ if (confirmedPeople.length) {
 
 <template>
   <div>
-    <!-- 1. Hero -->
-    <section class="section-clip relative isolate" aria-labelledby="about-title">
-      <div
-        class="pointer-events-none absolute inset-0 -z-10 bg-(image:--grad-atmosphere)"
-        aria-hidden="true"
-      />
-      <div class="container-site grid gap-10 pt-12 pb-16 lg:grid-cols-12 lg:items-center lg:pt-20 lg:pb-24">
-        <div class="lg:col-span-5">
-          <p class="eyebrow text-primary-strong">La clínica</p>
-          <h1 id="about-title" class="mt-4 font-display text-display-l text-deep-blue">
-            Detrás de cada paso, <em class="text-primary">hay personas</em>.
-          </h1>
-          <ContentValue
-            :value="clinic.heroText"
-            as="p"
-            class="mt-6 max-w-[44ch] text-body-l text-text-secondary"
-          />
-        </div>
-        <div class="hero-photo lg:col-span-7">
-          <div class="orbit" aria-hidden="true"><OrganicLines /></div>
-          <PhotoPlaceholder
-            ratio="16 / 10"
-            label="Fotografía del equipo pendiente"
-            class="relative rounded-l"
-          />
-        </div>
+    <!-- 1. Cabecera -->
+    <PageHeader
+      id="about-title"
+      title="Detrás de cada paso, hay personas."
+      eyebrow="La clínica"
+      tone="bone-2"
+    >
+      <ContentValue :value="clinic.heroText" as="span" />
+    </PageHeader>
+    <div class="chapter-bone-2 pb-(--space-section)" data-nav-theme="bone">
+      <div class="container-wide">
+        <PhotoPlaceholder v-reveal ratio="21 / 9" label="Fotografía del equipo pendiente" class="rounded-m" />
       </div>
-    </section>
+    </div>
 
     <!-- 2. Equipo -->
-    <section id="equipo" class="bg-white py-(--space-section)" aria-labelledby="team-title">
-      <div class="container-site">
+    <section id="equipo" class="py-(--space-section)" aria-labelledby="team-title" data-nav-theme="bone">
+      <div class="container-wide">
         <SectionHeading
           id="team-title"
           eyebrow="Equipo"
@@ -83,8 +69,8 @@ if (confirmedPeople.length) {
     </section>
 
     <!-- 3. Clínica -->
-    <section class="py-(--space-section)" aria-labelledby="clinic-title">
-      <div class="container-site">
+    <section class="pb-(--space-section)" aria-labelledby="clinic-title" data-nav-theme="bone">
+      <div class="container-wide">
         <SectionHeading
           id="clinic-title"
           :title="{ before: 'Un espacio pensado para ', accent: 'cuidar de ti', after: '.' }"
@@ -94,9 +80,7 @@ if (confirmedPeople.length) {
     </section>
 
     <!-- 4. Experiencia -->
-    <div class="bg-white">
-      <ExperienceSection />
-    </div>
+    <ExperienceSection />
 
     <!-- 5. Filosofía -->
     <PhilosophyPath />
@@ -109,14 +93,6 @@ if (confirmedPeople.length) {
 </template>
 
 <style scoped>
-.hero-photo {
-  position: relative;
-}
-.orbit {
-  position: absolute;
-  inset: -8% -4%;
-  pointer-events: none;
-}
 .team-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -137,7 +113,7 @@ if (confirmedPeople.length) {
   }
   .team-grid > :nth-child(2) {
     grid-column: 7 / span 5;
-    margin-top: 64px;
+    margin-top: 96px;
   }
 }
 </style>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 /**
- * Encabezado de sección (plan §2.3): eyebrow + titular con palabra destacada + intro opcional.
+ * Encabezado de sección: etiqueta + titular de display + entradilla opcional. El titular es texto plano:
+ * el antiguo énfasis en cursiva de color se retira (Bricolage no tiene cursiva y la fórmula se repetía).
  */
 import type { Maybe } from '#shared/utils/pending'
 import type { Headline } from '#shared/types/content'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     title: Headline
     eyebrow?: string
@@ -17,6 +18,8 @@ withDefaults(
   }>(),
   { eyebrow: undefined, intro: undefined, id: undefined, level: 'h2', size: 'm', center: false },
 )
+
+const text = computed(() => `${props.title.before}${props.title.accent ?? ''}${props.title.after ?? ''}`)
 </script>
 
 <template>
@@ -26,15 +29,14 @@ withDefaults(
       :is="level"
       :id="id"
       v-reveal
-      class="font-display text-deep-blue"
+      class="text-ink"
       :class="[
         size === 'l' ? 'text-display-l' : 'text-display-m',
         eyebrow ? 'mt-4' : '',
         center ? 'mx-auto max-w-[20ch]' : 'max-w-[22ch]',
       ]"
     >
-      {{ title.before }}<em v-if="title.accent" class="text-primary">{{ title.accent }}</em
-      >{{ title.after ?? '' }}
+      {{ text }}
     </component>
     <ContentValue
       v-if="intro"
