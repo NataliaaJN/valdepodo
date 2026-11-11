@@ -69,6 +69,7 @@ useGsapContext(section, (c) => {
     <div class="hero__glow" aria-hidden="true" />
 
     <div class="hero__model" aria-hidden="true">
+      <div class="hero__fade">
       <SceneGate
         :loader="loader"
         :scene-props="sceneProps"
@@ -79,6 +80,7 @@ useGsapContext(section, (c) => {
         priority
         @ready="sceneReady = true"
       />
+      </div>
     </div>
 
     <div class="hero__text container-wide">
@@ -125,9 +127,6 @@ useGsapContext(section, (c) => {
   width: min(120vw, 34rem);
   translate: -50% 0;
   filter: drop-shadow(0 30px 36px rgb(18 112 182 / 0.3));
-  /* Degradado superior: el corte del tobillo se funde con el fondo */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 14%, #000 46%);
-  mask-image: linear-gradient(to bottom, transparent 14%, #000 46%);
   animation: model-in 1.8s var(--ease-out-soft) both;
   animation-delay: 0.3s;
 }
@@ -139,6 +138,12 @@ html[data-intro='play'] .hero__model {
     opacity: 0;
     transform: translateY(6%) scale(0.97);
   }
+}
+
+/* Degradado superior: el corte del tobillo se funde con el fondo. La máscara va en la capa interior para no recortar la sombra */
+.hero__fade {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 14%, #000 46%);
+  mask-image: linear-gradient(to bottom, transparent 14%, #000 46%);
 }
 
 /* ---------- Texto (fijo) ---------- */
