@@ -35,7 +35,7 @@ const loader = () => import('~/components/three/FootAnatomy.client.vue')
 const sceneProps = computed(() => ({
   activeLayer: activeLayer.value,
   rotationY: rotationY.value,
-  glass: true,
+  studio: true,
 }))
 
 useGsapContext(section, (c) => {
