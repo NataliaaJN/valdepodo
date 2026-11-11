@@ -4,7 +4,6 @@
  * ice-blue más presente; sin tipografías ni colores "infantiles". Solo `reveal` y aparición de huellas.
  */
 import { kids } from '~/data/kids'
-import { bookingPath } from '~/data/services'
 
 const service = useServicePage('podologia-infantil')
 </script>
@@ -136,11 +135,6 @@ const service = useServicePage('podologia-infantil')
     </section>
 
     <RelatedServices :slugs="service.related" />
-
-    <CtaBlock
-      :title="{ before: 'Acompañamos cada etapa de ', accent: 'su crecimiento' }"
-      :cta="{ label: 'Pedir cita', to: bookingPath(service.slug) }"
-    />
   </div>
 </template>
 

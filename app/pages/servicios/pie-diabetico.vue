@@ -5,7 +5,6 @@
  * va destacado; las recomendaciones, con su descargo.
  */
 import { diabetic } from '~/data/diabetic'
-import { bookingPath } from '~/data/services'
 
 const service = useServicePage('pie-diabetico')
 </script>
@@ -106,11 +105,6 @@ const service = useServicePage('pie-diabetico')
     </section>
 
     <RelatedServices :slugs="service.related" />
-
-    <CtaBlock
-      :title="{ before: 'La prevención empieza con una ', accent: 'revisión' }"
-      :cta="{ label: 'Pedir cita', to: bookingPath(service.slug) }"
-    />
   </div>
 </template>
 

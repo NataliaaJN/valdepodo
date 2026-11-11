@@ -5,7 +5,6 @@
  */
 import { pending } from '#shared/utils/pending'
 import { ILLUSTRATIVE_LABEL, pressureStates } from '~/data/biomech'
-import { bookingPath } from '~/data/services'
 
 const service = useServicePage('estudio-biomecanico')
 const description = service.description
@@ -14,7 +13,6 @@ const intro = pending(
   'Introducción del servicio (spec 04 §1.2): la redacta o valida la clínica',
 )
 const indicators = ['Estático', 'Marcha', 'Carrera']
-const cta = { label: 'Solicitar estudio', to: bookingPath(service.slug) }
 </script>
 
 <template>
@@ -54,10 +52,5 @@ const cta = { label: 'Solicitar estudio', to: bookingPath(service.slug) }
     </div>
 
     <RelatedServices :slugs="service.related" />
-
-    <CtaBlock
-      :title="{ before: 'Cada paso empieza por entender ', accent: 'cómo pisas' }"
-      :cta="{ label: 'Solicitar estudio biomecánico', to: cta.to }"
-    />
   </div>
 </template>

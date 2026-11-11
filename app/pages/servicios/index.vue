@@ -68,11 +68,6 @@ useBreadcrumbSchema([
         </li>
       </ol>
     </section>
-
-    <CtaBlock
-      :title="{ before: '¿No sabes qué necesita tu pie?', accent: '' }"
-      :cta="{ label: 'Pedir cita', to: '/pedir-cita' }"
-    />
   </div>
 </template>
 

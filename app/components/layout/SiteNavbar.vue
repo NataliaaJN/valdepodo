@@ -28,7 +28,8 @@ function detectTheme() {
   const x = window.innerWidth / 2
   const y = Math.min(40, window.innerHeight / 2)
   for (const el of document.elementsFromPoint(x, y)) {
-    if (header.value.contains(el)) continue
+    // Ni la propia navbar ni el loading de marca (cubre la página en la primera visita)
+    if (header.value.contains(el) || el.closest('.brand-intro')) continue
     const host = el.closest<HTMLElement>('[data-nav-theme]')
     if (host) {
       detected.value = host.dataset.navTheme as NavTheme
@@ -49,11 +50,7 @@ function onScroll() {
 }
 
 function isActive(to: string) {
-  const [path, hash] = to.split('#')
-  if (hash) return route.path === path && route.hash === `#${hash}`
-  // "La clínica" no se marca si el activo es "Equipo" (/conocenos#equipo)
-  if (route.hash && site.nav.some((n) => n.to === `${route.path}${route.hash}`)) return false
-  return route.path === path || (path !== '/' && route.path.startsWith(`${path}/`))
+  return route.path === to || (to !== '/' && route.path.startsWith(`${to}/`))
 }
 
 /* ----- Menú móvil ----- */

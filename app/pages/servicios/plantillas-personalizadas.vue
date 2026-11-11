@@ -67,11 +67,6 @@ const cta = { label: 'Pedir cita', to: bookingPath(service.slug) }
     </section>
 
     <RelatedServices :slugs="service.related" />
-
-    <CtaBlock
-      :title="{ before: 'El soporte adecuado empieza con un ', accent: 'buen análisis' }"
-      :cta="cta"
-    />
   </div>
 </template>
 

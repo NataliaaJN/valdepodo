@@ -1,59 +1,32 @@
 <script setup lang="ts">
 /**
- * Experiencia (spec 05 §4): numeral gigante con los años (desde `site.foundedYear`), en contorno y con un
- * relleno que sube con el scroll (solo escritorio y sin reduced motion; si no, relleno completo), sobre el
- * azul Valdepodo. Línea temporal solo con hitos reales.
+ * Experiencia (spec 05 §4), minisección editorial de confianza: «9 años» como cifra protagonista, una
+ * frase y el texto de trayectoria, entre filetes y con poca altura. Pausa visual entre el método y el
+ * espacio de la clínica. Los años salen de `site.foundedYear`; línea de hitos solo si hay hitos reales.
  */
-import { gsap } from 'gsap'
 import { clinic } from '~/data/clinic'
 import { site } from '~/data/site'
 
 const { years } = useClinic()
-const root = ref<HTMLElement | null>(null)
-const numeral = ref<HTMLElement | null>(null)
-
-useGsapContext(root, (c) => {
-  if (!c.desktop || c.reduce || !numeral.value) return undefined
-  gsap.fromTo(
-    numeral.value,
-    { '--fill': '6%' },
-    {
-      '--fill': '100%',
-      ease: 'none',
-      scrollTrigger: { trigger: numeral.value, start: 'top 85%', end: 'bottom 45%', scrub: 0.6 },
-    },
-  )
-  return undefined
-})
 </script>
 
 <template>
-  <section
-    ref="root"
-    class="chapter-blue section-clip py-(--space-section)"
-    data-nav-theme="blue"
-    aria-labelledby="exp-title"
-  >
+  <section class="exp chapter-bone-2 section-clip" data-nav-theme="bone" aria-labelledby="exp-title">
     <div class="container-wide">
-      <div class="grid items-end gap-10 lg:grid-cols-12">
-        <p ref="numeral" class="numeral mega lg:col-span-6" aria-hidden="true">{{ years }}</p>
-        <div class="lg:col-span-5 lg:col-start-8">
-          <h2 id="exp-title" v-reveal class="text-display-m text-bone">
-            <ContentValue :value="site.foundedYear">{{ years }}</ContentValue> años cuidando de la salud de
-            tus pies.
-          </h2>
-          <ContentValue
-            v-reveal="1"
-            :value="clinic.experienceText"
-            as="p"
-            class="measure mt-6 text-body-l text-text-secondary"
-          />
-        </div>
+      <div class="exp__row">
+        <h2 id="exp-title" v-reveal class="exp__headline">
+          <span class="exp__num"
+            ><ContentValue :value="site.foundedYear">{{ years }}</ContentValue></span
+          >
+          <span class="exp__rest">años cuidando de la salud de tus pies.</span>
+        </h2>
+        <ContentValue v-reveal="1" :value="clinic.experienceText" as="p" class="exp__text" />
       </div>
-      <ol v-if="clinic.milestones.length" class="mt-16 grid gap-6 border-t border-border pt-8 md:grid-cols-4">
-        <li v-for="m in clinic.milestones" :key="m.year" v-reveal>
-          <p class="font-display text-heading-s text-bone">{{ m.year }}</p>
-          <p class="mt-2 text-text-secondary">{{ m.text }}</p>
+
+      <ol v-if="clinic.milestones.length" class="exp__milestones">
+        <li v-for="m in clinic.milestones" :key="m.year">
+          <p class="font-display text-heading-s text-ink">{{ m.year }}</p>
+          <p class="mt-1 text-text-secondary">{{ m.text }}</p>
         </li>
       </ol>
     </div>
@@ -61,15 +34,63 @@ useGsapContext(root, (c) => {
 </template>
 
 <style scoped>
-.numeral {
-  --fill: 100%;
-  font-size: var(--text-numeral);
+.exp {
+  padding-block: clamp(2.5rem, 5vw, 4.5rem);
+  border-block: 1px solid var(--color-border);
+}
+.exp__row {
+  display: grid;
+  gap: 1.25rem;
+  align-items: center;
+}
+.exp__headline {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  color: var(--color-ink);
+}
+.exp__num {
+  font-family: var(--font-display);
+  font-weight: 650;
+  font-stretch: 75%;
+  font-size: clamp(6rem, 2.5rem + 10vw, 11.5rem);
   line-height: 0.8;
-  color: transparent;
-  -webkit-text-stroke: 2px var(--color-bone);
-  background: linear-gradient(to top, var(--color-bone) var(--fill), transparent var(--fill));
-  background-clip: text;
-  -webkit-background-clip: text;
-  width: fit-content;
+  letter-spacing: -0.03em;
+  color: var(--color-primary-strong);
+}
+.exp__rest {
+  max-width: 11ch;
+  font-size: clamp(1.375rem, 1rem + 1.2vw, 2rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+.exp__text {
+  max-width: 44ch;
+  color: var(--color-text-secondary);
+}
+.exp__milestones {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .exp__milestones {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .exp__row {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.5rem;
+  }
+  .exp__headline {
+    grid-column: 1 / span 6;
+  }
+  .exp__text {
+    grid-column: 8 / span 5;
+  }
 }
 </style>

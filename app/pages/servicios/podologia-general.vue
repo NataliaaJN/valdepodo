@@ -47,10 +47,5 @@ const intro = pending(
     </section>
 
     <RelatedServices :slugs="service.related" />
-
-    <CtaBlock
-      :title="{ before: 'No dejes que las molestias condicionen ', accent: 'tus pasos' }"
-      :cta="{ label: 'Pedir cita', to: bookingPath(service.slug) }"
-    />
   </div>
 </template>

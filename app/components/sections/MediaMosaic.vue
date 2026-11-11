@@ -1,19 +1,17 @@
 <script setup lang="ts">
 /**
- * Mosaico de la clínica (spec 05 §3): principal grande (7 col) + 2 secundarias apiladas (5 col) + fila de
- * detalles con recorte redondeado, desalineados. Móvil: principal a ancho completo + carrusel con
- * scroll-snap para el resto.
+ * Composición editorial del espacio de la clínica (spec 05 §3): cuatro imágenes de tamaños distintos y
+ * desalineadas (una principal ancha, un retrato, un detalle cuadrado y una vista media), no una galería.
+ * Móvil: principal a ancho completo, retrato y detalle en dos columnas y la vista media al final.
  * Lightbox accesible con <dialog> nativo: flechas y teclado, Esc, foco atrapado (lo hace el navegador con
- * showModal), contador "2 / 7" y deslizar en táctil. Las fotos pendientes no abren lightbox.
+ * showModal), contador "2 / 4" y deslizar en táctil. Las fotos pendientes no abren lightbox.
  */
 import { resolveValue } from '#shared/utils/pending'
 import type { ClinicPhoto } from '~/data/clinic'
 
 const props = defineProps<{ photos: readonly ClinicPhoto[] }>()
 
-const main = computed(() => props.photos[0])
-const side = computed(() => props.photos.slice(1, 3))
-const details = computed(() => props.photos.slice(3))
+const slots = computed(() => props.photos.slice(0, 4))
 const viewable = computed(() => props.photos.filter((p) => p.src))
 
 const dialog = ref<HTMLDialogElement | null>(null)
@@ -49,48 +47,25 @@ const onClose = () => opener?.focus()
 
 <template>
   <div class="mosaic">
-    <figure v-if="main" v-reveal class="m-main">
+    <figure v-for="(photo, i) in slots" :key="i" v-reveal="i" class="m-item" :class="`m-${i}`">
       <component
-        :is="main.src ? 'button' : 'div'"
-        :type="main.src ? 'button' : undefined"
+        :is="photo.src ? 'button' : 'div'"
+        :type="photo.src ? 'button' : undefined"
         class="m-frame"
-        :aria-label="main.src ? `Ampliar: ${resolveValue(main.alt)}` : undefined"
-        @click="openAt(main, $event)"
+        :aria-label="photo.src ? `Ampliar: ${resolveValue(photo.alt)}` : undefined"
+        @click="openAt(photo, $event)"
       >
-        <img v-if="main.src" :src="main.src" :alt="resolveValue(main.alt)" class="m-img" />
-        <PhotoPlaceholder v-else ratio="4 / 3" class="m-img" />
+        <img
+          v-if="photo.src"
+          :src="photo.src"
+          :alt="resolveValue(photo.alt)"
+          :loading="i === 0 ? undefined : 'lazy'"
+          class="m-img"
+        />
+        <PhotoPlaceholder v-else ratio="1 / 1" class="m-img" />
       </component>
-      <figcaption class="m-caption"><ContentValue :value="main.caption" /></figcaption>
+      <figcaption class="m-caption"><ContentValue :value="photo.caption" /></figcaption>
     </figure>
-
-    <div class="m-rest">
-      <figure
-        v-for="(photo, i) in [...side, ...details]"
-        :key="i"
-        v-reveal="i"
-        class="m-item"
-        :class="i < 2 ? 'is-side' : 'is-detail'"
-      >
-        <component
-          :is="photo.src ? 'button' : 'div'"
-          :type="photo.src ? 'button' : undefined"
-          class="m-frame"
-          :aria-label="photo.src ? `Ampliar: ${resolveValue(photo.alt)}` : undefined"
-          @click="openAt(photo, $event)"
-        >
-          <img
-            v-if="photo.src"
-            :src="photo.src"
-            :alt="resolveValue(photo.alt)"
-            loading="lazy"
-            class="m-img"
-          />
-          <PhotoPlaceholder v-else :ratio="i < 2 ? '16 / 10' : '1 / 1'" class="m-img" />
-        </component>
-        <figcaption class="m-caption"><ContentValue :value="photo.caption" /></figcaption>
-      </figure>
-    </div>
-    <p class="m-hint" aria-hidden="true">Desliza para ver más</p>
 
     <dialog
       ref="dialog"
@@ -124,27 +99,35 @@ const onClose = () => opener?.focus()
 <style scoped>
 .mosaic {
   display: grid;
-  gap: 1.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 1rem;
+  align-items: start;
 }
 .m-frame {
+  position: relative;
   display: block;
   width: 100%;
   overflow: hidden;
   border-radius: var(--radius-l);
+  background: var(--color-ink);
 }
 button.m-frame {
   cursor: zoom-in;
 }
-.m-img {
-  display: block;
+.m-frame .m-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 600ms var(--ease-out-soft);
+  transition: transform 900ms var(--ease-out-soft);
+}
+img.m-img {
+  display: block;
 }
 @media (hover: hover) and (pointer: fine) {
   button.m-frame:hover .m-img {
-    transform: scale(1.05);
+    transform: scale(1.04);
   }
 }
 .m-caption {
@@ -152,67 +135,53 @@ button.m-frame {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
 }
-.is-detail .m-frame {
-  border-radius: var(--radius-m);
-}
 
-/* Móvil: carrusel con scroll-snap para el resto */
-.m-rest {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 72%;
-  gap: 1rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 0.5rem;
-  scrollbar-width: thin;
+/* Proporciones y posiciones: móvil en 2 columnas */
+.m-0 {
+  grid-column: 1 / -1;
 }
-.m-item {
-  scroll-snap-align: start;
+.m-0 .m-frame {
+  aspect-ratio: 3 / 2;
 }
-.m-hint {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
+.m-1 .m-frame {
+  aspect-ratio: 4 / 5;
+}
+.m-2 .m-frame {
+  aspect-ratio: 4 / 5;
+}
+.m-3 {
+  grid-column: 1 / -1;
+}
+.m-3 .m-frame {
+  aspect-ratio: 16 / 9;
 }
 
 @media (min-width: 768px) {
   .mosaic {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: 1.5rem;
-    align-items: start;
   }
-  .m-main {
+  .m-0 {
     grid-column: 1 / span 7;
-    grid-row: 1 / span 2;
-  }
-  .m-rest {
-    display: contents;
-  }
-  .m-hint {
-    display: none;
-  }
-  .is-side {
-    grid-column: 8 / span 5;
-  }
-  .is-side:nth-child(1) {
     grid-row: 1;
   }
-  .is-side:nth-child(2) {
-    grid-row: 2;
+  .m-1 {
+    grid-column: 9 / span 3;
+    grid-row: 1;
+    margin-top: clamp(2rem, 5vw, 5rem);
   }
-  .is-detail {
-    grid-column: span 4;
-  }
-  .is-detail:nth-child(3) {
+  .m-2 {
     grid-column: 2 / span 3;
-    margin-top: 2rem;
+    grid-row: 2;
+    margin-top: clamp(0rem, 1vw, 1rem);
   }
-  .is-detail:nth-child(4) {
-    grid-column: 6 / span 3;
+  .m-2 .m-frame {
+    aspect-ratio: 1 / 1;
   }
-  .is-detail:nth-child(5) {
-    grid-column: 10 / span 3;
-    margin-top: 4rem;
+  .m-3 {
+    grid-column: 6 / span 6;
+    grid-row: 2;
+    margin-top: clamp(1rem, 3vw, 3rem);
   }
 }
 
