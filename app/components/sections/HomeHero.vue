@@ -84,6 +84,11 @@ useGsapContext(section, (c) => {
       </div>
     </div>
 
+    <!-- Indicador de scroll: ratón con rueda que se desliza, muy sutil; se desvanece en cuanto empieza el paso -->
+    <div class="hero__scroll" :style="{ opacity: Math.max(0, 1 - progress * 10) }" aria-hidden="true">
+      <span class="hero__mouse"><span class="hero__wheel" /></span>
+    </div>
+
     <div class="hero__text container-wide">
       <p class="eyebrow hero__eyebrow">Clínica de podología · <ContentValue :value="site.city" /></p>
       <h1 id="hero-title" class="hero__title">
@@ -147,6 +152,54 @@ html[data-intro='play'] .hero__model {
   mask-image: linear-gradient(to bottom, transparent 14%, #000 46%);
 }
 
+/* ---------- Indicador de scroll ---------- */
+.hero__scroll {
+  position: absolute;
+  z-index: 2;
+  right: clamp(1rem, 3.2vw, 3rem);
+  bottom: clamp(1.5rem, 6svh, 3.5rem);
+  pointer-events: none;
+  transition: opacity 0.3s linear;
+  animation: fade-up 1.4s var(--ease-out-soft) both;
+  animation-delay: 1s;
+}
+html[data-intro='play'] .hero__scroll {
+  animation-delay: 2s;
+}
+.hero__mouse {
+  display: block;
+  position: relative;
+  width: 1.5rem;
+  height: 2.375rem;
+  border: 1.5px solid rgb(22 60 99 / 0.45);
+  border-radius: 999px;
+}
+.hero__wheel {
+  position: absolute;
+  top: 0.45rem;
+  left: 50%;
+  width: 3px;
+  height: 0.5rem;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--color-primary);
+  animation: wheel 2.2s cubic-bezier(0.5, 0, 0.2, 1) infinite;
+}
+@keyframes wheel {
+  0% {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  25% {
+    opacity: 1;
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: translateY(0.7rem);
+  }
+}
+
 /* ---------- Texto (fijo) ---------- */
 .hero__text {
   position: relative;
@@ -195,7 +248,7 @@ html[data-intro='play'] .hero__title {
   .hero__model {
     top: 50%;
     left: auto;
-    right: 7vw;
+    right: 11vw;
     width: min(56vw, 88svh);
     translate: 0 -48%;
   }
@@ -208,6 +261,11 @@ html[data-intro='play'] .hero__title {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero__wheel {
+    animation: none;
+    opacity: 1;
+  }
+  .hero__scroll,
   .hero__model,
   .hero__glow,
   .hero__eyebrow,
