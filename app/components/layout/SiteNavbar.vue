@@ -1,9 +1,10 @@
 <script setup lang="ts">
 /**
- * Navbar global. Fija y casi invisible: logo, cuatro enlaces y la acción. Cambia de tema (hueso / azul / tinta)
- * según el capítulo que tiene debajo (`data-nav-theme` en cada sección), así que siempre se lee sin caja ni
- * sombra; con scroll compacta su altura y toma un vidrio sutil del color del capítulo.
- * - ≥ 1024 px: enlaces en línea + «Pedir cita».
+ * Navbar global. Fija y sin barra: logo a la izquierda, los enlaces en una píldora de vidrio (glassmorphism)
+ * centrada y «Pedir cita» redondeado a la derecha. Cambia de tema (hueso / azul / tinta) según el capítulo que
+ * tiene debajo (`data-nav-theme` en cada sección).
+ * - Arriba del todo: logo completo (símbolo + texto), grande. Con scroll: solo el símbolo, más pequeño.
+ * - ≥ 1024 px: píldora de enlaces + «Pedir cita».
  * - < 1024 px: «Menú» abre un panel de tinta a pantalla completa con los enlaces en tipografía monumental
  *   (foco atrapado, Esc, resto de la página `inert`, scroll bloqueado, se cierra al navegar).
  */
@@ -134,15 +135,17 @@ onBeforeUnmount(() => {
     :class="[`theme-${theme}`, { 'is-scrolled': scrolled && !open, 'is-open': open }]"
     @keydown="onKeydown"
   >
-    <div class="container-wide flex h-full items-center justify-between gap-6">
-      <NuxtLink to="/" class="brand relative z-10 flex items-center gap-3" aria-label="Valdepodo, inicio">
+    <div class="container-wide nav-grid">
+      <NuxtLink to="/" class="brand relative z-10" aria-label="Valdepodo, inicio">
         <!-- El símbolo (262 × 472) se dimensiona por anchura: BrandLogo fija height: auto -->
-        <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="w-[20px]" />
-        <BrandLogo variant="wordmark" label="" :mono="theme !== 'bone'" class="w-[108px]" />
+        <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="brand__symbol" />
+        <span class="brand__text">
+          <BrandLogo variant="wordmark" label="" :mono="theme !== 'bone'" class="brand__wordmark" />
+        </span>
       </NuxtLink>
 
       <nav class="hidden lg:block" aria-label="Principal">
-        <ul class="flex items-center gap-9">
+        <ul class="nav-pill">
           <li v-for="item in site.nav" :key="item.to">
             <NuxtLink :to="item.to" class="nav-link" :aria-current="isActive(item.to) ? 'page' : undefined">{{
               item.label
@@ -151,9 +154,15 @@ onBeforeUnmount(() => {
         </ul>
       </nav>
 
-      <div class="relative z-10 flex items-center gap-3">
+      <div class="nav-end relative z-10">
         <div class="hidden lg:block">
-          <BaseButton size="sm" :variant="theme === 'bone' ? 'primary' : 'on-blue'" :to="site.cta.to">
+          <BaseButton
+            size="sm"
+            class="nav-cta"
+            :variant="theme === 'bone' ? 'primary' : 'on-blue'"
+            :to="site.cta.to"
+            arrow
+          >
             {{ site.cta.label }}
           </BaseButton>
         </div>
@@ -189,7 +198,7 @@ onBeforeUnmount(() => {
           <nav aria-label="Principal (móvil)">
             <ul class="grid">
               <li
-                v-for="(item, i) in [{ label: 'Inicio', to: '/' }, ...site.nav]"
+                v-for="(item, i) in site.nav"
                 :key="item.to"
                 class="menu-item"
                 :style="{ '--i': i }"
@@ -224,61 +233,127 @@ onBeforeUnmount(() => {
 <style scoped>
 .site-navbar {
   --nav-fg: var(--color-ink);
-  --nav-bg: rgb(241 239 233 / 0.8);
+  --glass-bg: rgb(255 255 255 / 0.42);
+  --glass-border: rgb(255 255 255 / 0.75);
+  --pill-on-bg: var(--color-ink);
+  --pill-on-fg: var(--color-bone);
   height: var(--nav-h);
   color: var(--nav-fg);
-  border-bottom: 1px solid transparent;
   transition:
     height var(--dur-base) var(--ease-out-soft),
-    background-color var(--dur-base) var(--ease-out-soft),
-    color var(--dur-base) var(--ease-out-soft),
-    border-color var(--dur-base) var(--ease-out-soft);
+    color var(--dur-base) var(--ease-out-soft);
 }
-.theme-blue {
-  --nav-fg: var(--color-bone);
-  --nav-bg: rgb(18 112 182 / 0.72);
-}
+.theme-blue,
 .theme-ink {
   --nav-fg: var(--color-bone);
-  --nav-bg: rgb(6 26 44 / 0.72);
+  --glass-bg: rgb(255 255 255 / 0.14);
+  --glass-border: rgb(255 255 255 / 0.32);
+  --pill-on-bg: rgb(255 255 255 / 0.92);
+  --pill-on-fg: var(--color-ink);
 }
 .site-navbar.is-scrolled {
   height: var(--nav-h-compact);
-  background-color: var(--nav-bg);
-  backdrop-filter: blur(16px) saturate(1.2);
-  border-bottom-color: color-mix(in srgb, var(--nav-fg) 14%, transparent);
-}
-.site-navbar.is-open {
-  background-color: transparent;
 }
 
+.nav-grid {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+@media (min-width: 1024px) {
+  .nav-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+  }
+}
+.nav-end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* ----- Logo: completo arriba del todo; con scroll, solo el símbolo y más pequeño ----- */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+}
+.brand__symbol {
+  width: 26px;
+  flex: none;
+  transition: width var(--dur-base) var(--ease-out-soft);
+}
+.brand__text {
+  display: block;
+  overflow: hidden;
+  max-width: 11rem;
+  margin-left: 0.875rem;
+  opacity: 1;
+  transition:
+    max-width var(--dur-base) var(--ease-out-soft),
+    margin-left var(--dur-base) var(--ease-out-soft),
+    opacity var(--dur-fast) linear;
+}
+.brand__wordmark {
+  display: block;
+  width: 150px;
+  max-width: none;
+}
+.is-scrolled .brand__symbol {
+  width: 20px;
+}
+.is-scrolled .brand__text {
+  max-width: 0;
+  margin-left: 0;
+  opacity: 0;
+}
+
+/* ----- Píldora de enlaces con vidrio ----- */
+.nav-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3125rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow:
+    0 8px 28px rgb(6 26 44 / 0.08),
+    inset 0 1px 0 rgb(255 255 255 / 0.35);
+}
 .nav-link {
-  position: relative;
   display: inline-block;
-  font-size: 0.9375rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 999px;
+  font-size: 1.0625rem;
   font-weight: 500;
-  padding-block: 0.5rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-base) var(--ease-out-soft),
+    color var(--dur-base) var(--ease-out-soft);
 }
-.nav-link::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0.2rem;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform var(--dur-base) var(--ease-out-soft);
-}
-.nav-link[aria-current='page']::after {
-  transform: scaleX(1);
+.nav-link[aria-current='page'] {
+  background: var(--pill-on-bg);
+  color: var(--pill-on-fg);
 }
 @media (hover: hover) and (pointer: fine) {
-  .nav-link:hover::after {
-    transform: scaleX(1);
-    transform-origin: left;
+  .nav-link:not([aria-current='page']):hover {
+    background: color-mix(in srgb, var(--nav-fg) 12%, transparent);
   }
+}
+
+/* «Pedir cita» redondeado (solo en la navbar; el botón del sistema mantiene su radio) */
+.site-navbar .nav-cta {
+  min-height: 3rem;
+  padding-inline: 1.5rem 1.25rem;
+  border-radius: 999px;
+  font-size: 1rem;
 }
 
 .menu-button {
@@ -286,6 +361,12 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 0.75rem;
   min-height: 44px;
+  padding-inline: 1.125rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
   font-size: 0.9375rem;
   font-weight: 500;
 }
@@ -375,7 +456,9 @@ onBeforeUnmount(() => {
 @media (prefers-reduced-motion: reduce) {
   .site-navbar,
   .menu-bar,
-  .nav-link::after {
+  .brand__symbol,
+  .brand__text,
+  .nav-link {
     transition: none;
   }
   .menu-enter-active,
