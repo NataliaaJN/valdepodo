@@ -71,7 +71,7 @@ useGsapContext(section, (c) => {
 
 <template>
   <section ref="section" class="hero section-clip relative isolate" data-nav-theme="bone" aria-labelledby="hero-title">
-    <HeroBackdrop variant="fluido-celeste" :animate="!isStatic && !reduceMotion" />
+    <HeroBackdrop :animate="!isStatic && !reduceMotion" />
 
     <!-- Luz ambiental: halo cian tras el pie y velo de luz arriba a la izquierda -->
     <div class="hero__glow" aria-hidden="true" />
