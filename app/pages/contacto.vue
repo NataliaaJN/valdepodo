@@ -36,7 +36,7 @@ async function copy(text: string, what: string) {
 
 <template>
   <div>
-    <PageHeader id="contact-title" title="Estamos aquí para ayudarte." eyebrow="Contacto">
+    <PageHeader id="contact-title" title="Contacto">
       Llámanos, escríbenos o pasa por la clínica. Y si prefieres, pide tu cita online más abajo.
       <template #actions>
         <BaseButton to="#cita" arrow>Pedir cita</BaseButton>
@@ -97,19 +97,17 @@ async function copy(text: string, what: string) {
           <OpeningHours columns />
         </article>
 
-        <!-- Redes -->
+        <!-- Redes: solo iconos -->
         <article v-reveal="4" class="card card-social" aria-labelledby="c-social">
           <p id="c-social" class="card-label">Síguenos</p>
           <div class="social-list">
-            <a :href="clinic.instagram.url" target="_blank" rel="noopener" class="social-link link-quiet">
+            <a :href="clinic.instagram.url" target="_blank" rel="noopener" class="social-icon">
               <BaseIcon name="instagram" />
-              <ContentValue v-slot="{ value }" :value="site.instagram">{{ value.handle }}</ContentValue>
-              <span class="sr-only"> en Instagram (se abre en una pestaña nueva)</span>
+              <span class="sr-only">Instagram (se abre en una pestaña nueva)</span>
             </a>
-            <a :href="clinic.linkedin.url" target="_blank" rel="noopener" class="social-link link-quiet">
+            <a :href="clinic.linkedin.url" target="_blank" rel="noopener" class="social-icon">
               <BaseIcon name="linkedin" />
-              <ContentValue v-slot="{ value }" :value="site.linkedin">{{ value.label }}</ContentValue>
-              <span class="sr-only"> en LinkedIn (se abre en una pestaña nueva)</span>
+              <span class="sr-only">LinkedIn (se abre en una pestaña nueva)</span>
             </a>
           </div>
         </article>
@@ -262,23 +260,28 @@ async function copy(text: string, what: string) {
 .social-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 1.5rem;
+  gap: 0.5rem;
 }
-.social-link {
+.social-icon {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  min-height: 44px;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: var(--text-heading-s);
-  letter-spacing: -0.02em;
-  color: var(--color-ink);
-}
-.social-link :deep(.base-icon) {
-  width: 1.4em;
-  height: 1.4em;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  background: var(--color-white);
   color: var(--color-primary);
+  transition:
+    background var(--dur-fast),
+    color var(--dur-fast);
+}
+.social-icon:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+.social-icon :deep(.base-icon) {
+  width: 1.4rem;
+  height: 1.4rem;
 }
 .phone-actions {
   display: flex;
@@ -329,11 +332,11 @@ async function copy(text: string, what: string) {
     grid-row: 1;
   }
   .card-mail {
-    grid-column: 4 / span 4;
+    grid-column: 4 / span 6;
     grid-row: 1;
   }
   .card-social {
-    grid-column: 8 / span 5;
+    grid-column: 10 / span 3;
     grid-row: 1;
   }
   .card-place {
