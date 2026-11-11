@@ -6,7 +6,7 @@
  * Sin GSAP: `position: sticky` + IntersectionObserver. Paleta propia de marca declarada en `.svc`.
  */
 import { getServiceMedia, mediaSrcset } from '~/data/service-media'
-import { bookingPath, servicePath, services } from '~/data/services'
+import { servicePath, services } from '~/data/services'
 
 const active = ref(0)
 const steps = ref<HTMLElement[]>([])
@@ -71,19 +71,12 @@ const media = services.map((s) => {
           <span class="step__dot" aria-hidden="true" />
 
           <div class="step__body">
-            <p class="step__num">{{ service.number }}</p>
             <h2 class="step__name">{{ service.name }}</h2>
             <ContentValue :value="service.description" as="p" class="step__desc" />
-            <ul class="step__needs" role="list" aria-label="Te ayuda si…">
-              <li v-for="(need, n) in service.needs" :key="n"><ContentValue :value="need" /></li>
-            </ul>
             <div class="step__actions">
               <NuxtLink :to="servicePath(service.slug)" class="step__more">
                 Saber más<span class="sr-only">: {{ service.name }}</span>
                 <BaseIcon name="arrow-right" class="step__more-icon" />
-              </NuxtLink>
-              <NuxtLink :to="bookingPath(service.slug)" class="step__book">
-                Pedir cita<span class="sr-only"> para {{ service.name.toLowerCase() }}</span>
               </NuxtLink>
             </div>
           </div>
@@ -206,15 +199,7 @@ const media = services.map((s) => {
   box-shadow: 0 0 0 6px rgb(0 169 208 / 0.22);
 }
 
-.step__num {
-  font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  font-variant-numeric: tabular-nums;
-  color: var(--b-main);
-}
 .step__name {
-  margin-top: 0.5rem;
   font-family: var(--font-display);
   font-weight: 600;
   font-size: clamp(2rem, 1.2rem + 2.6vw, 3.5rem);
@@ -224,30 +209,11 @@ const media = services.map((s) => {
   text-wrap: balance;
 }
 .step__desc {
-  margin-top: 1.25rem;
-  max-width: 46ch;
-  font-size: 1.0625rem;
-  line-height: 1.55;
-  color: var(--b-text);
-}
-.step__needs {
   margin-top: 1.5rem;
-  display: grid;
-  gap: 0.5rem;
-  max-width: 46ch;
-}
-.step__needs li {
-  display: flex;
-  gap: 0.75rem;
-  border-top: 1px solid rgb(8 126 173 / 0.18);
-  padding-top: 0.5rem;
-  font-size: 0.9375rem;
+  max-width: 34ch;
+  font-size: clamp(1.25rem, 1rem + 0.9vw, 1.75rem);
+  line-height: 1.45;
   color: var(--b-text);
-}
-.step__needs li::before {
-  content: '+';
-  color: var(--b-main);
-  font-weight: 600;
 }
 .step__actions {
   margin-top: 1.75rem;
@@ -256,29 +222,21 @@ const media = services.map((s) => {
   align-items: center;
   gap: 0.75rem 1.75rem;
 }
-.step__more,
-.step__book {
+.step__more {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.9375rem;
+  font-size: 1.0625rem;
   font-weight: 600;
   color: var(--b-main);
   transition: color 250ms ease;
-}
-.step__book {
-  color: var(--b-deep);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  text-decoration-color: var(--b-ice);
 }
 .step__more-icon {
   width: 1rem;
   height: 1rem;
   transition: transform 250ms ease;
 }
-.step__more:focus-visible,
-.step__book:focus-visible {
+.step__more:focus-visible {
   outline: 2px solid var(--b-cyan);
   outline-offset: 4px;
   border-radius: 4px;
@@ -289,9 +247,6 @@ const media = services.map((s) => {
   }
   .step__more:hover .step__more-icon {
     transform: translateX(4px);
-  }
-  .step__book:hover {
-    text-decoration-color: var(--b-cyan);
   }
 }
 
