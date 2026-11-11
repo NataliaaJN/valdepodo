@@ -2,8 +2,7 @@
 /**
  * Datos de la clínica, FUERA del hero: una cápsula de vidrio (glassmorphism) con cuatro elementos en línea,
  * icono de línea azul + texto corto en dos líneas, todo con el mismo peso y tamaño, sin tarjetas.
- * La cápsula cabalga sobre el borde del hero (mitad sobre él, mitad sobre esta sección), de modo que el
- * cambio de fondo queda cubierto sin tocar el hero. El contenido son los `values`.
+ * El borde con el hero se funde con una capa propia de esta sección (`::before`); el hero no se toca. El contenido son los `values`.
  */
 import type { IconName } from '~/components/base/BaseIcon.vue'
 import { site } from '~/data/site'
@@ -48,10 +47,24 @@ const items = computed(() =>
 <style scoped>
 .facts {
   z-index: 2;
-  /* Hueco para la mitad inferior de la cápsula; la superior queda sobre el pie del hero */
-  padding-block: 0 clamp(2.5rem, 4vw, 3.5rem);
+  padding-block: clamp(1rem, 2vw, 1.5rem) clamp(2.5rem, 4vw, 3.5rem);
   /* Cian clarito de la familia del hero */
   background: linear-gradient(180deg, #d9f0fa 0%, #e6f6fc 100%);
+}
+/* Funde el borde superior con el pie del hero (sin tocar el hero): la capa vive en esta sección */
+.facts::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 100%;
+  height: 4rem;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgb(217 240 250 / 0) 0%,
+    rgb(217 240 250 / 0.35) 55%,
+    rgb(217 240 250 / 0.85) 85%,
+    #d9f0fa 100%
+  );
 }
 .facts__capsule {
   display: grid;
@@ -60,8 +73,7 @@ const items = computed(() =>
   max-width: 62rem;
   margin-inline: auto;
   padding: 1.5rem 1.5rem;
-  /* En móvil solo asoma un poco sobre el hero (el titular queda justo encima) */
-  transform: translateY(-1rem);
+  transform: none;
   margin-bottom: 0;
   border-radius: 1.75rem;
   border: 1px solid rgb(255 255 255 / 0.8);
@@ -98,9 +110,9 @@ const items = computed(() =>
     justify-content: space-between;
     gap: 1.5rem;
     padding: 1.5rem 3rem;
-    /* Desde escritorio, la mitad de su alto cabalga sobre el hero */
-    transform: translateY(-50%);
-    margin-bottom: -2.75rem;
+    /* Desde escritorio solo asoma un poco sobre el borde: deja aire entre el pie y la cápsula */
+    transform: none;
+    margin-bottom: 0;
     border-radius: 999px;
   }
   .fact {
