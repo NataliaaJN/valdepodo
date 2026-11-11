@@ -36,12 +36,7 @@ async function copy(text: string, what: string) {
 
 <template>
   <div>
-    <PageHeader id="contact-title" title="Contacto">
-      Llámanos, escríbenos o pasa por la clínica. Y si prefieres, pide tu cita online más abajo.
-      <template #actions>
-        <BaseButton to="#cita" arrow>Pedir cita</BaseButton>
-      </template>
-    </PageHeader>
+    <PageHeader id="contact-title" title="Contacto" />
 
     <!-- 1 · Cómo contactar -->
     <section class="container-wide pb-(--space-section)" aria-label="Datos de contacto" data-nav-theme="bone">
@@ -255,7 +250,7 @@ async function copy(text: string, what: string) {
 /* Redes: card con más presencia */
 .card-social {
   justify-content: space-between;
-  background: var(--color-ice-blue, var(--color-white));
+  background: var(--color-white);
 }
 .social-list {
   display: flex;
@@ -326,26 +321,29 @@ async function copy(text: string, what: string) {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: 1rem;
   }
-  /* Fila 1: teléfono · email · redes. Fila 2: ubicación (destacada) + horario */
+  /* Izquierda: ubicación (alta). Derecha: teléfono + email · redes · horario */
+  .card-place {
+    grid-column: 1 / span 5;
+    grid-row: 1 / span 3;
+  }
   .card-phone {
-    grid-column: 1 / span 3;
+    grid-column: 6 / span 3;
     grid-row: 1;
   }
   .card-mail {
-    grid-column: 4 / span 6;
+    grid-column: 9 / span 4;
     grid-row: 1;
   }
   .card-social {
-    grid-column: 10 / span 3;
-    grid-row: 1;
-  }
-  .card-place {
-    grid-column: 1 / span 5;
+    grid-column: 6 / span 7;
     grid-row: 2;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
   .card-hours {
     grid-column: 6 / span 7;
-    grid-row: 2;
+    grid-row: 3;
   }
 }
 

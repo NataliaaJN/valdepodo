@@ -31,7 +31,7 @@ defineSlots<{ default?: () => unknown; actions?: () => unknown }>()
           :id="id ?? 'page-title'"
           v-reveal
           class="page-header__title"
-          :class="size === 'mega' ? 'mega' : 'text-display-xl'"
+          :class="[size === 'mega' ? 'mega' : 'text-display-xl', { 'no-eyebrow': !eyebrow }]"
         >
           {{ title }}
         </h1>
@@ -101,6 +101,7 @@ defineSlots<{ default?: () => unknown; actions?: () => unknown }>()
     grid-column: 4 / -1;
     max-width: 16ch;
   }
+  .page-header__title.no-eyebrow,
   .page-header__title.mega {
     grid-column: 1 / -1;
   }
