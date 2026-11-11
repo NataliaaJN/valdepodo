@@ -11,6 +11,7 @@
  * - Tablet o `lite`: sin fijado; rotación corta con el propio scroll.
  * - Móvil / `static` (incluye reduced motion): póster estático.
  */
+import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { site } from '~/data/site'
 import { HERO_EXIT_START, hero, heroRotationAt, heroSequence, heroStepIndex } from '~/data/home'
@@ -24,12 +25,55 @@ const sceneReady = ref(false)
 
 const step = computed(() => heroSequence[heroStepIndex(progress.value)]!)
 const activeLayer = computed<FootLayer>(() => step.value.layer)
-const rotationY = computed(() => heroRotationAt(progress.value))
+const userRotation = reactive({ value: 0 })
+const MAX_USER_ROTATION = Math.PI / 3 // ±60°
+const rotationY = computed(() => heroRotationAt(progress.value) + userRotation.value)
+
+/*
+ * «Da el paso»: con el scroll el pie avanza hacia la izquierda y, en el tramo final, se acerca al espectador
+ * y se funde.
+ */
+const exit = computed(() => {
+  const t = Math.min(1, Math.max(0, (progress.value - HERO_EXIT_START) / (1 - HERO_EXIT_START)))
+  return t * t * (3 - 2 * t)
+})
+const modelStyle = computed(() => {
+  const walk = progress.value * -16 // % de su propio ancho, hacia la izquierda
+  if (progress.value <= 0) return undefined
+  return {
+    transform: `translate3d(${walk + exit.value * 8}%, ${exit.value * 10}%, 0) scale(${1 + exit.value * 0.5})`,
+    opacity: String(1 - exit.value),
+  }
+})
 
 const isStatic = computed(() => !resolved.value || tier.value === 'static')
 const poster = computed(
   () => `/images/3d-fallbacks/foot/${isStatic.value || !sceneReady.value ? activeLayer.value : 'skin'}`,
 )
+
+/* Rotación manual: arrastre horizontal (pan-y deja pasar el scroll); en ratón vuelve a la secuencia al soltar */
+let dragX: number | null = null
+let dragTween: gsap.core.Tween | undefined
+const clampRotation = (v: number) => Math.max(-MAX_USER_ROTATION, Math.min(MAX_USER_ROTATION, v))
+function onPointerDown(e: PointerEvent) {
+  if (isStatic.value) return
+  dragTween?.kill()
+  dragX = e.clientX
+  ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+}
+function onPointerMove(e: PointerEvent) {
+  if (dragX === null) return
+  userRotation.value = clampRotation(userRotation.value + (e.clientX - dragX) * 0.008)
+  dragX = e.clientX
+}
+function onPointerUp(e: PointerEvent) {
+  if (dragX === null) return
+  dragX = null
+  if (e.pointerType === 'mouse') {
+    dragTween = gsap.to(userRotation, { value: 0, duration: 0.9, ease: 'power3.out' })
+  }
+}
+onBeforeUnmount(() => dragTween?.kill())
 
 const loader = () => import('~/components/three/FootAnatomy.client.vue')
 const sceneProps = computed(() => ({
@@ -68,7 +112,16 @@ useGsapContext(section, (c) => {
     <!-- Luz ambiental: halo cian tras el pie y velo de luz arriba a la izquierda -->
     <div class="hero__glow" aria-hidden="true" />
 
-    <div class="hero__model" aria-hidden="true">
+    <div
+      class="hero__model"
+      :class="{ 'is-interactive': !isStatic }"
+      :style="modelStyle"
+      aria-hidden="true"
+      @pointerdown="onPointerDown"
+      @pointermove="onPointerMove"
+      @pointerup="onPointerUp"
+      @pointercancel="onPointerUp"
+    >
       <div class="hero__fade">
       <SceneGate
         :loader="loader"
@@ -141,6 +194,16 @@ html[data-intro='play'] .hero__model {
 }
 
 /* Degradado superior: el corte del tobillo se funde con el fondo. La máscara va en la capa interior para no recortar la sombra */
+.hero__model {
+  touch-action: pan-y;
+  will-change: transform, opacity;
+}
+.hero__model.is-interactive {
+  cursor: grab;
+}
+.hero__model.is-interactive:active {
+  cursor: grabbing;
+}
 .hero__fade {
   -webkit-mask-image: linear-gradient(to bottom, transparent 14%, #000 46%);
   mask-image: linear-gradient(to bottom, transparent 14%, #000 46%);
