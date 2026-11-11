@@ -5,16 +5,17 @@
  *
  * Solo dos textos, FIJOS (no se mueven con el scroll): eyebrow «Clínica de podología · Valdemoro» y el
  * titular «Todo empieza por tus pies» con «tus pies» en otro color. Lo único que responde al scroll es el
- * pie 3D, que gira y pasa de piel a músculos y huesos.
+ * pie 3D (capa de músculos bajo contorno translúcido), que da un paso: el progreso de la sección fijada
+ * (0 → 1) gobierna el ciclo talón → apoyo → antepié → impulso (app/utils/foot-step.ts).
  *
- * - ≥ 1024 px y nivel `full`: sección fijada (~220 %); el texto queda quieto y el pie recorre la secuencia.
- * - Tablet o `lite`: sin fijado; rotación corta con el propio scroll.
- * - Móvil / `static` (incluye reduced motion): póster estático.
+ * - ≥ 1024 px y nivel `full`: sección fijada (~220 %); el texto queda quieto y el pie recorre el paso.
+ * - Tablet, móvil o `lite`: también fijada, con un recorrido más corto.
+ * - `static` (incluye reduced motion): póster estático.
  */
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { site } from '~/data/site'
-import { HERO_EXIT_START, hero, heroRotationAt, heroSequence, heroStepIndex } from '~/data/home'
-import type { FootLayer } from '~/utils/foot-layers'
+import { hero } from '~/data/home'
+import { FOOT_VIEW } from '~/utils/foot-layers'
 
 const section = ref<HTMLElement | null>(null)
 const { tier, resolved } = useDeviceTier()
@@ -28,43 +29,32 @@ onMounted(() => {
 const progress = ref(0)
 const sceneReady = ref(false)
 
-const step = computed(() => heroSequence[heroStepIndex(progress.value)]!)
-const activeLayer = computed<FootLayer>(() => step.value.layer)
-const rotationY = computed(() => heroRotationAt(progress.value))
 
 const isStatic = computed(() => !resolved.value || tier.value === 'static')
 const poster = computed(
-  () => `/images/3d-fallbacks/foot/${isStatic.value || !sceneReady.value ? activeLayer.value : 'skin'}`,
+  () => '/images/3d-fallbacks/foot/muscles',
 )
 
 const loader = () => import('~/components/three/FootAnatomy.client.vue')
 const sceneProps = computed(() => ({
-  activeLayer: activeLayer.value,
-  rotationY: rotationY.value,
+  activeLayer: 'muscles',
+  rotationY: FOOT_VIEW.rotationY,
+  step: progress.value,
   studio: true,
 }))
 
 useGsapContext(section, (c) => {
   progress.value = 0
-  if (c.reduce || c.mobile || tier.value === 'static') return undefined
-  if (c.desktop && tier.value === 'full') {
-    ScrollTrigger.create({
-      trigger: section.value,
-      start: 'top top',
-      end: '+=220%',
-      pin: true,
-      scrub: 0.6,
-      onUpdate: (self) => (progress.value = self.progress),
-    })
-  } else {
-    ScrollTrigger.create({
-      trigger: section.value,
-      start: 'top top',
-      end: 'bottom top',
-      scrub: 0.6,
-      onUpdate: (self) => (progress.value = self.progress * (HERO_EXIT_START - 0.01)),
-    })
-  }
+  if (c.reduce || tier.value === 'static') return undefined
+  // El scroll controla el progreso del paso de forma continua (sin animación independiente)
+  ScrollTrigger.create({
+    trigger: section.value,
+    start: 'top top',
+    end: c.desktop && tier.value === 'full' ? '+=220%' : '+=160%',
+    pin: true,
+    scrub: 0.6,
+    onUpdate: (self) => (progress.value = self.progress),
+  })
   return undefined
 })
 </script>

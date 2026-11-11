@@ -12,15 +12,19 @@ import {
   Color,
   FrontSide,
   Group,
+  Mesh as ThreeMesh,
   MeshPhysicalMaterial,
   MeshStandardMaterial,
+  PlaneGeometry,
   ShaderMaterial,
+  Vector2,
   Vector3,
   type Material,
   type Mesh,
   type Object3D,
 } from 'three'
 import { layerRoles, type FootLayer, type LayerRole } from '~/utils/foot-layers'
+import { buildStepTable, sampleStep, soleProfile } from '~/utils/foot-step'
 
 const props = withDefaults(
   defineProps<{
@@ -31,14 +35,21 @@ const props = withDefaults(
     fit?: number
     /** Acabado de estudio (hero): piel natural mate. */
     studio?: boolean
+    /** Progreso 0..1 del paso (hero). Si se define, el pie simula un paso apoyado en un suelo tenue. */
+    step?: number
   }>(),
-  { fit: 2.2, studio: false },
+  { fit: 2.2, studio: false, step: undefined },
 )
 const emit = defineEmits<{ layers: [available: FootLayer[]] }>()
 
 const { invalidate } = useTres()
 const { onBeforeRender } = useLoop()
 const group = shallowRef(new Group())
+// `motion` agrupa el modelo para cabecearlo/trasladarlo (paso) sin tocar el centrado ni la escala
+const motion = new Group()
+// `anchor` agrupa pie + suelo y los recoloca juntos para que el recorrido del paso no saque al pie del encuadre
+// (como una cámara que sigue al pie: la relación pie–suelo, y por tanto el contacto, no cambia)
+const anchor = new Group()
 
 // ---------------------------------------------------------------- materiales
 const shellMaterial = new ShaderMaterial({
@@ -134,8 +145,85 @@ const box = new Box3().setFromObject(props.model)
 const size = box.getSize(new Vector3())
 const center = box.getCenter(new Vector3())
 props.model.position.sub(center)
-group.value.add(props.model)
+motion.add(props.model)
+anchor.add(motion)
+group.value.add(anchor)
 group.value.scale.setScalar(props.fit / Math.max(size.x, size.y, size.z))
+
+// ---------------------------------------------------------------- paso (hero)
+// Perfil de la suela tomado del propio modelo (marco de `motion`, sin escala) → tabla de la simulación
+const stepTable = (() => {
+  if (props.step === undefined) return undefined
+  group.value.updateMatrixWorld(true)
+  const inverse = group.value.matrixWorld.clone().invert()
+  const skin = meshesByLayer.get('skin') ?? [...meshesByLayer.values()].flat()
+  const v = new Vector3()
+  const verts: number[] = []
+  for (const mesh of skin) {
+    const pos = mesh.geometry.getAttribute('position')
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i).applyMatrix4(mesh.matrixWorld).applyMatrix4(inverse)
+      verts.push(v.x, v.y, v.z)
+    }
+  }
+  return buildStepTable(soleProfile(verts))
+})()
+
+// Suelo abstracto muy tenue: velo azul bajo el pie, halo de carga en el punto de apoyo y una onda mínima
+// al primer contacto del talón. Solo gama de marca (#00A9D0 / #087EAD).
+const floorUniforms = {
+  uCenter: { value: new Vector2() },
+  uHalf: { value: 0.3 },
+  uBase: { value: 0 },
+  uContact: { value: new Vector2() },
+  uPress: { value: 0 },
+  uHit: { value: new Vector2() },
+  uRipple: { value: 0 },
+}
+const floorMaterial = new ShaderMaterial({
+  uniforms: floorUniforms,
+  vertexShader: /* glsl */ `
+    varying vec2 vXZ;
+    void main() {
+      vXZ = position.xz;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }`,
+  fragmentShader: /* glsl */ `
+    uniform vec2 uCenter;
+    uniform float uHalf;
+    uniform float uBase;
+    uniform vec2 uContact;
+    uniform float uPress;
+    uniform vec2 uHit;
+    uniform float uRipple;
+    varying vec2 vXZ;
+    void main() {
+      float d = length(vXZ - uCenter) / uHalf;
+      float edge = 1.0 - smoothstep(0.55, 1.0, d);
+      float base = (1.0 - smoothstep(0.1, 1.0, d)) * uBase;
+      float sigma = uHalf * 0.34;
+      float dc = length(vXZ - uContact);
+      float halo = exp(-(dc * dc) / (sigma * sigma)) * uPress * 0.34;
+      float rr = uRipple * uHalf * 0.8;
+      float w = uHalf * 0.07;
+      float dh = length(vXZ - uHit);
+      float ring = exp(-pow((dh - rr) / w, 2.0)) * (1.0 - uRipple) * (1.0 - uRipple) * step(0.001, uRipple) * 0.13;
+      vec3 col = mix(vec3(0.0, 0.663, 0.816), vec3(0.031, 0.494, 0.678), clamp(halo * 5.0, 0.0, 1.0));
+      gl_FragColor = vec4(col, (base + halo + ring) * edge);
+    }`,
+  transparent: true,
+  depthWrite: false,
+})
+// El plano se construye ya a su tamaño: el shader recibe posiciones en unidades del modelo (sin escala de malla)
+const floorSize = (stepTable?.length ?? 0.2) * 1.7
+const floorMesh = new ThreeMesh(new PlaneGeometry(floorSize, floorSize).rotateX(-Math.PI / 2), floorMaterial)
+floorMesh.renderOrder = -1
+floorMesh.frustumCulled = false
+if (stepTable) {
+  floorMesh.position.set(0, stepTable.floorY - 0.0004, 0)
+  floorUniforms.uHalf.value = floorSize / 2
+  anchor.add(floorMesh)
+}
 
 onMounted(() => emit('layers', [...meshesByLayer.keys()]))
 
@@ -201,8 +289,38 @@ watch(
   },
 )
 
-// ---------------------------------------------------------------- rotación
+// ---------------------------------------------------------------- rotación y paso
 let currentY = props.rotationY
+let currentStep = props.step ?? 0
+let stepYaw = 0
+const FOLLOW_Y = 0.6
+const FOLLOW_Z = 0.8
+const pointer = { x: 0, targetX: 0 }
+
+function applyStep(p: number) {
+  if (!stepTable) return
+  const pose = sampleStep(stepTable, p)
+  motion.rotation.x = pose.theta
+  motion.position.set(0, pose.y, pose.z)
+  anchor.position.set(0, -FOLLOW_Y * pose.y, -FOLLOW_Z * pose.z)
+  stepYaw = pose.yaw
+  floorUniforms.uBase.value = 0.04 + 0.09 * pose.near
+  floorUniforms.uContact.value.set(pose.contactX, pose.contactZ)
+  floorUniforms.uPress.value = pose.press
+  floorUniforms.uHit.value.set(pose.hitX, pose.hitZ)
+  floorUniforms.uRipple.value = pose.ripple
+}
+applyStep(currentStep)
+
+// Parallax mínimo del cursor: orienta el pie unas décimas de grado; el movimiento principal es el scroll
+function onPointerMove(e: PointerEvent) {
+  pointer.targetX = (e.clientX / window.innerWidth - 0.5) * 2
+  invalidate()
+}
+onMounted(() => {
+  const fine = window.matchMedia('(pointer: fine)').matches
+  if (stepTable && fine && !reduceMotion) window.addEventListener('pointermove', onPointerMove, { passive: true })
+})
 onBeforeRender(({ delta }) => {
   if (fadeDir !== 0) {
     fadeT = Math.min(1, Math.max(0, fadeT + (fadeDir * delta) / FADE))
@@ -216,17 +334,31 @@ onBeforeRender(({ delta }) => {
     setFade(fadeT)
     invalidate()
   }
+  // Progreso del paso amortiguado: manda el scroll, el filtro solo quita el temblor
+  if (stepTable && props.step !== undefined) {
+    const diff = props.step - currentStep
+    if (Math.abs(diff) > 1e-4) {
+      currentStep += diff * (1 - Math.exp(-delta * 10))
+      applyStep(currentStep)
+      invalidate()
+    }
+  }
+  if (Math.abs(pointer.targetX - pointer.x) > 1e-4) pointer.x += (pointer.targetX - pointer.x) * Math.min(1, delta * 4)
   const target = props.rotationY
   const next = currentY + (target - currentY) * Math.min(1, delta * 8)
-  if (Math.abs(next - currentY) > 1e-4 || props.idleSpin) {
-    currentY = props.idleSpin ? currentY + delta * 0.15 : next
-    group.value.rotation.y = currentY
+  if (Math.abs(next - currentY) > 1e-4 || props.idleSpin) currentY = props.idleSpin ? currentY + delta * 0.15 : next
+  const yaw = currentY + stepYaw + pointer.x * 0.06
+  if (Math.abs(group.value.rotation.y - yaw) > 1e-5) {
+    group.value.rotation.y = yaw
     invalidate()
   }
 })
 
 onBeforeUnmount(() => {
+  window.removeEventListener('pointermove', onPointerMove)
   shellMaterial.dispose()
+  floorMaterial.dispose()
+  floorMesh.geometry.dispose()
   for (const m of [...Object.values(activeMaterials), ...Object.values(contextMaterials)]) m.dispose()
 })
 </script>

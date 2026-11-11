@@ -15,8 +15,16 @@ import type { FootLayer } from '~/utils/foot-layers'
 import type { SceneStats } from '~/utils/scene-types'
 
 const props = withDefaults(
-  defineProps<{ src?: string; activeLayer: FootLayer; rotationY?: number; idleSpin?: boolean; studio?: boolean }>(),
-  { src: undefined, rotationY: FOOT_VIEW.rotationY, idleSpin: false, studio: false },
+  defineProps<{
+    src?: string
+    activeLayer: FootLayer
+    rotationY?: number
+    idleSpin?: boolean
+    studio?: boolean
+    /** Progreso 0..1 del paso del pie (hero); sin definir, no hay paso ni suelo. */
+    step?: number
+  }>(),
+  { src: undefined, rotationY: FOOT_VIEW.rotationY, idleSpin: false, studio: false, step: undefined },
 )
 const emit = defineEmits<{
   ready: []
@@ -113,6 +121,7 @@ onBeforeUnmount(() => {
       :idle-spin="idleSpin"
       :fit="FOOT_VIEW.fit"
       :studio="studio"
+      :step="step"
       @layers="(l) => emit('layers', l)"
     />
   </TresCanvas>
