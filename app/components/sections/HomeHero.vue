@@ -96,11 +96,10 @@ useGsapContext(section, (c) => {
   min-height: max(100svh, 40rem);
   padding-top: var(--nav-h);
   color: var(--color-ink);
-  /* Pastel etéreo como las referencias: rosa pálido arriba-derecha, lavanda y azul periwinkle abajo */
+  /* Fondo de Mind AI: rosa-lila muy pálido, casi plano, con un velo de luz tras el pie */
   background:
-    radial-gradient(60% 50% at 88% 6%, rgb(255 214 236 / 0.95), rgb(255 214 236 / 0) 70%),
-    radial-gradient(70% 60% at 6% 4%, rgb(236 226 250 / 0.9), rgb(236 226 250 / 0) 70%),
-    linear-gradient(180deg, #e9e3f7 0%, #c9cff5 45%, #9fb6ee 100%);
+    radial-gradient(50% 60% at 74% 50%, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 70%),
+    linear-gradient(180deg, #f8e8f2 0%, #f6e4f0 100%);
 }
 .hero__glow {
   position: absolute;
