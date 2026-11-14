@@ -68,6 +68,7 @@ const checked = computed(() => model.value === props.value)
 .is-checked .option-check {
   border-color: var(--color-primary);
   background: var(--color-primary);
+  color: var(--color-ink);
 }
 .option-card:has(input:focus-visible) {
   box-shadow: var(--focus-ring);

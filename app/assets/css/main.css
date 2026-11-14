@@ -24,10 +24,13 @@
 /* `static`: todos los tokens se emiten como variables CSS (los gráficos SVG los usan con var()). */
 @theme static {
   /* ---------- Color: marca ---------- */
-  --color-primary: #1270b6; /* Azul Valdepodo · 5.2:1 sobre blanco, 4.6:1 sobre hueso */
-  --color-primary-strong: #0b5e99; /* 6.1:1 sobre hueso · enlaces y texto azul pequeño */
-  --color-cyan: #1eabe1; /* único acento vivo · NUNCA texto sobre claro (2.4:1) */
-  --color-cyan-ink: #007e9e; /* "texto cian" pequeño sobre claro (4.5:1) */
+  --color-primary: #14b8d4; /* CYAN principal · solo como fondo/relleno con texto TINTA (7.4:1). Nunca texto sobre claro ni texto blanco encima. El logotipo conserva su azul original */
+  --color-primary-strong: #087088; /* cyan oscuro · 4.9:1 sobre hueso · enlaces y texto cian pequeño */
+  --color-cyan: #14b8d4; /* igual que el principal; sobre oscuro puede ser texto */
+  --color-cyan-light: #c8f1fa; /* cyan claro · fondo de contraste del pre-footer */
+  --color-cyan-mist: #eaf8fc; /* cyan muy muy claro · fondos de sección suaves */
+  --color-coral: #f28b82; /* coral tenue · solo detalles que destacan, nunca superficies grandes */
+  --color-cyan-ink: #087088; /* "texto cian" pequeño sobre claro (4.5:1) */
   --color-logo-gray: #565656;
 
   /* ---------- Color: capítulos ---------- */
@@ -35,9 +38,9 @@
   --color-ink: #061a2c;
   --color-surface: #f1efe9; /* HUESO: papel base */
   --color-bone: #f1efe9;
-  --color-light-blue: #e7e4dc; /* hueso 2: segundo plano de papel */
-  --color-bone-2: #e7e4dc;
-  --color-ice-blue: #bfd8ea; /* texto de apoyo sobre azul/tinta · selección */
+  --color-light-blue: #eaf8fc; /* segundo plano de papel: cyan muy claro */
+  --color-bone-2: #eaf8fc;
+  --color-ice-blue: #c8f1fa; /* texto de apoyo sobre tinta · cyan claro */
   --color-white: #ffffff;
 
   /* ---------- Color: neutros ---------- */
@@ -94,7 +97,7 @@
   /* ---------- Sombras: sin sombra; la profundidad sale de la composición. Filetes en su lugar ---------- */
   --shadow-soft: 0 0 0 1px rgb(6 26 44 / 0.1);
   --shadow-float: 0 0 0 1px rgb(6 26 44 / 0.16);
-  --shadow-glow: 0 0 0 1px rgb(18 112 182 / 0.5);
+  --shadow-glow: 0 0 0 1px rgb(20 184 212 / 0.5);
 
   /* ---------- Movimiento ---------- */
   --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1); /* expo-out: entradas, zoom, hover */
@@ -119,7 +122,7 @@
   /* Sin degradados decorativos (se conservan los nombres por compatibilidad) */
   --grad-atmosphere: none;
   --grad-mist: none;
-  --grad-brand: linear-gradient(135deg, #1270b6 0%, #1eabe1 100%);
+  --grad-brand: linear-gradient(135deg, #14b8d4 0%, #c8f1fa 100%);
   --grad-glass: none;
 
   /* Entrada estándar `reveal` */
@@ -182,7 +185,7 @@
 
   ::selection {
     background-color: var(--color-primary);
-    color: var(--color-bone);
+    color: var(--color-ink);
   }
 }
 
@@ -254,9 +257,9 @@
   }
   .chapter-blue {
     background: var(--color-primary);
-    color: var(--color-bone);
-    --color-text-secondary: rgb(255 255 255 / 0.82);
-    --color-border: rgb(241 239 233 / 0.32);
+    color: var(--color-ink);
+    --color-text-secondary: rgb(6 26 44 / 0.78);
+    --color-border: rgb(6 26 44 / 0.28);
   }
   .chapter-ink h1,
   .chapter-ink h2,
@@ -264,7 +267,7 @@
   .chapter-blue h1,
   .chapter-blue h2,
   .chapter-blue h3 {
-    color: var(--color-bone);
+    color: var(--color-ink);
   }
 
   /* Superficie translúcida: solo en las micro-tarjetas de datos y la navbar con scroll. */

@@ -175,7 +175,7 @@ async function copy(text: string, what: string) {
 .card-label :deep(.base-icon) {
   width: 1.1em;
   height: 1.1em;
-  color: var(--color-primary);
+  color: var(--color-primary-strong);
 }
 .card-value {
   font-family: var(--font-display);
@@ -210,11 +210,11 @@ async function copy(text: string, what: string) {
   padding: clamp(1.5rem, 3vw, 2.25rem);
   box-shadow: none;
   background: var(--color-primary);
-  color: var(--color-bone);
+  color: var(--color-ink);
 }
 .card-place .card-label,
 .card-place .card-label :deep(.base-icon) {
-  color: var(--color-ice-blue);
+  color: rgb(6 26 44 / 0.75);
 }
 .place-address {
   margin-top: 1.25rem;
@@ -290,14 +290,14 @@ async function copy(text: string, what: string) {
   height: 3rem;
   border-radius: 9999px;
   background: var(--color-white);
-  color: var(--color-primary);
+  color: var(--color-primary-strong);
   transition:
     background var(--dur-fast),
     color var(--dur-fast);
 }
 .social-icon:hover {
   background: var(--color-primary);
-  color: var(--color-white);
+  color: var(--color-ink);
 }
 .social-icon :deep(.base-icon) {
   width: 1.4rem;

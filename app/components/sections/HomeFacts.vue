@@ -47,88 +47,55 @@ const items = computed(() =>
 <style scoped>
 .facts {
   z-index: 2;
-  padding-block: clamp(1rem, 2vw, 1.5rem) clamp(2.5rem, 4vw, 3.5rem);
-  /* Cian clarito de la familia del hero */
-  background: linear-gradient(180deg, #d9f0fa 0%, #e6f6fc 100%);
-}
-/* Funde el borde superior con el pie del hero (sin tocar el hero): la capa vive en esta sección */
-.facts::before {
-  content: '';
-  position: absolute;
-  inset: auto 0 100%;
-  /* En móvil el titular está pegado al pie del hero: el fundido es más corto para no velarlo */
-  height: 4rem;
-  pointer-events: none;
-  /* Rampa en S (ease-in-out) para que no haya ningún escalón perceptible */
-  background: linear-gradient(
-    180deg,
-    rgb(217 240 250 / 0) 0%,
-    rgb(217 240 250 / 0.03) 15%,
-    rgb(217 240 250 / 0.12) 30%,
-    rgb(217 240 250 / 0.3) 45%,
-    rgb(217 240 250 / 0.55) 60%,
-    rgb(217 240 250 / 0.8) 75%,
-    rgb(217 240 250 / 0.94) 88%,
-    #d9f0fa 100%
-  );
+  /* Banda plana de cyan muy claro: sin vidrio, sin sombras. El corte con el hero es recto */
+  background: var(--color-cyan-mist);
+  border-bottom: 1px solid var(--color-border);
 }
 .facts__capsule {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem 1rem;
-  max-width: 62rem;
-  margin-inline: auto;
-  padding: 1.5rem 1.5rem;
-  transform: none;
-  margin-bottom: 0;
-  border-radius: 1.75rem;
-  border: 1px solid rgb(255 255 255 / 0.8);
-  background: rgb(255 255 255 / 0.5);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  box-shadow:
-    0 20px 44px -22px rgb(18 112 182 / 0.35),
-    inset 0 1px 0 rgb(255 255 255 / 0.7);
 }
 .fact {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  padding: 1.25rem 1rem;
   color: var(--color-ink);
+  border-top: 1px solid var(--color-border);
+}
+.fact:nth-child(-n + 2) {
+  border-top: 0;
+}
+.fact:nth-child(even) {
+  border-left: 1px solid var(--color-border);
 }
 .fact__icon {
   flex: none;
   width: 1.75rem;
   height: 1.75rem;
-  color: var(--color-primary);
+  color: var(--color-primary-strong);
 }
-/* Un solo estilo para todo el texto: mismo tamaño y peso en las dos líneas */
 .fact__text {
-  max-width: 9.5rem;
-  font-size: 0.875rem;
+  max-width: 11rem;
+  font-size: 0.9375rem;
   font-weight: 500;
   line-height: 1.25;
 }
 
-@media (min-width: 768px) {
-  .facts::before {
-    height: clamp(4.5rem, 6.5vw, 5.5rem);
-  }
-}
-
 @media (min-width: 1024px) {
   .facts__capsule {
-    display: flex;
-    justify-content: space-between;
-    gap: 1.5rem;
-    padding: 1.5rem 3rem;
-    /* Desde escritorio solo asoma un poco sobre el borde: deja aire entre el pie y la cápsula */
-    transform: none;
-    margin-bottom: 0;
-    border-radius: 999px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  .fact {
+  .fact,
+  .fact:nth-child(-n + 2),
+  .fact:nth-child(even) {
+    border-top: 0;
+    border-left: 1px solid var(--color-border);
+    padding: 1.75rem 2rem;
     gap: 0.875rem;
+  }
+  .fact:first-child {
+    border-left: 0;
   }
   .fact__icon {
     width: 2rem;

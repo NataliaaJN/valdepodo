@@ -42,7 +42,7 @@ import { clinic } from '~/data/clinic'
 }
 @media (hover: hover) and (pointer: fine) {
   .step:hover .step__title {
-    color: var(--color-primary);
+    color: var(--color-primary-strong);
     transform: translateX(0.75rem);
   }
 }

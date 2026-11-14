@@ -19,19 +19,12 @@ import { hero } from '~/data/home'
 const HERO_ROTATION_Y = 0.25
 
 const section = ref<HTMLElement | null>(null)
-const { tier, resolved } = useDeviceTier()
-
-// Fondo del hero: fluido-celeste (elegido entre las pruebas de feature/hero-background-pruebas)
-const reduceMotion = ref(false)
-onMounted(() => {
-  reduceMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-})
+const { tier } = useDeviceTier()
 
 const progress = ref(0)
 const sceneReady = ref(false)
 
 
-const isStatic = computed(() => !resolved.value || tier.value === 'static')
 const poster = computed(
   () => '/images/3d-fallbacks/foot/muscles',
 )
@@ -64,11 +57,6 @@ useGsapContext(section, (c) => {
 
 <template>
   <section ref="section" class="hero section-clip relative isolate" data-nav-theme="bone" aria-labelledby="hero-title">
-    <HeroBackdrop :animate="!isStatic && !reduceMotion" />
-
-    <!-- Luz ambiental: halo cian tras el pie y velo de luz arriba a la izquierda -->
-    <div class="hero__glow" aria-hidden="true" />
-
     <div class="hero__model" aria-hidden="true">
       <div class="hero__fade">
       <SceneGate
@@ -106,23 +94,8 @@ useGsapContext(section, (c) => {
   min-height: max(100svh, 40rem);
   padding-top: var(--nav-h);
   color: var(--color-ink);
-  /* Cian clarito, etéreo: velo de luz tras el pie y un poco más de cian abajo */
-  background:
-    radial-gradient(50% 60% at 74% 50%, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 70%),
-    linear-gradient(180deg, #e3f6fc 0%, #cdeefa 100%);
-}
-.hero__glow {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(40% 48% at 74% 46%, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 70%);
-  animation: glow-in 2.4s var(--ease-out-soft) both;
-}
-@keyframes glow-in {
-  from {
-    opacity: 0;
-  }
+  /* Hueso plano: el pie 3D es la única pieza de color */
+  background: var(--color-bone);
 }
 
 /* ---------- Pie ---------- */
@@ -133,7 +106,7 @@ useGsapContext(section, (c) => {
   left: 50%;
   width: min(120vw, 34rem);
   translate: -50% 0;
-  filter: drop-shadow(0 30px 36px rgb(18 112 182 / 0.3));
+  filter: drop-shadow(0 30px 36px rgb(6 26 44 / 0.22));
   animation: model-in 1.8s var(--ease-out-soft) both;
   animation-delay: 0.3s;
 }
@@ -252,7 +225,7 @@ html[data-intro='play'] .hero__scroll {
 .hero__accent {
   font-style: normal;
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--color-primary-strong);
 }
 html[data-intro='play'] .hero__eyebrow {
   animation-delay: 1.3s;
@@ -294,7 +267,6 @@ html[data-intro='play'] .hero__title {
   }
   .hero__scroll,
   .hero__model,
-  .hero__glow,
   .hero__eyebrow,
   .hero__title {
     animation: none;

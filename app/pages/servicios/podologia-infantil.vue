@@ -50,7 +50,7 @@ const service = useServicePage('podologia-infantil')
             v-reveal="i"
             class="flex gap-4 rounded-l bg-white/80 p-5"
           >
-            <span class="grid size-10 flex-none place-items-center rounded-m bg-light-blue text-primary">
+            <span class="grid size-10 flex-none place-items-center rounded-m bg-light-blue text-primary-strong">
               <BaseIcon name="check" />
             </span>
             <ContentValue :value="item" as="p" class="self-center text-body-l text-text" />
@@ -129,7 +129,7 @@ const service = useServicePage('podologia-infantil')
       />
       <StepList :steps="kids.followUp" horizontal class="mt-12" />
       <aside v-reveal class="kids-advice mt-12 flex gap-4 rounded-l p-6">
-        <BaseIcon name="info" class="mt-0.5 size-6 text-primary" />
+        <BaseIcon name="info" class="mt-0.5 size-6 text-primary-strong" />
         <ContentValue :value="kids.advice" as="p" class="text-body-l text-deep-blue" />
       </aside>
     </section>

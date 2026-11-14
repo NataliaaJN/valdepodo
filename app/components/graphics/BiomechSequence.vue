@@ -99,7 +99,7 @@ onBeforeUnmount(() => observer?.disconnect())
           <div class="sticky top-0 flex h-svh items-center">
             <div class="flex w-full items-center gap-5 lg:gap-10">
               <div class="shrink-0">
-                <p class="font-display text-display-m leading-none text-primary">{{ current.number }}</p>
+                <p class="font-display text-display-m leading-none text-primary-strong">{{ current.number }}</p>
                 <p class="mt-1 text-sm text-text-secondary">— {{ lastNumber }}</p>
                 <svg viewBox="0 0 48 250" class="mt-6 w-10 overflow-visible">
                   <g
@@ -143,7 +143,7 @@ onBeforeUnmount(() => observer?.disconnect())
                   :playing="playing[i]"
                 />
               </div>
-              <p class="bs-number font-display text-primary">{{ phase.number }}</p>
+              <p class="bs-number font-display text-primary-strong">{{ phase.number }}</p>
               <h3 class="mt-2 text-heading-s font-semibold text-deep-blue">{{ phase.title }}</h3>
               <ContentValue :value="phase.text" as="p" class="mt-3 max-w-[44ch] text-text-secondary" />
               <NuxtLink

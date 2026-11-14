@@ -1,11 +1,11 @@
 <script setup lang="ts">
 /**
- * Botón del sistema de diseño. Píldora totalmente redondeada (como el «Pedir cita» de la navbar). Hover sutil:
+ * Botón del sistema de diseño. Radio de 8 px. Hover sutil:
  * ligero cambio de tono y la flecha avanza un par de píxeles.
  * Renderiza <NuxtLink> si recibe `to`/`href`, o <button> en caso contrario. Nunca un <div> clicable.
  *
- * - `primary`: tinta sobre hueso (hover: azul Valdepodo). El azul es un capítulo, no el color del botón.
- * - `on-blue`: hueso sobre azul (hover: tinta). También sirve sobre tinta.
+ * - `primary`: cyan con texto tinta (hover: tinta con texto hueso). Es el botón estándar.
+ * - `on-blue`: hueso sobre cyan o tinta (hover: cyan).
  * - `secondary`: filete (hover: se rellena de tinta).
  * - `ghost`: enlace subrayado.
  */
@@ -87,8 +87,8 @@ const isInactive = computed(() => props.disabled || props.loading)
   justify-content: center;
   gap: 0.875rem;
   border: 1px solid transparent;
-  border-radius: 999px;
-  font-weight: 500;
+  border-radius: var(--radius-m);
+  font-weight: 600;
   letter-spacing: 0.005em;
   cursor: pointer;
   user-select: none;
@@ -118,8 +118,8 @@ const isInactive = computed(() => props.disabled || props.loading)
 }
 
 .btn--primary {
-  background: var(--color-ink);
-  color: var(--color-bone);
+  background: var(--color-primary);
+  color: var(--color-ink);
 }
 .btn--on-blue,
 .btn--on-dark {
@@ -170,11 +170,12 @@ const isInactive = computed(() => props.disabled || props.loading)
 /* Hover claro pero contenido: cambio de color de marca y la flecha avanza unos píxeles */
 @media (hover: hover) and (pointer: fine) {
   .btn--primary:hover {
-    background: var(--color-primary);
+    background: var(--color-ink);
+    color: var(--color-bone);
   }
   .btn--on-blue:hover,
   .btn--on-dark:hover {
-    background: var(--color-ice-blue);
+    background: var(--color-primary);
     color: var(--color-ink);
   }
   .btn--secondary:hover {

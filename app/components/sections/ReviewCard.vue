@@ -48,15 +48,14 @@ const initial = computed(() => props.review.author.trim().charAt(0).toUpperCase(
   height: 100%;
   padding: clamp(1.25rem, 2vw, 1.75rem);
   background: var(--color-white);
-  border: 1px solid rgb(255 255 255 / 0.9);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-l);
-  box-shadow: 0 20px 44px -26px rgb(18 112 182 / 0.4);
 }
 
 .review__stars {
   display: flex;
   gap: 0.15rem;
-  color: var(--color-primary);
+  color: var(--color-primary-strong);
 }
 .review__stars svg {
   width: 1.125rem;
@@ -96,7 +95,7 @@ const initial = computed(() => props.review.author.trim().charAt(0).toUpperCase(
   height: 2rem;
   border-radius: var(--radius-pill);
   background: var(--color-primary);
-  color: var(--color-bone);
+  color: var(--color-ink);
   font-family: var(--font-display);
   font-size: 1rem;
   font-weight: 600;

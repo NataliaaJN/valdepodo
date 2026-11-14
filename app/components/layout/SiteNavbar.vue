@@ -1,14 +1,18 @@
 <script setup lang="ts">
 /**
- * Navbar global. Fija y sin barra: logo a la izquierda, los enlaces en una píldora de vidrio (glassmorphism)
- * centrada y «Pedir cita» redondeado a la derecha. Cambia de tema (hueso / azul / tinta) según el capítulo que
- * tiene debajo (`data-nav-theme` en cada sección).
- * - Arriba del todo: logo completo (símbolo + texto), grande. Con scroll: solo el símbolo, más pequeño.
- * - ≥ 1024 px: píldora de enlaces + «Pedir cita».
+ * Navbar global «camaleón». Arriba del todo es transparente e integrada en la página (logo completo, enlaces
+ * y «Pedir cita» sobre el fondo). Al hacer scroll se encoge en una píldora flotante translúcida (solo el
+ * símbolo del logo). Cambia de tema (hueso / cyan / tinta) según el capítulo que tiene debajo
+ * (`data-nav-theme` en cada sección).
+ * - «Servicios» es un enlace directo a /servicios y, con su flecha, despliega un panel con los cinco servicios
+ *   en bento grid (solo ≥ 1024 px; se abre al pasar el puntero o con la flecha; Esc lo cierra).
+ * - ≥ 1024 px: enlaces + «Pedir cita».
  * - < 1024 px: «Menú» abre un panel de tinta a pantalla completa con los enlaces en tipografía monumental
  *   (foco atrapado, Esc, resto de la página `inert`, scroll bloqueado, se cierra al navegar).
  */
 import { site } from '~/data/site'
+import { services, servicePath } from '~/data/services'
+import { getServiceMedia } from '~/data/service-media'
 
 type NavTheme = 'blue' | 'ink' | 'bone'
 
@@ -19,9 +23,34 @@ const open = ref(false)
 const menuButton = ref<HTMLButtonElement | null>(null)
 const panel = ref<HTMLElement | null>(null)
 const header = ref<HTMLElement | null>(null)
+const megaButton = ref<HTMLButtonElement | null>(null)
 
-// SSR y primer pintado: la Home abre en azul; el resto, en hueso. El cliente corrige con lo que hay debajo.
-const detected = ref<NavTheme>(route.path === '/' ? 'blue' : 'bone')
+/* ----- Panel de Servicios (bento) ----- */
+const megaOpen = ref(false)
+let megaTimer: ReturnType<typeof setTimeout> | undefined
+function openMega(e?: PointerEvent) {
+  if (e && e.pointerType !== 'mouse') return
+  clearTimeout(megaTimer)
+  megaTimer = setTimeout(() => (megaOpen.value = true), 90)
+}
+function closeMega(e?: PointerEvent, delay = 160) {
+  if (e && e.pointerType !== 'mouse') return
+  clearTimeout(megaTimer)
+  megaTimer = setTimeout(() => (megaOpen.value = false), delay)
+}
+function toggleMega() {
+  clearTimeout(megaTimer)
+  megaOpen.value = !megaOpen.value
+}
+function onFocusOut(e: FocusEvent) {
+  const next = e.relatedTarget as Node | null
+  if (!next || !header.value) return
+  const zone = header.value.querySelectorAll('.nav-item--mega, .svcmenu')
+  if (![...zone].some((z) => z.contains(next))) closeMega(undefined, 0)
+}
+
+// SSR y primer pintado: hueso (el hero de la Home también lo es). El cliente corrige con lo que hay debajo.
+const detected = ref<NavTheme>('bone')
 const theme = computed<NavTheme>(() => (open.value ? 'ink' : detected.value))
 
 function detectTheme() {
@@ -75,6 +104,12 @@ function closeMenu(returnFocus = true) {
 }
 
 function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && megaOpen.value) {
+    e.preventDefault()
+    megaOpen.value = false
+    megaButton.value?.focus()
+    return
+  }
   if (!open.value) return
   if (e.key === 'Escape') {
     e.preventDefault()
@@ -101,6 +136,7 @@ function onKeydown(e: KeyboardEvent) {
 watch(
   () => route.fullPath,
   async () => {
+    megaOpen.value = false
     closeMenu(false)
     await nextTick()
     // La página nueva se monta tras la transición: se comprueba también un poco después
@@ -112,7 +148,17 @@ watch(
 const mq = import.meta.client ? window.matchMedia('(min-width: 1024px)') : undefined
 const onBreakpoint = (e: MediaQueryListEvent) => e.matches && closeMenu(false)
 
+/* Cierra el panel de Servicios al pulsar fuera o con Esc aunque el foco no esté en la cabecera */
+function onDocPointerDown(e: PointerEvent) {
+  if (megaOpen.value && header.value && !header.value.contains(e.target as Node)) megaOpen.value = false
+}
+function onDocKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && megaOpen.value) megaOpen.value = false
+}
+
 onMounted(() => {
+  document.addEventListener('pointerdown', onDocPointerDown)
+  document.addEventListener('keydown', onDocKeydown)
   onScroll()
   detectTheme()
   window.addEventListener('scroll', onScroll, { passive: true })
@@ -120,7 +166,10 @@ onMounted(() => {
   mq?.addEventListener('change', onBreakpoint)
 })
 onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', onDocPointerDown)
+  document.removeEventListener('keydown', onDocKeydown)
   cancelAnimationFrame(frame)
+  clearTimeout(megaTimer)
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('resize', onScroll)
   mq?.removeEventListener('change', onBreakpoint)
@@ -132,10 +181,12 @@ onBeforeUnmount(() => {
   <header
     ref="header"
     class="site-navbar fixed inset-x-0 top-0 z-40"
-    :class="[`theme-${theme}`, { 'is-scrolled': scrolled && !open, 'is-open': open }]"
+    :class="[`theme-${theme}`, { 'is-scrolled': scrolled && !open, 'is-open': open, 'has-mega': megaOpen }]"
     @keydown="onKeydown"
+    @focusout="onFocusOut"
   >
-    <div class="container-wide nav-grid">
+    <div class="nav-shell">
+    <div class="nav-grid">
       <NuxtLink to="/" class="brand relative z-10" aria-label="Valdepodo, inicio">
         <!-- El símbolo (262 × 472) se dimensiona por anchura: BrandLogo fija height: auto -->
         <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="brand__symbol" />
@@ -145,24 +196,48 @@ onBeforeUnmount(() => {
       </NuxtLink>
 
       <nav class="hidden lg:block" aria-label="Principal">
-        <ul class="nav-pill">
+        <ul class="nav-list">
           <li v-for="item in site.nav" :key="item.to">
-            <NuxtLink :to="item.to" class="nav-link" :aria-current="isActive(item.to) ? 'page' : undefined">{{
-              item.label
-            }}</NuxtLink>
+            <div
+              v-if="item.to === '/servicios'"
+              class="nav-item--mega"
+              @pointerenter="openMega"
+              @pointerleave="closeMega"
+            >
+              <NuxtLink
+                :to="item.to"
+                class="nav-link nav-link--mega"
+                :aria-current="isActive(item.to) ? 'page' : undefined"
+                >{{ item.label }}</NuxtLink
+              >
+              <button
+                ref="megaButton"
+                type="button"
+                class="nav-chevron"
+                aria-controls="mega-servicios"
+                :aria-expanded="megaOpen"
+                aria-label="Ver los servicios"
+                @click="toggleMega"
+              >
+                <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
+                </svg>
+              </button>
+            </div>
+            <NuxtLink
+              v-else
+              :to="item.to"
+              class="nav-link"
+              :aria-current="isActive(item.to) ? 'page' : undefined"
+              >{{ item.label }}</NuxtLink
+            >
           </li>
         </ul>
       </nav>
 
       <div class="nav-end relative z-10">
         <div class="hidden lg:block">
-          <BaseButton
-            size="sm"
-            class="nav-cta"
-            :variant="theme === 'bone' ? 'primary' : 'on-blue'"
-            :to="site.cta.to"
-            arrow
-          >
+          <BaseButton size="sm" class="nav-cta" variant="primary" :to="site.cta.to" arrow>
             {{ site.cta.label }}
           </BaseButton>
         </div>
@@ -182,6 +257,40 @@ onBeforeUnmount(() => {
         </button>
       </div>
     </div>
+    </div>
+
+    <!-- Servicios en bento grid (≥ 1024 px) -->
+    <Transition name="svcmenu">
+      <div
+        v-show="megaOpen"
+        id="mega-servicios"
+        class="svcmenu hidden lg:flex"
+        @pointerenter="openMega"
+        @pointerleave="closeMega"
+      >
+        <div class="svcmenu__panel">
+          <ul class="bento" role="list">
+            <li v-for="(service, i) in services" :key="service.slug" :class="`bento__item bento__item--${i + 1}`">
+              <NuxtLink :to="servicePath(service.slug)" class="bento__tile">
+                <span class="bento__media" aria-hidden="true">
+                  <img
+                    :src="getServiceMedia(service.slug).src"
+                    :style="{ objectPosition: getServiceMedia(service.slug).focus }"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                  />
+                </span>
+                <span class="bento__name">{{ service.name }}</span>
+                <BaseIcon name="arrow-up-right" class="bento__go" />
+              </NuxtLink>
+            </li>
+          </ul>
+          <NuxtLink to="/servicios" class="svcmenu__all">Ver todos los servicios</NuxtLink>
+        </div>
+      </div>
+    </Transition>
 
     <!-- Menú a pantalla completa (< 1024 px) -->
     <Transition name="menu">
@@ -231,32 +340,82 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* La cabecera ocupa todo el ancho pero no captura clics fuera de la píldora y del panel */
 .site-navbar {
   --nav-fg: var(--color-ink);
-  --glass-bg: rgb(255 255 255 / 0.42);
-  --glass-border: rgb(255 255 255 / 0.75);
-  --pill-on-bg: var(--color-ink);
-  --pill-on-fg: var(--color-bone);
-  height: var(--nav-h);
+  --glass-bg: rgb(6 26 44 / 0.06);
+  --glass-border: rgb(6 26 44 / 0.14);
+  --pill-bg: rgb(241 239 233 / 0.74);
+  --pill-border: rgb(6 26 44 / 0.1);
+  --panel-bg: rgb(241 239 233 / 0.94);
+  --underline: var(--color-coral);
   color: var(--nav-fg);
-  transition:
-    height var(--dur-base) var(--ease-out-soft),
-    color var(--dur-base) var(--ease-out-soft);
+  pointer-events: none;
+  transition: color var(--dur-base) var(--ease-out-soft);
 }
-.theme-blue,
+.theme-blue {
+  --pill-bg: rgb(234 248 252 / 0.78);
+  --pill-border: rgb(6 26 44 / 0.12);
+  --panel-bg: rgb(234 248 252 / 0.95);
+}
 .theme-ink {
   --nav-fg: var(--color-bone);
-  --glass-bg: rgb(255 255 255 / 0.14);
-  --glass-border: rgb(255 255 255 / 0.32);
-  --pill-on-bg: rgb(255 255 255 / 0.92);
-  --pill-on-fg: var(--color-ink);
+  --glass-bg: rgb(255 255 255 / 0.12);
+  --glass-border: rgb(255 255 255 / 0.28);
+  --pill-bg: rgb(6 26 44 / 0.7);
+  --pill-border: rgb(255 255 255 / 0.16);
+  --panel-bg: rgb(6 26 44 / 0.94);
 }
-.site-navbar.is-scrolled {
-  height: var(--nav-h-compact);
+
+/* ----- Cabecera camaleón: transparente arriba, píldora flotante con scroll ----- */
+.nav-shell {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  width: calc(100% - 2 * var(--gutter));
+  max-width: var(--container-wide);
+  height: var(--nav-h);
+  margin-inline: auto;
+  padding-inline: 0;
+  pointer-events: auto;
+  transition:
+    max-width 650ms var(--ease-in-out-soft),
+    height 650ms var(--ease-in-out-soft),
+    margin-top 650ms var(--ease-in-out-soft),
+    padding-inline 650ms var(--ease-in-out-soft);
+}
+/* La píldora (fondo, borde y desenfoque) vive en una capa propia: así el hero no se desenfoca arriba del todo */
+.nav-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 999px;
+  border: 1px solid var(--pill-border);
+  background: var(--pill-bg);
+  backdrop-filter: blur(18px) saturate(1.5);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  box-shadow: 0 10px 30px -12px rgb(6 26 44 / 0.22);
+  opacity: 0;
+  transition: opacity 450ms var(--ease-out-soft);
+}
+.is-scrolled .nav-shell {
+  max-width: 66rem;
+  height: 4rem;
+  margin-top: 0.75rem;
+  padding-inline: 1rem 0.625rem;
+}
+.is-scrolled .nav-shell::before {
+  opacity: 1;
+}
+.is-open .nav-shell::before {
+  opacity: 0;
 }
 
 .nav-grid {
   display: flex;
+  width: 100%;
   height: 100%;
   align-items: center;
   justify-content: space-between;
@@ -275,7 +434,7 @@ onBeforeUnmount(() => {
   gap: 0.75rem;
 }
 
-/* ----- Logo: completo arriba del todo; con scroll, solo el símbolo y más pequeño ----- */
+/* ----- Logo: completo arriba del todo; con scroll, solo el símbolo ----- */
 .brand {
   display: inline-flex;
   align-items: center;
@@ -302,8 +461,17 @@ onBeforeUnmount(() => {
   width: 230px;
   max-width: none;
 }
+/* Móvil: el logotipo completo cede ancho al botón «Menú» */
+@media (max-width: 480px) {
+  .brand__wordmark {
+    width: 150px;
+  }
+  .brand__text {
+    margin-left: 0.625rem;
+  }
+}
 .is-scrolled .brand__symbol {
-  width: 38px;
+  width: 36px;
 }
 .is-scrolled .brand__text {
   max-width: 0;
@@ -311,49 +479,219 @@ onBeforeUnmount(() => {
   opacity: 0;
 }
 
-/* ----- Píldora de enlaces con vidrio ----- */
-.nav-pill {
+/* ----- Enlaces: texto sobre el fondo, subrayado que se dibuja ----- */
+.nav-list {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.3125rem;
-  border: 1px solid var(--glass-border);
-  border-radius: 999px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(18px) saturate(1.4);
-  -webkit-backdrop-filter: blur(18px) saturate(1.4);
-  box-shadow:
-    0 8px 28px rgb(6 26 44 / 0.08),
-    inset 0 1px 0 rgb(255 255 255 / 0.35);
+}
+.nav-item--mega {
+  display: flex;
+  align-items: center;
 }
 .nav-link {
+  position: relative;
   display: inline-block;
-  padding: 0.6rem 1.25rem;
-  border-radius: 999px;
+  padding: 0.6rem 0.9rem;
   font-size: 1.0625rem;
   font-weight: 500;
   line-height: 1.2;
   white-space: nowrap;
-  transition:
-    background-color var(--dur-base) var(--ease-out-soft),
-    color var(--dur-base) var(--ease-out-soft);
 }
-.nav-link[aria-current='page'] {
-  background: var(--pill-on-bg);
-  color: var(--pill-on-fg);
+.nav-link::after {
+  content: '';
+  position: absolute;
+  inset: auto 0.9rem 0.3rem;
+  height: 2px;
+  background: var(--underline);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-base) var(--ease-out-soft);
+}
+.nav-link[aria-current='page']::after {
+  transform: scaleX(1);
+}
+.nav-link--mega {
+  padding-right: 0.25rem;
+}
+.nav-link--mega::after {
+  inset-inline: 0.9rem 0.25rem;
+}
+.nav-chevron {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 2rem;
+  border-radius: var(--radius-s);
+}
+.nav-chevron svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  transition: transform var(--dur-base) var(--ease-out-soft);
+}
+.has-mega .nav-chevron svg {
+  transform: rotate(180deg);
 }
 @media (hover: hover) and (pointer: fine) {
-  .nav-link:not([aria-current='page']):hover {
-    background: color-mix(in srgb, var(--nav-fg) 12%, transparent);
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+  .nav-chevron:hover {
+    background: var(--glass-bg);
   }
 }
 
-/* «Pedir cita» redondeado (solo en la navbar; el botón del sistema mantiene su radio) */
 .site-navbar .nav-cta {
-  min-height: 3rem;
-  padding-inline: 1.5rem 1.25rem;
-  border-radius: 999px;
-  font-size: 1rem;
+  min-height: 2.75rem;
+  padding-inline: 1.25rem 1.1rem;
+  font-size: 0.9375rem;
+}
+
+/* ----- Panel de Servicios: bento grid ----- */
+.svcmenu {
+  position: absolute;
+  inset: 100% 0 auto;
+  justify-content: center;
+  /* El relleno superior hace de puente: el puntero no «sale» al cruzar el hueco */
+  padding: 0.5rem var(--gutter) 0;
+  pointer-events: auto;
+}
+.is-scrolled .svcmenu {
+  top: calc(100% - 0.5rem);
+}
+.svcmenu__panel {
+  width: min(64rem, 100%);
+  padding: 0.75rem;
+  border: 1px solid var(--pill-border);
+  border-radius: 1.5rem;
+  background: var(--panel-bg);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  box-shadow: 0 24px 60px -24px rgb(6 26 44 / 0.35);
+}
+.bento {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(2, 8.5rem);
+  gap: 0.5rem;
+}
+.bento__item {
+  min-width: 0;
+}
+.bento__item--1 {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+.bento__tile {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  height: 100%;
+  align-items: flex-end;
+  overflow: hidden;
+  border-radius: var(--radius-m);
+  background: var(--color-ink);
+  color: var(--color-bone);
+  padding: 0.875rem 1rem;
+  transition: transform var(--dur-base) var(--ease-out-soft);
+}
+.bento__media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+.bento__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05);
+  transition:
+    scale var(--dur-image) var(--ease-out-soft),
+    filter 700ms var(--ease-out-soft);
+}
+/* Cyan en multiply en reposo (como las piezas de la Home); en hover vuelve el color de la foto */
+.bento__media::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--color-primary);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  transition: opacity 700ms var(--ease-out-soft);
+}
+.bento__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(to top, rgb(6 26 44 / 0.78) 0%, rgb(6 26 44 / 0.2) 50%, transparent 75%);
+}
+.bento__name {
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.bento__item--1 .bento__name {
+  font-size: 2rem;
+}
+.bento__go {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  opacity: 0.85;
+  transition: transform var(--dur-base) var(--ease-out-soft);
+}
+.svcmenu__all {
+  display: block;
+  width: fit-content;
+  margin: 0.75rem 0.5rem 0.25rem auto;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+  text-decoration-color: transparent;
+  transition: text-decoration-color var(--dur-base) var(--ease-out-soft);
+}
+@media (hover: hover) and (pointer: fine) {
+  .bento__tile:hover {
+    transform: translateY(-2px);
+  }
+  .bento__tile:hover .bento__media img {
+    scale: 1.03;
+    filter: grayscale(0);
+  }
+  .bento__tile:hover .bento__media::before {
+    opacity: 0.12;
+  }
+  .bento__tile:hover .bento__go {
+    transform: translate(2px, -2px);
+  }
+  .svcmenu__all:hover {
+    text-decoration-color: currentColor;
+  }
+}
+.bento__tile:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+.svcmenu-enter-active,
+.svcmenu-leave-active {
+  transition:
+    opacity 220ms var(--ease-out-soft),
+    transform 260ms var(--ease-out-soft);
+}
+.svcmenu-enter-from,
+.svcmenu-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 .menu-button {
@@ -455,10 +793,16 @@ onBeforeUnmount(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .site-navbar,
+  .nav-shell,
+  .nav-shell::before,
   .menu-bar,
   .brand__symbol,
   .brand__text,
-  .nav-link {
+  .nav-link::after,
+  .bento__tile,
+  .bento__media img,
+  .svcmenu-enter-active,
+  .svcmenu-leave-active {
     transition: none;
   }
   .menu-enter-active,

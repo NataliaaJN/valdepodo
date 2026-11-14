@@ -41,7 +41,7 @@ const service = useServicePage('pie-diabetico')
       <SectionHeading :title="{ before: 'Cuidados y atención ', accent: 'podológica', after: '' }" />
       <ul class="mt-10 grid gap-8 md:grid-cols-3" role="list">
         <li v-for="(item, i) in diabetic.care" :key="item.title" v-reveal="i">
-          <span class="font-display text-heading-s text-primary">0{{ i + 1 }}</span>
+          <span class="font-display text-heading-s text-primary-strong">0{{ i + 1 }}</span>
           <h3 class="mt-2 text-heading-s font-semibold text-deep-blue">{{ item.title }}</h3>
           <ContentValue :value="item.text" as="p" class="mt-2 text-text-secondary" />
         </li>
@@ -93,7 +93,7 @@ const service = useServicePage('pie-diabetico')
           v-reveal="i"
           class="flex gap-4 border-t border-border pt-5"
         >
-          <span class="font-display text-heading-s text-primary" aria-hidden="true">0{{ i + 1 }}</span>
+          <span class="font-display text-heading-s text-primary-strong" aria-hidden="true">0{{ i + 1 }}</span>
           <ContentValue :value="rec" as="p" class="text-body-l text-text" />
         </li>
       </ol>

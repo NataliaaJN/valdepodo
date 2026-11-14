@@ -196,7 +196,7 @@ onBeforeUnmount(() => {
                       }
                 "
               >
-                <span class="font-display text-primary">{{ label.number }}</span>
+                <span class="font-display text-primary-strong">{{ label.number }}</span>
                 <!-- En móvil solo el número: el nombre está en la lista numerada (spec 04 §2.2) -->
                 <span class="hidden md:inline">{{ label.label }}</span>
               </div>
@@ -241,7 +241,7 @@ onBeforeUnmount(() => {
           </h2>
           <ol class="mt-8 grid gap-6">
             <li v-for="layer in insoleLayers" :key="layer.id" class="flex gap-4">
-              <span class="font-display text-heading-s text-primary">{{ layer.number }}</span>
+              <span class="font-display text-heading-s text-primary-strong">{{ layer.number }}</span>
               <div>
                 <h3 class="font-semibold text-deep-blue">{{ layer.label }}</h3>
                 <ContentValue
@@ -265,7 +265,7 @@ onBeforeUnmount(() => {
               class="fiber-step flex gap-4"
               :class="{ 'is-active': i === activeStep }"
             >
-              <span class="font-display text-heading-s text-primary">{{ step.number }}</span>
+              <span class="font-display text-heading-s text-primary-strong">{{ step.number }}</span>
               <div>
                 <h3 class="font-semibold text-deep-blue">{{ step.title }}</h3>
                 <ContentValue :value="step.text" as="p" class="text-text-secondary" />
@@ -290,7 +290,7 @@ onBeforeUnmount(() => {
 .story-chip[aria-pressed='true'] {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: var(--color-white);
+  color: var(--color-ink);
 }
 
 @media (min-width: 768px) {

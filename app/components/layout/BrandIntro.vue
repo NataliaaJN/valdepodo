@@ -36,7 +36,7 @@ onBeforeUnmount(finish)
 <template>
   <div ref="root" class="brand-intro" aria-hidden="true">
     <div class="brand-intro__logo">
-      <BrandLogo variant="full" mono label="" class="w-[min(38vw,168px)] text-bone" />
+      <BrandLogo variant="full" mono label="" class="w-[min(38vw,168px)] text-ink" />
     </div>
   </div>
 </template>

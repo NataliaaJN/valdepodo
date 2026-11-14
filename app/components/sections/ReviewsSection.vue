@@ -89,8 +89,8 @@ useGsapContext(root, (c) => {
 <style scoped>
 .reviews {
   padding-block: clamp(3.5rem, 8vw, 7rem);
-  /* Cian muy claro: el mismo de la pausa de datos, para que no se funda con el pre-footer azul */
-  background: linear-gradient(180deg, #e6f6fc 0%, #d9f0fa 100%);
+  /* Hueso base: la banda de datos (cyan muy claro) y el pre-footer (cyan claro) quedan como capítulos distintos */
+  background: var(--color-bone);
   color: var(--color-ink);
 }
 
@@ -134,12 +134,12 @@ useGsapContext(root, (c) => {
   font-stretch: 75%;
   line-height: 1;
   letter-spacing: -0.02em;
-  color: var(--color-primary);
+  color: var(--color-primary-strong);
 }
 .reviews__stars {
   position: relative;
   line-height: 0;
-  color: var(--color-primary);
+  color: var(--color-primary-strong);
 }
 .reviews__stars-row {
   display: flex;

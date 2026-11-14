@@ -109,10 +109,10 @@ useGsapContext(section, (c) => {
 
 <style scoped>
 .cta {
-  /* Claro y azulado, derivado de los tokens (hielo + blanco) */
-  background: color-mix(in srgb, var(--color-ice-blue) 22%, var(--color-white));
+  /* Cyan claro: fondo de contraste antes del footer */
+  background: var(--color-cyan-light);
   color: var(--color-deep-blue);
-  border-top: 1px solid color-mix(in srgb, var(--color-primary) 18%, transparent);
+  border-top: 1px solid rgb(6 26 44 / 0.12);
   padding-block: clamp(2.5rem, 4vw, 3.5rem);
 }
 
@@ -132,7 +132,7 @@ useGsapContext(section, (c) => {
   color: var(--color-deep-blue);
 }
 .cta__stop {
-  color: var(--color-cyan);
+  color: var(--color-coral);
 }
 .cta__text {
   margin-top: 0.9rem;
@@ -184,7 +184,7 @@ useGsapContext(section, (c) => {
   aspect-ratio: 1;
   border-radius: 50%;
   background: var(--color-primary);
-  color: var(--color-bone);
+  color: var(--color-ink);
   text-align: center;
   font-family: var(--font-display);
   font-weight: 600;
@@ -216,7 +216,8 @@ useGsapContext(section, (c) => {
 }
 @media (hover: hover) and (pointer: fine) {
   .cta__link:hover {
-    background: var(--color-primary-strong);
+    background: var(--color-ink);
+    color: var(--color-bone);
   }
   .cta__link:hover .cta__link-arrow svg:first-child {
     transform: translate(100%, -100%);

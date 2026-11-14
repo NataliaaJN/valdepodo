@@ -141,6 +141,7 @@ img.photo {
 }
 .social:hover {
   background: var(--color-primary);
+  color: var(--color-ink);
 }
 
 .info {

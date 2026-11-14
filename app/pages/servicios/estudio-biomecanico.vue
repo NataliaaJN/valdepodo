@@ -39,7 +39,7 @@ const indicators = ['Estático', 'Marcha', 'Carrera']
         <ContentValue :value="intro" as="p" class="text-body-l text-text-secondary lg:col-span-6" />
         <ul class="grid grid-cols-3 gap-4 lg:col-span-5 lg:col-start-8" role="list">
           <li v-for="(label, i) in indicators" :key="label" class="rounded-m bg-white p-4 text-center">
-            <span class="font-display text-heading-s text-primary">0{{ i + 1 }}</span>
+            <span class="font-display text-heading-s text-primary-strong">0{{ i + 1 }}</span>
             <span class="mt-1 block text-sm font-semibold text-deep-blue">{{ label }}</span>
           </li>
         </ul>
