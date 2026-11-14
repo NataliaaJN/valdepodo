@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Footer global. Una sola fila de datos (ubicación · contacto · redes), la línea legal y VALDEPODO a ancho
- * completo, recortado por abajo, como elemento gráfico de cierre. Todos los datos salen de `app/data/site.ts`.
+ * Footer global. Una sola fila de datos (ubicación · contacto · redes) y la línea legal.
+ * Todos los datos salen de `app/data/site.ts`.
  */
 import { site } from '~/data/site'
 
@@ -58,13 +58,6 @@ const year = new Date().getFullYear()
           </ul>
         </nav>
       </div>
-    </div>
-
-    <!-- VALDEPODO a ancho completo: el SVG escala con el viewport; el recorte inferior lo hace gráfico -->
-    <div class="footer-word" aria-hidden="true">
-      <svg viewBox="0 0 1000 250" preserveAspectRatio="xMidYMax meet">
-        <text x="0" y="238" textLength="1000" lengthAdjust="spacingAndGlyphs">VALDEPODO</text>
-      </svg>
     </div>
   </footer>
 </template>
@@ -131,27 +124,5 @@ const year = new Date().getFullYear()
   padding-block: 1.25rem;
   font-size: 0.875rem;
   color: rgb(241 239 233 / 0.7);
-}
-
-.footer-word {
-  /* Recorta el 14 % inferior del rótulo */
-  overflow: hidden;
-  padding-inline: var(--gutter);
-  margin-bottom: -0.5vw;
-  line-height: 0;
-}
-.footer-word svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin-bottom: -2.4vw;
-}
-.footer-word text {
-  font-family: var(--font-display);
-  font-weight: 650;
-  font-size: 255px;
-  letter-spacing: -0.02em;
-  font-stretch: 75%;
-  fill: var(--color-primary);
 }
 </style>
