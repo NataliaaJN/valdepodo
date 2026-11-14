@@ -80,9 +80,10 @@ useGsapContext(section, (c) => {
 
     <div class="hero__text container-wide">
       <p class="eyebrow hero__eyebrow">Clínica de podología · <ContentValue :value="site.city" /></p>
-      <h1 id="hero-title" class="hero__title">
+      <h1 id="hero-title" class="hero__title">Valdepodo</h1>
+      <p class="hero__lead">
         {{ hero.title.before }}<em class="hero__accent">{{ hero.title.accent }}</em>
-      </h1>
+      </p>
     </div>
   </section>
 </template>
@@ -212,15 +213,25 @@ html[data-intro='play'] .hero__scroll {
   animation-delay: 0.2s;
 }
 .hero__title {
-  max-width: 9.5ch;
   font-family: var(--font-display);
-  font-weight: 500;
-  font-size: clamp(3rem, 1.2rem + 7.2vw, 7.5rem);
-  line-height: 0.96;
-  letter-spacing: -0.035em;
-  text-wrap: balance;
+  font-weight: 600;
+  font-size: clamp(3rem, 0.9rem + 8.6vw, 8.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
   animation: fade-up 1.4s var(--ease-out-soft) both;
   animation-delay: 0.35s;
+}
+.hero__lead {
+  max-width: 16ch;
+  margin-top: clamp(0.75rem, 1.6vw, 1.25rem);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.375rem, 1rem + 1.6vw, 2.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  animation: fade-up 1.4s var(--ease-out-soft) both;
+  animation-delay: 0.5s;
 }
 .hero__accent {
   font-style: normal;
@@ -232,6 +243,9 @@ html[data-intro='play'] .hero__eyebrow {
 }
 html[data-intro='play'] .hero__title {
   animation-delay: 1.45s;
+}
+html[data-intro='play'] .hero__lead {
+  animation-delay: 1.6s;
 }
 @keyframes fade-up {
   from {
@@ -254,9 +268,6 @@ html[data-intro='play'] .hero__title {
   .hero__text {
     padding-bottom: 0;
   }
-  .hero__title {
-    max-width: 8.5ch;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -268,6 +279,7 @@ html[data-intro='play'] .hero__title {
   .hero__scroll,
   .hero__model,
   .hero__eyebrow,
+  .hero__lead,
   .hero__title {
     animation: none;
   }

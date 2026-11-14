@@ -4,7 +4,7 @@
  * ligero cambio de tono y la flecha avanza un par de píxeles.
  * Renderiza <NuxtLink> si recibe `to`/`href`, o <button> en caso contrario. Nunca un <div> clicable.
  *
- * - `primary`: cyan con texto tinta (hover: tinta con texto hueso). Es el botón estándar.
+ * - `primary`: cyan claro (#c8f1fa) con filete y texto tinta (hover: tinta con texto hueso). Es el botón estándar.
  * - `on-blue`: hueso sobre cyan o tinta (hover: cyan).
  * - `secondary`: filete (hover: se rellena de tinta).
  * - `ghost`: enlace subrayado.
@@ -118,7 +118,9 @@ const isInactive = computed(() => props.disabled || props.loading)
 }
 
 .btn--primary {
-  background: var(--color-primary);
+  background: var(--color-cyan-light);
+  /* Filete tenue: el cyan claro sobre hueso necesita borde para definirse */
+  border-color: rgb(6 26 44 / 0.14);
   color: var(--color-ink);
 }
 .btn--on-blue,
@@ -171,6 +173,7 @@ const isInactive = computed(() => props.disabled || props.loading)
 @media (hover: hover) and (pointer: fine) {
   .btn--primary:hover {
     background: var(--color-ink);
+    border-color: var(--color-ink);
     color: var(--color-bone);
   }
   .btn--on-blue:hover,

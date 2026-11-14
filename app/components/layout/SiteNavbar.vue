@@ -12,7 +12,6 @@
  */
 import { site } from '~/data/site'
 import { services, servicePath } from '~/data/services'
-import { getServiceMedia } from '~/data/service-media'
 
 type NavTheme = 'blue' | 'ink' | 'bone'
 
@@ -272,16 +271,7 @@ onBeforeUnmount(() => {
           <ul class="bento" role="list">
             <li v-for="(service, i) in services" :key="service.slug" :class="`bento__item bento__item--${i + 1}`">
               <NuxtLink :to="servicePath(service.slug)" class="bento__tile">
-                <span class="bento__media" aria-hidden="true">
-                  <img
-                    :src="getServiceMedia(service.slug).src"
-                    :style="{ objectPosition: getServiceMedia(service.slug).focus }"
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    draggable="false"
-                  />
-                </span>
+                <span class="bento__num" aria-hidden="true">{{ String(i + 1).padStart(2, '0') }}</span>
                 <span class="bento__name">{{ service.name }}</span>
                 <BaseIcon name="arrow-up-right" class="bento__go" />
               </NuxtLink>
@@ -391,7 +381,7 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: 0;
   z-index: -1;
-  border-radius: 999px;
+  border-radius: var(--radius-m);
   border: 1px solid var(--pill-border);
   background: var(--pill-bg);
   backdrop-filter: blur(18px) saturate(1.5);
@@ -563,7 +553,7 @@ onBeforeUnmount(() => {
   width: min(64rem, 100%);
   padding: 0.75rem;
   border: 1px solid var(--pill-border);
-  border-radius: 1.5rem;
+  border-radius: 0.75rem;
   background: var(--panel-bg);
   backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
@@ -582,51 +572,31 @@ onBeforeUnmount(() => {
   grid-column: span 2;
   grid-row: span 2;
 }
+/* Solo tipografía: sin fotos. Baldosas planas con filete; la principal en cyan */
 .bento__tile {
   position: relative;
-  isolation: isolate;
   display: flex;
   height: 100%;
-  align-items: flex-end;
-  overflow: hidden;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgb(6 26 44 / 0.12);
   border-radius: var(--radius-m);
-  background: var(--color-ink);
-  color: var(--color-bone);
+  background: rgb(6 26 44 / 0.04);
+  color: var(--color-ink);
   padding: 0.875rem 1rem;
-  transition: transform var(--dur-base) var(--ease-out-soft);
-}
-.bento__media {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-}
-.bento__media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(1) contrast(1.05);
   transition:
-    scale var(--dur-image) var(--ease-out-soft),
-    filter 700ms var(--ease-out-soft);
+    transform var(--dur-base) var(--ease-out-soft),
+    background-color var(--dur-base) var(--ease-out-soft);
 }
-/* Cyan en multiply en reposo (como las piezas de la Home); en hover vuelve el color de la foto */
-.bento__media::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+.bento__item--1 .bento__tile {
+  border-color: transparent;
   background: var(--color-primary);
-  mix-blend-mode: multiply;
-  opacity: 0.85;
-  transition: opacity 700ms var(--ease-out-soft);
 }
-.bento__media::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background: linear-gradient(to top, rgb(6 26 44 / 0.78) 0%, rgb(6 26 44 / 0.2) 50%, transparent 75%);
+.bento__num {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
 }
 .bento__name {
   max-width: 14ch;
@@ -665,12 +635,11 @@ onBeforeUnmount(() => {
   .bento__tile:hover {
     transform: translateY(-2px);
   }
-  .bento__tile:hover .bento__media img {
-    scale: 1.03;
-    filter: grayscale(0);
+  .bento__tile:hover {
+    background: var(--color-cyan-light);
   }
-  .bento__tile:hover .bento__media::before {
-    opacity: 0.12;
+  .bento__item--1 .bento__tile:hover {
+    background: var(--color-cyan-light);
   }
   .bento__tile:hover .bento__go {
     transform: translate(2px, -2px);
@@ -800,7 +769,6 @@ onBeforeUnmount(() => {
   .brand__text,
   .nav-link::after,
   .bento__tile,
-  .bento__media img,
   .svcmenu-enter-active,
   .svcmenu-leave-active {
     transition: none;

@@ -5,7 +5,8 @@
  * Interacción (referencia de ritmo: galerías de imagen de Kexsio, sin copiar su diseño):
  *  - Reposo: foto en monocromo azul de marca (tratamiento común, independiente de la foto de origen).
  *  - Hover / foco: el color vuelve, zoom lento 1,00 → 1,07 (1,4 s, expo-out), la imagen se desplaza en
- *    sentido contrario al puntero (≤ 18 px, con inercia → profundidad) y el título cambia a cian.
+ *    sentido contrario al puntero (≤ 18 px, con inercia → profundidad) y el título sube unos píxeles
+ *    (sin cambiar de color).
  *  - Táctil (sin hover): la pieza que cruza el centro de la pantalla se «activa» con la misma animación.
  *  - Reduced motion: sin zoom ni desplazamiento; cambian el color de la foto y el del título.
  * La imagen sale de `app/data/service-media.ts` (único punto de sustitución).
@@ -226,7 +227,6 @@ function onPointerLeave() {
 }
 .is-active .tile__title,
 .tile:focus-visible .tile__title {
-  color: var(--color-cyan);
   transform: translateY(-6px);
 }
 .is-active .tile__go,
@@ -248,7 +248,6 @@ function onPointerLeave() {
     opacity: 0.18;
   }
   .tile:hover .tile__title {
-    color: var(--color-cyan);
     transform: translateY(-6px);
   }
   .tile:hover .tile__go {
