@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { gsap } from 'gsap'
+
 /**
  * Pre-footer global: una pieza compacta, no un hero. Mensaje a la izquierda, un recorrido de huellas alternas
  * (pie izquierdo / derecho) que sube en diagonal y desemboca en «Pedir cita». Fondo claro con tokens de marca;
  * el footer (tinta) viene justo debajo.
  *
- * Animación: las huellas se van revelando con el scroll. Un solo listener pasivo (activo únicamente mientras la
- * sección está en pantalla) escribe `--p` (0 → 1) en la sección y el CSS decide qué huellas se ven. Sin GSAP.
- * Sin JS o con `prefers-reduced-motion`, `--p` vale 1 y todo se ve ya dibujado.
+ * Animación: un timeline GSAP + ScrollTrigger con `scrub` (useGsapContext, como el resto del sitio) revela las
+ * huellas con el scroll y, al final, el botón. Sin JS o con `prefers-reduced-motion` todo se ve ya dibujado.
  * Lo pinta el layout al final de todas las páginas (salvo en `/contacto`, donde ya está el formulario).
  */
 withDefaults(
@@ -45,48 +46,20 @@ const prints = Array.from({ length: STEPS }, (_, i) => {
 })
 
 const section = ref<HTMLElement | null>(null)
-let io: IntersectionObserver | undefined
-let frame = 0
 
-function update() {
-  frame = 0
-  const el = section.value
-  if (!el) return
-  const r = el.getBoundingClientRect()
-  const vh = window.innerHeight
-  // 0 cuando la sección asoma por abajo; 1 cuando su parte inferior está ya cerca del borde de la ventana
-  const p = (vh - r.top) / (r.height + vh * 0.35)
-  el.style.setProperty('--p', Math.min(1, Math.max(0, p)).toFixed(3))
-}
-const onScroll = () => {
-  if (!frame) frame = requestAnimationFrame(update)
-}
-
-onMounted(() => {
-  const el = section.value
-  if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  el.dataset.walk = 'on'
-  update()
-  io = new IntersectionObserver(
-    ([entry]) => {
-      if (entry?.isIntersecting) {
-        window.addEventListener('scroll', onScroll, { passive: true })
-        window.addEventListener('resize', onScroll, { passive: true })
-        update()
-      } else {
-        window.removeEventListener('scroll', onScroll)
-        window.removeEventListener('resize', onScroll)
-      }
-    },
-    { rootMargin: '0px 0px 10% 0px' },
-  )
-  io.observe(el)
-})
-onBeforeUnmount(() => {
-  io?.disconnect()
-  window.removeEventListener('scroll', onScroll)
-  window.removeEventListener('resize', onScroll)
-  if (frame) cancelAnimationFrame(frame)
+// Un único timeline con scrub: las huellas se apoyan una a una y, al terminar, entra el botón.
+// Con `prefers-reduced-motion` no se crea nada y todo queda visible.
+useGsapContext(section, (c) => {
+  if (c.reduce || !section.value) return undefined
+  const prints = gsap.utils.toArray<SVGElement>('.print', section.value)
+  const link = section.value.querySelector('.cta__link')
+  const tl = gsap.timeline({
+    defaults: { ease: 'power2.out' },
+    scrollTrigger: { trigger: section.value, start: 'top 88%', end: 'bottom 68%', scrub: 0.6 },
+  })
+  tl.fromTo(prints, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 1, stagger: 0.55 })
+  if (link) tl.fromTo(link, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 1.1, ease: 'back.out(1.4)' }, '>-0.2')
+  return undefined
 })
 </script>
 
@@ -126,7 +99,7 @@ onBeforeUnmount(() => {
         <span class="cta__link-label">{{ cta.label }}</span>
         <span class="cta__link-arrow" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none">
-            <path d="M3 12h17M14 5.5 20.5 12 14 18.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" />
+            <path d="M5 19 19 5M8 5h11v11" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" />
           </svg>
         </span>
       </NuxtLink>
@@ -136,7 +109,6 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .cta {
-  --p: 1;
   /* Claro y azulado, derivado de los tokens (hielo + blanco) */
   background: color-mix(in srgb, var(--color-ice-blue) 22%, var(--color-white));
   color: var(--color-deep-blue);
@@ -181,7 +153,8 @@ onBeforeUnmount(() => {
   width: 1.35rem;
   height: auto;
   overflow: visible;
-  transform: translate(-50%, -50%) rotate(var(--rot));
+  translate: -50% -50%;
+  rotate: var(--rot);
 }
 .print__shadow {
   fill: color-mix(in srgb, var(--color-primary) 30%, transparent);
@@ -198,71 +171,45 @@ onBeforeUnmount(() => {
   --fp-fill: color-mix(in srgb, var(--color-primary) 62%, var(--color-ice-blue));
 }
 
-/* Con JS: cada huella aparece cuando el progreso del scroll alcanza su turno */
-.cta[data-walk='on'] .print {
-  --k: clamp(0, calc((var(--p) * 11 - var(--i)) / 1.4), 1);
-  opacity: var(--k);
-  transform: translate(-50%, calc(-50% + (1 - var(--k)) * 6px)) rotate(var(--rot));
-}
-
-/* ---------- CTA: enlace tipográfico con círculo que reacciona al hover; entra al terminar el recorrido ---------- */
+/* ---------- CTA: sello circular, el último «paso» del recorrido ---------- */
 .cta__link {
-  justify-self: start;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.9rem;
-  padding-block: 0.5rem;
+  position: relative;
+  isolation: isolate;
+  justify-self: end;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.6rem;
+  width: 8rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-bone);
+  text-align: center;
   font-family: var(--font-display);
   font-weight: 600;
   font-stretch: 75%;
-  font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+  font-size: 1.75rem;
   letter-spacing: -0.02em;
-  line-height: 1;
-  color: var(--color-primary-strong);
-  transition: opacity var(--dur-base) var(--ease-out-soft);
-}
-.cta__link-label {
-  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 2px no-repeat;
-  padding-bottom: 0.2em;
-  transition: background-size var(--dur-base) var(--ease-out-soft);
-}
-.cta__link-arrow {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-  transition:
-    background-color var(--dur-base) var(--ease-out-soft),
-    color var(--dur-base) var(--ease-out-soft),
-    border-color var(--dur-base) var(--ease-out-soft);
+  line-height: 0.95;
+  transition: background-color var(--dur-base) var(--ease-out-soft);
 }
 .cta__link-arrow svg {
-  width: 1.1rem;
-  height: 1.1rem;
+  display: block;
+  width: 1.4rem;
+  height: 1.4rem;
   transition: transform var(--dur-base) var(--ease-out-soft);
 }
-
-/* Con JS: el CTA entra cuando la última huella ya está apoyada */
-.cta[data-walk='on'] .cta__link {
-  --k2: clamp(0, calc((var(--p) * 11 - 8.6) / 1), 1);
-  opacity: var(--k2);
-  transform: translateY(calc((1 - var(--k2)) * 8px));
-}
-.cta[data-walk='on'] .cta__link:focus-visible {
-  opacity: 1;
-  transform: none;
+.cta__link:focus-visible {
+  opacity: 1 !important;
+  transform: none !important;
 }
 @media (hover: hover) and (pointer: fine) {
-  .cta__link:hover .cta__link-arrow,
-  .cta__link:focus-visible .cta__link-arrow {
-    background: var(--color-cyan);
-    border-color: var(--color-cyan);
-    color: var(--color-deep-blue);
+  .cta__link:hover {
+    background: var(--color-deep-blue);
   }
   .cta__link:hover .cta__link-arrow svg {
-    transform: translateX(3px);
+    transform: translate(3px, -3px);
   }
   /* La última huella «pisa» al señalar el CTA */
   .cta:has(.cta__link:hover) .print--last .print__body {
@@ -285,12 +232,8 @@ onBeforeUnmount(() => {
     width: 2.1rem;
   }
   .cta__link {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    justify-self: end;
-    align-self: start;
-    margin-top: 0.5rem;
+    width: 9.5rem;
+    font-size: 2rem;
   }
 }
 @media (min-width: 1024px) and (max-width: 1279px) {
