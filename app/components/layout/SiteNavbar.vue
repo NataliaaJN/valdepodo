@@ -431,7 +431,7 @@ onBeforeUnmount(() => {
   justify-self: start;
 }
 .brand__symbol {
-  width: 46px;
+  width: 36px;
   flex: none;
   transition: width var(--dur-base) var(--ease-out-soft);
 }
@@ -448,7 +448,7 @@ onBeforeUnmount(() => {
 }
 .brand__wordmark {
   display: block;
-  width: 230px;
+  width: 200px;
   max-width: none;
 }
 /* Móvil: el logotipo completo cede ancho al botón «Menú» */
@@ -461,7 +461,7 @@ onBeforeUnmount(() => {
   }
 }
 .is-scrolled .brand__symbol {
-  width: 36px;
+  width: 28px;
 }
 .is-scrolled .brand__text {
   max-width: 0;

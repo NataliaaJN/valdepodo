@@ -150,9 +150,10 @@ function onPointerLeave() {
 .tile__tint {
   position: absolute;
   inset: 0;
-  background: var(--color-primary);
+  /* Mismo tono que los botones (cyan claro): filtro suave en vez del cyan saturado */
+  background: var(--color-cyan-light);
   mix-blend-mode: multiply;
-  opacity: 0.92;
+  opacity: 0.95;
   transition: opacity 1000ms var(--ease-out-soft);
 }
 /* Velo solo bajo el texto: garantiza el contraste del título (AA) en cualquier foto */

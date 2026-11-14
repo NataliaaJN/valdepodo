@@ -80,10 +80,11 @@ useGsapContext(section, (c) => {
 
     <div class="hero__text container-wide">
       <p class="eyebrow hero__eyebrow">Clínica de podología · <ContentValue :value="site.city" /></p>
-      <h1 id="hero-title" class="hero__title">Valdepodo</h1>
-      <p class="hero__lead">
-        {{ hero.title.before }}<em class="hero__accent">{{ hero.title.accent }}</em>
-      </p>
+      <h1 id="hero-title" class="hero__title">
+        {{ hero.title.before }}<em class="hero__accent">{{ hero.title.accent }}</em>{{ hero.title.after }}
+      </h1>
+      <p class="hero__lead">{{ hero.lead }}</p>
+      <p class="hero__desc"><ContentValue :value="hero.description" /></p>
     </div>
   </section>
 </template>
@@ -213,25 +214,34 @@ html[data-intro='play'] .hero__scroll {
   animation-delay: 0.2s;
 }
 .hero__title {
+  max-width: 9.5ch;
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(3rem, 0.9rem + 8.6vw, 8.5rem);
-  line-height: 0.92;
-  letter-spacing: -0.04em;
+  font-weight: 500;
+  font-size: clamp(3rem, 1.2rem + 7.2vw, 7.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
   animation: fade-up 1.4s var(--ease-out-soft) both;
   animation-delay: 0.35s;
 }
 .hero__lead {
-  max-width: 16ch;
-  margin-top: clamp(0.75rem, 1.6vw, 1.25rem);
+  margin-top: clamp(1rem, 2vw, 1.5rem);
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: clamp(1.375rem, 1rem + 1.6vw, 2.25rem);
-  line-height: 1.05;
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  line-height: 1.1;
   letter-spacing: -0.02em;
-  text-wrap: balance;
   animation: fade-up 1.4s var(--ease-out-soft) both;
   animation-delay: 0.5s;
+}
+.hero__desc {
+  max-width: 30ch;
+  margin-top: 0.5rem;
+  color: rgb(6 26 44 / 0.72);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  animation: fade-up 1.4s var(--ease-out-soft) both;
+  animation-delay: 0.6s;
 }
 .hero__accent {
   font-style: normal;
@@ -246,6 +256,9 @@ html[data-intro='play'] .hero__title {
 }
 html[data-intro='play'] .hero__lead {
   animation-delay: 1.6s;
+}
+html[data-intro='play'] .hero__desc {
+  animation-delay: 1.7s;
 }
 @keyframes fade-up {
   from {
@@ -280,6 +293,7 @@ html[data-intro='play'] .hero__lead {
   .hero__model,
   .hero__eyebrow,
   .hero__lead,
+  .hero__desc,
   .hero__title {
     animation: none;
   }

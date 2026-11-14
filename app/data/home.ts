@@ -6,9 +6,10 @@ import { pending, type Maybe } from '#shared/utils/pending'
 import type { FootLayer } from '~/utils/foot-layers'
 
 export const hero = {
-  title: { before: 'Todo empieza por ', accent: 'tus pies', after: '' },
+  title: { before: 'Todo empieza por ', accent: 'tus pies', after: '.' },
+  lead: 'Cuidamos de ti en cada paso.',
   description: pending(
-    'Analizamos cómo está construido tu pie y cómo se mueve para cuidarlo en cada paso.',
+    'Especialistas en podología, biomecánica y cuidado integral del pie.',
     'Propuesta de valor provisional (spec 03 §1): validar con la clínica',
   ) as Maybe<string>,
   primaryCta: { label: 'Pedir cita', to: '/contacto#cita' },
