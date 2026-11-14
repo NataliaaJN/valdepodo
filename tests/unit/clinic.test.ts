@@ -75,14 +75,28 @@ describe('horario y "abierto ahora" (Europe/Madrid)', () => {
 
 describe('contenido (spec 09)', () => {
   it('los datos de contacto confirmados ya no son pendientes; también el año de apertura', () => {
-    for (const value of [site.phone, site.email, site.address.street, site.hours, site.instagram, site.linkedin, site.foundedYear]) {
+    for (const value of [
+      site.phone,
+      site.email,
+      site.address.street,
+      site.hours,
+      site.instagram,
+      site.linkedin,
+      site.foundedYear,
+    ]) {
       expect(isPending(value)).toBe(false)
     }
   })
 
   it('equipo confirmado: Paula primero, ambas copropietarias y podólogas con foto y LinkedIn', () => {
-    expect(team.map((m) => resolveValue(m.name))).toEqual(['Paula Vigara Aranda', 'Valerie Savignano Gutiérrez'])
-    for (const member of team) {
+    expect(team.map((m) => resolveValue(m.name))).toEqual([
+      'Paula Vigara Aranda',
+      'Valerie Savignano Gutiérrez',
+      'Nombre pendiente',
+    ])
+    // La recepcionista es un marcador a la espera de datos de la clínica
+    expect(isPending(team[2]!.name)).toBe(true)
+    for (const member of team.slice(0, 2)) {
       expect(resolveValue(member.role)).toBe('Copropietaria y Podóloga')
       expect(member.photo).not.toBeNull()
       expect(member.linkedin).toMatch(/^https:\/\/es\.linkedin\.com\/in\//)

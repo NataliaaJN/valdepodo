@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
- * La clínica (spec 05): una sola página que cuenta la historia Personas → Forma de trabajar → Experiencia →
- * Espacio. Hero con la foto del equipo, equipo (#equipo), método en línea de tiempo, los años de experiencia
- * como pausa y el espacio de la clínica. El CTA de cierre lo pone el layout.
+ * La clínica (spec 05): una sola página que cuenta la historia Personas → Forma de trabajar →
+ * Espacio. Hero con la foto del equipo (y los años de experiencia en su frase), equipo (#equipo), método en
+ * línea de tiempo y el espacio de la clínica. El CTA de cierre lo pone el layout.
  * Sin fotos reales todavía: placeholders ilustrados marcados ("Fotografía pendiente"), nunca stock.
  * Schema `Person`: solo con datos confirmados (ahora ninguno).
  */
@@ -66,9 +66,6 @@ if (confirmedPeople.length) {
     <!-- 2. Forma de trabajar -->
     <MethodTimeline />
 
-    <!-- 3. Experiencia -->
-    <ExperienceSection />
-
     <!-- 4. Espacio -->
     <section class="space py-(--space-section)" aria-labelledby="clinic-title" data-nav-theme="bone">
       <div class="container-wide space__grid">
@@ -101,6 +98,12 @@ if (confirmedPeople.length) {
 .team__cards {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  .team__cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 .space__grid {
   display: grid;
@@ -147,6 +150,7 @@ if (confirmedPeople.length) {
   }
   .team__cards {
     grid-column: 5 / span 8;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 </style>

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
- * Profesional en fila editorial (spec 05 §2): retrato cuadrado a su tamaño nativo (los archivos son de
- * 200 px: ampliarlos a una tarjeta grande los pixelaba), nombre grande y cargo siempre visibles, y
- * LinkedIn como enlace con nombre solo si la persona lo autoriza. Descripción, especialidades y colegiación
- * aparecen en la misma fila cuando existan. Nada depende del hover.
+ * Profesional en card (spec 05 §2): retrato cuadrado arriba (los archivos son de 200 px: se muestran en
+ * cards estrechas para no pixelarlos), cargo y nombre siempre visibles debajo y LinkedIn con nombre solo si
+ * la persona lo autoriza. Descripción, especialidades y colegiación aparecen en la card cuando existan.
+ * Sin foto: marcador «Fotografía pendiente». Nada depende del hover. En móvil la card se tumba (foto a la izquierda).
  */
 import { resolveValue } from '#shared/utils/pending'
 import type { TeamMember } from '~/data/team'
@@ -61,19 +61,23 @@ const name = computed(() => resolveValue(props.member.name))
 <style scoped>
 .person {
   display: grid;
-  grid-template-columns: clamp(6.5rem, 26vw, 12.5rem) minmax(0, 1fr);
+  grid-template-columns: 7rem minmax(0, 1fr);
   align-items: center;
-  gap: clamp(1rem, 3vw, 2.5rem);
-  border-top: 1px solid var(--color-border);
-  padding-block: clamp(1.25rem, 2.5vw, 2rem);
-}
-.person:last-child {
-  border-bottom: 1px solid var(--color-border);
+  gap: 1rem;
+  height: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-m);
+  background: var(--color-white);
+  padding: 0.75rem;
+  transition:
+    translate var(--dur-base) var(--ease-out-soft),
+    border-color var(--dur-base) var(--ease-out-soft);
 }
 .media {
+  position: relative;
   overflow: hidden;
   aspect-ratio: 1;
-  border-radius: var(--radius-m);
+  border-radius: var(--radius-s);
   background: var(--color-ink);
   transform: translateZ(0);
 }
@@ -94,21 +98,21 @@ const name = computed(() => resolveValue(props.member.name))
 .info {
   display: grid;
   justify-items: start;
-  gap: 0.5rem;
+  align-content: start;
+  gap: 0.375rem;
   min-width: 0;
 }
 .role {
   color: var(--color-text-secondary);
 }
 .name {
-  font-size: var(--text-display-m);
-  line-height: 1;
+  font-size: var(--text-heading-s);
+  line-height: 1.1;
   color: var(--color-ink);
 }
 .more {
   display: grid;
   gap: 0.75rem;
-  max-width: 44ch;
   margin-top: 0.5rem;
 }
 .bio {
@@ -137,8 +141,7 @@ const name = computed(() => resolveValue(props.member.name))
   align-items: center;
   gap: 0.5rem;
   min-height: 2.75rem;
-  margin-top: 0.5rem;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-ink);
   text-decoration: underline;
@@ -147,7 +150,26 @@ const name = computed(() => resolveValue(props.member.name))
   text-decoration-color: transparent;
   transition: text-decoration-color var(--dur-base) var(--ease-out-soft);
 }
+
+/* Desde tablet: card vertical, retrato arriba */
+@media (min-width: 640px) {
+  .person {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    align-content: start;
+    gap: 1.25rem;
+    padding: 1rem;
+  }
+  .name {
+    font-size: clamp(1.375rem, 1.1rem + 0.5vw, 1.625rem);
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
+  .person:hover {
+    translate: 0 -2px;
+    border-color: var(--color-border-strong);
+  }
   .person:hover .photo {
     scale: 1.03;
   }
@@ -156,10 +178,13 @@ const name = computed(() => resolveValue(props.member.name))
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .person,
   .photo {
     transition: none;
   }
+  .person:hover,
   .person:hover .photo {
+    translate: none;
     scale: 1;
   }
 }
