@@ -89,8 +89,16 @@ describe('contenido (spec 09)', () => {
     }
   })
 
-  it('sin reseñas inventadas', () => {
-    expect(reviews).toHaveLength(0)
+  it('solo reseñas reales: con texto, autor abreviado, nota válida y enlace a la ficha de Google', () => {
+    expect(reviews.length).toBeGreaterThan(0)
+    for (const r of reviews) {
+      expect(r.text.trim().length).toBeGreaterThan(0)
+      expect(r.author).toMatch(/^\S+ \p{L}\.$/u)
+      expect(r.rating).toBeGreaterThanOrEqual(1)
+      expect(r.rating).toBeLessThanOrEqual(5)
+      expect(r.source).toBe('Google')
+      expect(r.url).toMatch(/^https:\/\/www\.google\.com\/maps\//)
+    }
   })
 
   it('cada servicio tiene "Te ayuda si…", relacionados válidos y CTA con motivo', () => {
