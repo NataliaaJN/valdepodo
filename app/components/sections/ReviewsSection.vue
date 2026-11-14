@@ -1,16 +1,56 @@
 <script setup lang="ts">
 /**
  * Reseñas (spec 03 §4): capítulo cian muy claro (el de los datos), distinto del pre-footer azul que viene después. A la izquierda la nota de la ficha de Google (cifra grande, estrellas
- * rellenas hasta la nota exacta y enlace); a la derecha las reseñas como tarjetas escalonadas con avatar.
+ * rellenas hasta la nota exacta y enlace); a la derecha las reseñas como tarjetas escalonadas con avatar. La cabecera es estática (sin reveal ni sticky).
  * **Si `reviews` está vacía, la sección no se renderiza** (solo reseñas reales con permiso).
  * Más de 6 reseñas → carrusel accesible (pendiente: no hay datos que lo justifiquen todavía).
  */
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { googleSummary, reviews } from '~/data/reviews'
+
+const root = ref<HTMLElement | null>(null)
+const list = ref<HTMLElement | null>(null)
 
 const shown = computed(() => reviews.slice(0, 6))
 const rating = googleSummary.rating.toLocaleString('es-ES', { minimumFractionDigits: 1 })
 /** Porcentaje de estrellas rellenas (4,7 de 5 → 94 %). */
 const fill = `${(googleSummary.rating / 5) * 100}%`
+
+/**
+ * Entrada de las tarjetas (una sola vez): suben y se asientan una tras otra, en orden de lectura, y las estrellas
+ * se «rellenan» de izquierda a derecha justo después. `ScrollTrigger.batch` agrupa las que entran a la vez
+ * (así se escalonan) y dispara cada tarjeta nueva cuando le toca. Sin JS o con reduced motion: todo visible.
+ * El título y la nota no se animan ni se mueven con el scroll.
+ */
+useGsapContext(root, (c) => {
+  const cards = list.value ? gsap.utils.toArray<HTMLElement>(list.value.children) : []
+  if (c.reduce || !cards.length) return undefined
+
+  gsap.set(cards, { autoAlpha: 0, y: 72, scale: 0.96 })
+  const triggers = ScrollTrigger.batch(cards, {
+    start: 'top 90%',
+    once: true,
+    onEnter: (batch) => {
+      gsap.to(batch, {
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
+        duration: 1.1,
+        ease: 'expo.out',
+        stagger: 0.18,
+        overwrite: true,
+      })
+      const stars = batch.flatMap((el) => Array.from(el.querySelectorAll('.review__rating')))
+      gsap.fromTo(
+        stars,
+        { clipPath: 'inset(0 100% 0 0)' },
+        { clipPath: 'inset(0 0% 0 0)', duration: 0.7, ease: 'power2.out', stagger: 0.18, delay: 0.45 },
+      )
+    },
+  })
+  return () => triggers.forEach((t) => t.kill())
+})
 
 const STAR = 'm8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z'
 </script>
@@ -18,16 +58,16 @@ const STAR = 'm8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z'
 <template>
   <section
     v-if="shown.length"
+    ref="root"
     class="reviews section-clip"
     data-nav-theme="bone"
     aria-labelledby="resenas-title"
   >
     <div class="container-wide reviews__layout">
       <div class="reviews__intro">
-        <h2 id="resenas-title" v-reveal class="text-display-l">Opiniones</h2>
+        <h2 id="resenas-title" class="text-display-l">Opiniones</h2>
 
         <a
-          v-reveal="1"
           :href="googleSummary.url"
           target="_blank"
           rel="noopener"
@@ -51,8 +91,8 @@ const STAR = 'm8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z'
         </a>
       </div>
 
-      <ul class="reviews__list" role="list">
-        <li v-for="(review, i) in shown" :key="i" v-reveal="i" class="reviews__item">
+      <ul ref="list" class="reviews__list" role="list">
+        <li v-for="(review, i) in shown" :key="i" class="reviews__item">
           <ReviewCard :review="review" />
         </li>
       </ul>
@@ -165,16 +205,12 @@ const STAR = 'm8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z'
   }
 }
 
-/* Escritorio: nota a la izquierda (fija al hacer scroll), tarjetas escalonadas a la derecha */
+/* Escritorio: nota a la izquierda, tarjetas escalonadas a la derecha */
 @media (min-width: 1024px) {
   .reviews__layout {
     grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
     gap: clamp(2.5rem, 5vw, 5rem);
     align-items: start;
-  }
-  .reviews__intro {
-    position: sticky;
-    top: calc(var(--nav-h-compact) + 2rem);
   }
 }
 </style>
