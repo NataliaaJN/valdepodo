@@ -24,6 +24,11 @@ export const clinic = {
     src: '/images/clinic/fachada-equipo.jpg' as string | null,
     alt: 'Paula y Valerie, el equipo de Valdepodo, ante la fachada de la clínica',
   },
+  /** Fotografía del espacio (la única disponible; el resto del mosaico sigue pendiente). */
+  spacePhoto: {
+    src: '/images/clinic/contacto.jpg',
+    alt: 'Recepción y sala de espera de la clínica, luminosa y en tonos azules',
+  },
   /** Texto de apoyo de la sección «Un espacio pensado para cuidar de ti». */
   spaceText: pending(
     'Un lugar cálido, limpio y tranquilo, cuidado en cada detalle, para atenderte sin prisas.',

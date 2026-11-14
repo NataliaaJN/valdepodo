@@ -55,7 +55,7 @@ useGsapContext(root, (c) => {
   >
     <div class="container-wide">
       <div class="method__head">
-        <h2 id="method-title" v-reveal class="method__title text-display-m">Método</h2>
+        <h2 id="method-title" v-reveal class="method__title text-display-m">Método de trabajo en cinco pasos</h2>
       </div>
 
       <ol ref="list" class="timeline" role="list">

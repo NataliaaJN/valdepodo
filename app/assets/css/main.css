@@ -262,9 +262,12 @@
     --color-text-secondary: rgb(6 26 44 / 0.78);
     --color-border: rgb(6 26 44 / 0.28);
   }
+  /* Sobre tinta los titulares son hueso (antes heredaban tinta y desaparecían, p. ej. «Método») */
   .chapter-ink h1,
   .chapter-ink h2,
-  .chapter-ink h3,
+  .chapter-ink h3 {
+    color: var(--color-bone);
+  }
   .chapter-blue h1,
   .chapter-blue h2,
   .chapter-blue h3 {
