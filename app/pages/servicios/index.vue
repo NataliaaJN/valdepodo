@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Índice de servicios: cabecera monumental y un recorrido con scroll por los cinco servicios
- * (línea de tiempo + imagen asociada). Las cards de la Home no se repiten aquí.
+ * Índice de servicios: hero con vídeo (qué se ofrece y «Pedir cita» en la primera pantalla) y cinco filas
+ * editoriales, una por servicio. El cierre «Pedir cita» lo pinta el layout (CtaBlock).
  */
 usePageSeo({
   title: 'Servicios de podología',
@@ -19,13 +19,16 @@ useBreadcrumbSchema([
   <div>
     <ClinicHero
       id="services-title"
-      title="Servicios"
+      title="Servicios de podología"
       video="/videos/servicios.mp4"
       :photo="{ src: null, alt: '' }"
-    />
+    >
+      <p>Estudio de la pisada, plantillas a medida, uñas y piel, pie infantil y pie diabético.</p>
+      <BaseButton to="/contacto#cita" variant="on-blue" arrow class="mt-6">Pedir cita</BaseButton>
+    </ClinicHero>
 
     <section aria-label="Los cinco servicios" data-nav-theme="bone">
-      <ServiceScroll />
+      <ServiceRows />
     </section>
   </div>
 </template>
