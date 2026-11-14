@@ -69,10 +69,11 @@ const initial = computed(() => props.review.author.trim().charAt(0).toUpperCase(
   gap: 1.25rem;
   padding: clamp(1.5rem, 2.4vw, 2rem);
   overflow: hidden;
-  background: var(--color-bone);
+  background: var(--color-white);
   color: var(--color-text);
+  border: 1px solid rgb(255 255 255 / 0.9);
   border-radius: var(--radius-l);
-  box-shadow: 0 24px 48px -28px rgb(6 26 44 / 0.55);
+  box-shadow: 0 20px 44px -22px rgb(18 112 182 / 0.35);
 }
 .review__mark {
   position: absolute;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Reseñas (spec 03 §4): capítulo azul. A la izquierda la nota de la ficha de Google (cifra grande, estrellas
+ * Reseñas (spec 03 §4): capítulo cian muy claro (el de los datos), distinto del pre-footer azul que viene después. A la izquierda la nota de la ficha de Google (cifra grande, estrellas
  * rellenas hasta la nota exacta y enlace); a la derecha las reseñas como tarjetas escalonadas con avatar.
  * **Si `reviews` está vacía, la sección no se renderiza** (solo reseñas reales con permiso).
  * Más de 6 reseñas → carrusel accesible (pendiente: no hay datos que lo justifiquen todavía).
@@ -18,8 +18,8 @@ const STAR = 'm8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z'
 <template>
   <section
     v-if="shown.length"
-    class="reviews chapter-blue section-clip"
-    data-nav-theme="blue"
+    class="reviews section-clip"
+    data-nav-theme="bone"
     aria-labelledby="resenas-title"
   >
     <div class="container-wide reviews__layout">
@@ -63,6 +63,12 @@ const STAR = 'm8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z'
 <style scoped>
 .reviews {
   padding-block: clamp(3.5rem, 7vw, 6.5rem);
+  /* Cian muy claro: el mismo de la pausa de datos, para que no se funda con el pre-footer azul */
+  background: linear-gradient(180deg, #e6f6fc 0%, #d9f0fa 100%);
+  color: var(--color-ink);
+}
+.reviews h2 {
+  color: var(--color-deep-blue);
 }
 .reviews__layout {
   display: grid;
@@ -76,9 +82,10 @@ const STAR = 'm8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z'
   align-items: center;
   gap: 1rem;
   margin-top: clamp(1.25rem, 2.5vw, 2rem);
-  color: var(--color-bone);
+  color: var(--color-ink);
 }
 .reviews__number {
+  color: var(--color-primary);
   font-family: var(--font-display);
   font-size: clamp(4rem, 3rem + 4vw, 6.5rem);
   font-weight: 650;
@@ -94,6 +101,7 @@ const STAR = 'm8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z'
   line-height: 1.3;
 }
 .reviews__stars {
+  color: var(--color-primary);
   position: relative;
   display: inline-block;
   align-self: flex-start;
@@ -128,7 +136,7 @@ const STAR = 'm8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z'
 }
 .reviews__score-text {
   text-decoration: underline;
-  text-decoration-color: rgb(241 239 233 / 0.55);
+  text-decoration-color: rgb(6 26 44 / 0.35);
   text-underline-offset: 4px;
   transition: text-decoration-color var(--dur-fast) var(--ease-out-soft);
 }
