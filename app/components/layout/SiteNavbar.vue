@@ -271,7 +271,6 @@ onBeforeUnmount(() => {
           <ul class="bento" role="list">
             <li v-for="(service, i) in services" :key="service.slug" :class="`bento__item bento__item--${i + 1}`">
               <NuxtLink :to="servicePath(service.slug)" class="bento__tile">
-                <span class="bento__num" aria-hidden="true">{{ String(i + 1).padStart(2, '0') }}</span>
                 <span class="bento__name">{{ service.name }}</span>
                 <BaseIcon name="arrow-up-right" class="bento__go" />
               </NuxtLink>
@@ -592,11 +591,19 @@ onBeforeUnmount(() => {
   border-color: transparent;
   background: var(--color-primary);
 }
-.bento__num {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  opacity: 0.6;
+/* Tema oscuro: baldosas claras sobre el panel de tinta (la principal sigue en cyan con texto tinta) */
+.theme-ink .bento__tile {
+  border-color: rgb(241 239 233 / 0.16);
+  background: rgb(241 239 233 / 0.06);
+  color: var(--color-bone);
+}
+.theme-ink .bento__item--1 .bento__tile {
+  border-color: transparent;
+  background: var(--color-primary);
+  color: var(--color-ink);
+}
+.bento__tile {
+  justify-content: flex-end;
 }
 .bento__name {
   max-width: 14ch;
@@ -635,11 +642,12 @@ onBeforeUnmount(() => {
   .bento__tile:hover {
     transform: translateY(-2px);
   }
-  .bento__tile:hover {
+  .bento__tile:hover,
+  .bento__item--1 .bento__tile:hover,
+  .theme-ink .bento__tile:hover,
+  .theme-ink .bento__item--1 .bento__tile:hover {
     background: var(--color-cyan-light);
-  }
-  .bento__item--1 .bento__tile:hover {
-    background: var(--color-cyan-light);
+    color: var(--color-ink);
   }
   .bento__tile:hover .bento__go {
     transform: translate(2px, -2px);

@@ -7,7 +7,6 @@ import type { FootLayer } from '~/utils/foot-layers'
 
 export const hero = {
   title: { before: 'Todo empieza por ', accent: 'tus pies', after: '.' },
-  lead: 'Cuidamos de ti en cada paso.',
   description: pending(
     'Especialistas en podología, biomecánica y cuidado integral del pie.',
     'Propuesta de valor provisional (spec 03 §1): validar con la clínica',

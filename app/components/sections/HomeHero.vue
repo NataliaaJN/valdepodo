@@ -83,7 +83,6 @@ useGsapContext(section, (c) => {
       <h1 id="hero-title" class="hero__title">
         {{ hero.title.before }}<em class="hero__accent">{{ hero.title.accent }}</em>{{ hero.title.after }}
       </h1>
-      <p class="hero__lead">{{ hero.lead }}</p>
       <p class="hero__desc"><ContentValue :value="hero.description" /></p>
     </div>
   </section>
@@ -224,29 +223,22 @@ html[data-intro='play'] .hero__scroll {
   animation: fade-up 1.4s var(--ease-out-soft) both;
   animation-delay: 0.35s;
 }
-.hero__lead {
-  margin-top: clamp(1rem, 2vw, 1.5rem);
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  animation: fade-up 1.4s var(--ease-out-soft) both;
-  animation-delay: 0.5s;
-}
 .hero__desc {
-  max-width: 30ch;
-  margin-top: 0.5rem;
+  max-width: 32ch;
+  margin-top: clamp(1rem, 2vw, 1.5rem);
   color: rgb(6 26 44 / 0.72);
   font-size: var(--text-body);
   line-height: var(--text-body--line-height);
   animation: fade-up 1.4s var(--ease-out-soft) both;
-  animation-delay: 0.6s;
+  animation-delay: 0.5s;
 }
+/* Acento con un color de la paleta: marcador cyan bajo el texto (el texto sigue en tinta) */
 .hero__accent {
   font-style: normal;
   font-weight: 600;
-  color: var(--color-primary-strong);
+  background: linear-gradient(to top, var(--color-primary) 0.34em, transparent 0.34em);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 html[data-intro='play'] .hero__eyebrow {
   animation-delay: 1.3s;
@@ -254,11 +246,8 @@ html[data-intro='play'] .hero__eyebrow {
 html[data-intro='play'] .hero__title {
   animation-delay: 1.45s;
 }
-html[data-intro='play'] .hero__lead {
-  animation-delay: 1.6s;
-}
 html[data-intro='play'] .hero__desc {
-  animation-delay: 1.7s;
+  animation-delay: 1.6s;
 }
 @keyframes fade-up {
   from {
@@ -292,7 +281,6 @@ html[data-intro='play'] .hero__desc {
   .hero__scroll,
   .hero__model,
   .hero__eyebrow,
-  .hero__lead,
   .hero__desc,
   .hero__title {
     animation: none;
