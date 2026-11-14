@@ -1,116 +1,133 @@
 <script setup lang="ts">
-/** Card de una reseña (spec 03 §4): valoración, cita, autor con inicial y procedencia enlazada. */
+/**
+ * Una reseña (spec 03 §4) como fila editorial, no como tarjeta: autor, nota y procedencia en la columna lateral,
+ * la cita a escala de titular en la principal. Pensada para el capítulo azul (`chapter-blue`).
+ */
 import type { Review } from '~/data/reviews'
 
-const props = defineProps<{ review: Review }>()
-
-const initial = computed(() => props.review.author.trim().charAt(0).toUpperCase())
+defineProps<{ review: Review }>()
 </script>
 
 <template>
   <figure class="review">
-    <span class="review__mark" aria-hidden="true">“</span>
-    <div v-if="review.rating" class="review__stars">
-      <svg
-        v-for="n in 5"
-        :key="n"
-        viewBox="0 0 16 16"
-        class="size-4"
-        :class="n <= review.rating ? 'text-primary' : 'text-border-strong'"
-        aria-hidden="true"
-      >
-        <path
-          d="m8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z"
-          :fill="n <= review.rating ? 'currentColor' : 'none'"
-          stroke="currentColor"
-          stroke-width="1"
-          stroke-linejoin="round"
-        />
-      </svg>
-      <span class="sr-only">{{ review.rating }} de 5</span>
-    </div>
+    <figcaption class="review__who">
+      <span class="review__name">{{ review.author }}</span>
+      <span v-if="review.rating" class="review__rating">
+        <svg
+          v-for="n in 5"
+          :key="n"
+          viewBox="0 0 16 16"
+          :class="{ 'is-off': n > review.rating }"
+          aria-hidden="true"
+        >
+          <path d="m8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z" />
+        </svg>
+        <span class="sr-only">{{ review.rating }} de 5</span>
+      </span>
+      <a :href="review.url" target="_blank" rel="noopener" class="review__source">
+        Reseña de {{ review.source }}<span class="sr-only"> (se abre en una pestaña nueva)</span>
+      </a>
+    </figcaption>
+
     <blockquote class="review__text">
       <p>{{ review.text }}</p>
     </blockquote>
-    <figcaption class="review__author">
-      <span class="review__avatar" aria-hidden="true">{{ initial }}</span>
-      <span class="flex flex-col">
-        <span class="font-semibold text-ink">{{ review.author }}</span>
-        <a :href="review.url" target="_blank" rel="noopener" class="review__source">
-          Reseña de {{ review.source }}<span class="sr-only"> (se abre en una pestaña nueva)</span>
-        </a>
-      </span>
-    </figcaption>
   </figure>
 </template>
 
 <style scoped>
 .review {
-  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  padding-block: clamp(1.75rem, 3.5vw, 3rem);
+}
+
+/* En móvil el autor va debajo de la cita (se lee primero lo que dice, luego quién) */
+.review__text {
+  order: -1;
+}
+.review__text p {
+  max-width: 38ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 0.95rem + 1.3vw, 1.875rem);
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+  color: var(--color-bone);
+}
+
+.review__who {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  height: 100%;
-  padding: clamp(1.5rem, 2.4vw, 2.25rem);
-  overflow: hidden;
-  background: var(--color-white);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-l);
-  transition: border-color var(--dur-base) var(--ease-out-soft);
-}
-.review__mark {
-  position: absolute;
-  top: -0.25rem;
-  right: 1.25rem;
-  font-family: var(--font-display);
-  font-size: 8rem;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--color-primary);
-  opacity: 0.1;
-  pointer-events: none;
-}
-.review__stars {
-  display: flex;
-  gap: 0.2rem;
-}
-.review__text {
-  flex: 1;
-  font-size: var(--text-body-l);
-  line-height: var(--text-body-l--line-height);
-  color: var(--color-text);
-}
-.review__author {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--color-border);
+  align-items: flex-start;
+  gap: 0.5rem;
   font-size: var(--text-small);
   line-height: 1.3;
 }
-.review__avatar {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-ink);
-  color: var(--color-bone);
+.review__name {
   font-family: var(--font-display);
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-bone);
+}
+.review__rating {
+  display: flex;
+  gap: 0.15rem;
+  color: var(--color-bone);
+}
+.review__rating svg {
+  width: 0.9375rem;
+  height: 0.9375rem;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+.review__rating svg.is-off {
+  fill: none;
+  opacity: 0.55;
 }
 .review__source {
-  color: var(--color-primary-strong);
+  color: var(--color-bone);
   text-decoration: underline;
+  text-decoration-color: rgb(241 239 233 / 0.55);
   text-underline-offset: 4px;
+  transition: text-decoration-color var(--dur-fast) var(--ease-out-soft);
+}
+.review__source:hover {
+  text-decoration-color: currentColor;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .review:hover {
-    border-color: var(--color-primary);
+@media (min-width: 1024px) {
+  .review {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+  }
+  .review__text {
+    order: 0;
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .review__who {
+    grid-column: 1;
+    grid-row: 1;
+    padding-top: 0.35rem;
+  }
+  /* La comilla cuelga fuera del bloque de texto, como en un libro */
+  .review__text p {
+    position: relative;
+  }
+  .review__text p::before {
+    content: '“';
+    position: absolute;
+    right: 100%;
+    margin-right: 0.12em;
+    color: var(--color-ice-blue);
+    opacity: 0.7;
   }
 }
 </style>
