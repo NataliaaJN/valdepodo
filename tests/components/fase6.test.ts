@@ -96,7 +96,7 @@ describe('TeamCard (spec 05 §2): tarjeta compacta', () => {
 describe('CtaBlock (pre-footer global)', () => {
   it('lleva a la solicitud de cita de Contacto', async () => {
     const wrapper = await mountSuspended(CtaBlock)
-    expect(wrapper.find('h2').text()).toContain('Da el próximo paso')
+    expect(wrapper.find('h2').text()).toContain('Cada paso cuenta')
     const link = wrapper.find('a')
     expect(link.attributes('href')).toBe('/contacto#cita')
     expect(link.text()).toContain('Pedir cita')
