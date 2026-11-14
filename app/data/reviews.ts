@@ -18,6 +18,12 @@ export interface Review {
 /** Ficha de Google de Valdepodo (Valdemoro). Reseñas copiadas el 2026-11-14; nombre abreviado a nombre + inicial. */
 const GOOGLE_URL = 'https://www.google.com/maps/place/?q=place_id:ChIJx99Z58YeQg0RoJD__ddoaX0'
 
+/**
+ * Resumen público de la ficha de Google, a fecha 2026-11-14. Se muestra como texto; NO se marca como
+ * `AggregateRating` (spec 10 §3). Actualizar a mano junto con las reseñas.
+ */
+export const googleSummary = { rating: 4.7, count: 58, url: GOOGLE_URL } as const
+
 export const reviews: readonly Review[] = [
   {
     text: 'El trato es muy bueno, son muy simpáticas y muy profesionales, tienen mucho cuidado con el trabajo que hacen, yo estoy muy contento y se lo recomiendo a todos que tengan algún problema con las uñas que acudan al esta clínica.',
