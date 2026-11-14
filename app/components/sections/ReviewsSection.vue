@@ -235,6 +235,47 @@ useGsapContext(root, (c) => {
   }
 }
 
+/* Desorden controlado: giros y desplazamientos pequeños en la card interior (el li lo anima GSAP) */
+@media (min-width: 768px) {
+  .reviews__item {
+    position: relative;
+  }
+  .reviews__item :deep(.review) {
+    transition: transform var(--dur-base) var(--ease-out-soft);
+  }
+  .reviews__item:nth-child(1) {
+    margin-left: -1.25rem;
+    margin-top: 2.5rem;
+  }
+  .reviews__item:nth-child(1) :deep(.review) {
+    transform: rotate(-2.6deg);
+  }
+  .reviews__item:nth-child(2) {
+    margin-left: 1.5rem;
+    margin-top: -1.25rem;
+    z-index: 1;
+  }
+  .reviews__item:nth-child(2) :deep(.review) {
+    transform: rotate(2deg);
+  }
+  .reviews__item:nth-child(3) {
+    margin-left: -0.75rem;
+    margin-top: -0.5rem;
+    z-index: 2;
+  }
+  .reviews__item:nth-child(3) :deep(.review) {
+    transform: rotate(-1.4deg);
+  }
+  .reviews__item:nth-child(n + 4) :deep(.review) {
+    transform: rotate(1.2deg);
+  }
+}
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  .reviews__item:hover :deep(.review) {
+    transform: rotate(0deg) translateY(-4px);
+  }
+}
+
 @media (min-width: 1024px) {
   .reviews__layout {
     grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
