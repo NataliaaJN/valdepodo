@@ -2,7 +2,7 @@
 /**
  * Reseñas (spec 03 §4). Con tres reseñas reales un carrusel o una rejilla serían demasiado: el formato es el de
  * la referencia, con el titular centrado en vertical a la izquierda (frase de apoyo, nota de Google y botón a la
- * ficha) y las cards a la derecha, escalonadas: una en el centro y dos apiladas.
+ * ficha) y las cards a la derecha, escalonadas: una alta a la izquierda y dos apiladas a la derecha.
  * - ≥ 768 px: escalonado. < 768 px: carrusel con scroll-snap (se desliza con el dedo; teclado con Tab entre los enlaces).
  * - Scroll: las cards entran una tras otra (ScrollTrigger.batch). El titular no se anima. Reduced motion: todo visible.
  * **Si `reviews` está vacía, la sección no se renderiza** (solo reseñas reales con permiso).
@@ -205,7 +205,7 @@ useGsapContext(root, (c) => {
   .reviews__list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
+    align-items: stretch;
     gap: 1.25rem 1.5rem;
     margin-inline: 0;
     padding: 0;
@@ -215,10 +215,19 @@ useGsapContext(root, (c) => {
   .reviews__item {
     flex: none;
   }
-  /* Primera card en el centro de la columna, las otras dos apiladas a su derecha */
+  /* Rejilla tipo bento: la primera ocupa el alto de las otras dos, apiladas a su derecha */
   .reviews__item:nth-child(1) {
     grid-row: 1 / span 2;
-    align-self: center;
+    align-self: stretch;
+  }
+  /* La card alta lleva la cita a mayor tamaño, para que el espacio no quede vacío */
+  .reviews__item:nth-child(1) :deep(.review__text p) {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 1rem + 0.9vw, 1.625rem);
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.012em;
+    color: var(--color-ink);
   }
   .reviews__item:nth-child(2) {
     grid-column: 2;
@@ -232,21 +241,6 @@ useGsapContext(root, (c) => {
     grid-column: auto;
     grid-row: auto;
     align-self: start;
-  }
-}
-
-/* Desalineadas a propósito: la primera más abajo que el centro de las otras dos, y las otras dos con sangrías distintas */
-@media (min-width: 768px) {
-  .reviews__item:nth-child(1) {
-    align-self: start;
-    margin-top: clamp(3rem, 7vw, 6rem);
-  }
-  .reviews__item:nth-child(2) {
-    margin-left: 2rem;
-  }
-  .reviews__item:nth-child(3) {
-    margin-left: -1rem;
-    margin-top: 0.5rem;
   }
 }
 
