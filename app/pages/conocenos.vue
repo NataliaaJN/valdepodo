@@ -100,8 +100,7 @@ if (confirmedPeople.length) {
 }
 .team__cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
 }
 .space__grid {
   display: grid;
@@ -148,7 +147,6 @@ if (confirmedPeople.length) {
   }
   .team__cards {
     grid-column: 5 / span 8;
-    grid-template-columns: repeat(auto-fill, minmax(18rem, 23rem));
   }
 }
 </style>

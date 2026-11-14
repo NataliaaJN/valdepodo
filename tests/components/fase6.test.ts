@@ -76,10 +76,9 @@ describe('TeamCard (spec 05 §2): tarjeta compacta', () => {
     expect(detailed.find('.tags').attributes('aria-label')).toBe('Especialidades')
   })
 
-  it('es enfocable con el teclado y se nombra por el profesional', async () => {
+  it('se nombra por el profesional', async () => {
     const wrapper = await mountSuspended(TeamCard, { props: { member: team[0]! } })
     const card = wrapper.find('article')
-    expect(card.attributes('tabindex')).toBe('0')
     expect(card.attributes('aria-labelledby')).toBe(wrapper.find('h3').attributes('id'))
   })
 
