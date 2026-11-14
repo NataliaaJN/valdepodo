@@ -188,6 +188,13 @@ const rows = services.map((service) => {
   }
 }
 
+/* Móvil y tablet: la foto va antes del texto (en el DOM va después para que el h2 sea lo primero) */
+@media (max-width: 1023px) {
+  .row__photo {
+    order: -1;
+  }
+}
+
 /* ---------- Escritorio: dos columnas que se alternan ---------- */
 @media (min-width: 1024px) {
   .row__inner {
