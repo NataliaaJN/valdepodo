@@ -139,7 +139,7 @@ useGsapContext(root, (c) => {
 .reviews__stars {
   position: relative;
   line-height: 0;
-  color: var(--color-primary-strong);
+  color: var(--color-coral);
 }
 .reviews__stars-row {
   display: flex;

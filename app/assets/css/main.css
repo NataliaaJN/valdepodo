@@ -25,12 +25,13 @@
 @theme static {
   /* ---------- Color: marca ---------- */
   --color-primary: #14b8d4; /* CYAN principal · solo como fondo/relleno con texto TINTA (7.4:1). Nunca texto sobre claro ni texto blanco encima. El logotipo conserva su azul original */
-  --color-primary-strong: #087088; /* cyan oscuro · 4.9:1 sobre hueso · enlaces y texto cian pequeño */
+  --color-primary-strong: #061a2c; /* texto, enlaces y trazos de acento sobre claro: tinta (el cyan no se lee sobre hueso) */
+  --color-ice: #e5f2f5; /* azul hielo · banda de datos bajo el hero */
   --color-cyan: #14b8d4; /* igual que el principal; sobre oscuro puede ser texto */
   --color-cyan-light: #c8f1fa; /* cyan claro · fondo de contraste del pre-footer */
   --color-cyan-mist: #eaf8fc; /* cyan muy muy claro · fondos de sección suaves */
   --color-coral: #f28b82; /* coral tenue · solo detalles que destacan, nunca superficies grandes */
-  --color-cyan-ink: #087088; /* "texto cian" pequeño sobre claro (4.5:1) */
+  --color-cyan-ink: #061a2c; /* "texto cian" sobre claro: tinta */
   --color-logo-gray: #565656;
 
   /* ---------- Color: capítulos ---------- */

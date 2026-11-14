@@ -55,7 +55,7 @@ const initial = computed(() => props.review.author.trim().charAt(0).toUpperCase(
 .review__stars {
   display: flex;
   gap: 0.15rem;
-  color: var(--color-primary-strong);
+  color: var(--color-coral);
 }
 .review__stars svg {
   width: 1.125rem;

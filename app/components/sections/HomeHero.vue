@@ -232,13 +232,11 @@ html[data-intro='play'] .hero__scroll {
   animation: fade-up 1.4s var(--ease-out-soft) both;
   animation-delay: 0.5s;
 }
-/* Acento con un color de la paleta: marcador cyan bajo el texto (el texto sigue en tinta) */
+/* Acento: las propias letras en el cyan principal de la paleta */
 .hero__accent {
   font-style: normal;
   font-weight: 600;
-  background: linear-gradient(to top, var(--color-primary) 0.34em, transparent 0.34em);
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
+  color: var(--color-primary);
 }
 html[data-intro='play'] .hero__eyebrow {
   animation-delay: 1.3s;

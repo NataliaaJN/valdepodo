@@ -7,10 +7,7 @@ import type { FootLayer } from '~/utils/foot-layers'
 
 export const hero = {
   title: { before: 'Todo empieza por ', accent: 'tus pies', after: '.' },
-  description: pending(
-    'Especialistas en podología, biomecánica y cuidado integral del pie.',
-    'Propuesta de valor provisional (spec 03 §1): validar con la clínica',
-  ) as Maybe<string>,
+  description: 'Especialistas en podología, biomecánica y cuidado integral del pie.',
   primaryCta: { label: 'Pedir cita', to: '/contacto#cita' },
   secondaryCta: { label: 'Descubrir servicios', to: '#servicios' },
 }
