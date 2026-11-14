@@ -205,34 +205,38 @@ onBeforeUnmount(() => {
   transform: translate(-50%, calc(-50% + (1 - var(--k)) * 6px)) rotate(var(--rot));
 }
 
-/* ---------- CTA: pieza sólida azul que aparece cuando el recorrido termina ---------- */
+/* ---------- CTA: enlace tipográfico con círculo que reacciona al hover; entra al terminar el recorrido ---------- */
 .cta__link {
   justify-self: start;
   display: inline-flex;
   align-items: center;
-  gap: 1.1rem;
-  padding: 1.1rem 1.4rem 1.1rem 1.75rem;
-  border-radius: var(--radius-m);
-  background: var(--color-primary);
-  color: var(--color-bone);
+  gap: 0.9rem;
+  padding-block: 0.5rem;
   font-family: var(--font-display);
   font-weight: 600;
   font-stretch: 75%;
   font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
   letter-spacing: -0.02em;
   line-height: 1;
-  transition:
-    background-color var(--dur-base) var(--ease-out-soft),
-    opacity var(--dur-base) var(--ease-out-soft);
+  color: var(--color-primary-strong);
+  transition: opacity var(--dur-base) var(--ease-out-soft);
+}
+.cta__link-label {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 2px no-repeat;
+  padding-bottom: 0.2em;
+  transition: background-size var(--dur-base) var(--ease-out-soft);
 }
 .cta__link-arrow {
   display: grid;
   place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1.5px solid currentColor;
   border-radius: 50%;
-  background: var(--color-cyan);
-  color: var(--color-deep-blue);
+  transition:
+    background-color var(--dur-base) var(--ease-out-soft),
+    color var(--dur-base) var(--ease-out-soft),
+    border-color var(--dur-base) var(--ease-out-soft);
 }
 .cta__link-arrow svg {
   width: 1.1rem;
@@ -251,8 +255,11 @@ onBeforeUnmount(() => {
   transform: none;
 }
 @media (hover: hover) and (pointer: fine) {
-  .cta__link:hover {
-    background: var(--color-deep-blue);
+  .cta__link:hover .cta__link-arrow,
+  .cta__link:focus-visible .cta__link-arrow {
+    background: var(--color-cyan);
+    border-color: var(--color-cyan);
+    color: var(--color-deep-blue);
   }
   .cta__link:hover .cta__link-arrow svg {
     transform: translateX(3px);
@@ -278,7 +285,12 @@ onBeforeUnmount(() => {
     width: 2.1rem;
   }
   .cta__link {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
     justify-self: end;
+    align-self: start;
+    margin-top: 0.5rem;
   }
 }
 @media (min-width: 1024px) and (max-width: 1279px) {
