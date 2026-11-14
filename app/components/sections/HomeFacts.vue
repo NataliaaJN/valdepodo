@@ -56,8 +56,12 @@ const items = computed(() =>
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1.125rem 1rem;
+  padding: 0.875rem 1rem;
   border-top: 1px solid rgb(6 26 44 / 0.1);
+}
+/* Móvil y tablet: la columna izquierda alinea con el margen de la página */
+.fact:nth-child(odd) {
+  padding-left: 0;
 }
 .fact:nth-child(-n + 2) {
   border-top: 0;
@@ -93,6 +97,7 @@ const items = computed(() =>
   }
   .fact,
   .fact:nth-child(-n + 2),
+  .fact:nth-child(odd),
   .fact:nth-child(even) {
     border-top: 0;
     border-left: 1px solid rgb(6 26 44 / 0.1);

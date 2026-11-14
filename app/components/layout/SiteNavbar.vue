@@ -676,14 +676,27 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 0.75rem;
   min-height: 44px;
-  padding-inline: 1.125rem;
-  border: 1px solid var(--glass-border);
-  border-radius: 999px;
+  padding-inline: 1rem;
+  /* Mismo lenguaje que los botones: 8 px y cyan claro con filete (sobre tinta, cristal claro) */
+  border: 1px solid rgb(6 26 44 / 0.14);
+  border-radius: var(--radius-m);
+  background: var(--color-cyan-light);
+  color: var(--color-ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition:
+    background-color var(--dur-base) var(--ease-out-soft),
+    transform var(--dur-fast) var(--ease-out-soft);
+}
+.menu-button:active {
+  transform: scale(0.97);
+}
+.theme-ink .menu-button {
+  border-color: var(--glass-border);
   background: var(--glass-bg);
+  color: var(--color-bone);
   backdrop-filter: blur(18px) saturate(1.4);
   -webkit-backdrop-filter: blur(18px) saturate(1.4);
-  font-size: 0.9375rem;
-  font-weight: 500;
 }
 /* El CSS con ámbito no está en una capa y ganaría a la utilidad lg:hidden */
 @media (min-width: 1024px) {

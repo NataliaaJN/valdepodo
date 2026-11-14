@@ -1,9 +1,8 @@
 <script setup lang="ts">
 /**
- * Reseñas (spec 03 §4). Con tres reseñas reales un carrusel o una rejilla serían demasiado: el formato es el de
- * la referencia, con el titular centrado en vertical a la izquierda (frase de apoyo, nota de Google y botón a la
- * ficha) y las cards a la derecha, escalonadas: una alta a la izquierda y dos apiladas a la derecha.
- * - ≥ 768 px: escalonado. < 768 px: carrusel con scroll-snap (se desliza con el dedo; teclado con Tab entre los enlaces).
+ * Reseñas (spec 03 §4). Con tres reseñas reales no hace falta carrusel en escritorio: cabecera (titular y frase
+ * a la izquierda; nota de Google y botón a la ficha a la derecha) y debajo las tres cards en una fila.
+ * - ≥ 1024 px: tres columnas. < 1024 px: carrusel con scroll-snap (se desliza con el dedo; teclado con Tab entre los enlaces).
  * - Scroll: las cards entran una tras otra (ScrollTrigger.batch). El titular no se anima. Reduced motion: todo visible.
  * **Si `reviews` está vacía, la sección no se renderiza** (solo reseñas reales con permiso).
  * Más de 6 reseñas → carrusel con flechas (pendiente: no hay datos que lo justifiquen todavía).
@@ -56,7 +55,9 @@ useGsapContext(root, (c) => {
       <div class="reviews__intro">
         <h2 id="resenas-title" class="reviews__title text-display-m">Lo que dicen nuestros pacientes</h2>
         <p class="reviews__lede">La confianza de quienes nos visitan también forma parte del tratamiento.</p>
+      </div>
 
+      <div class="reviews__aside">
         <p class="reviews__score">
           <span class="reviews__number" aria-hidden="true">{{ rating }}</span>
           <span class="reviews__stars" :style="{ '--fill': fill }" aria-hidden="true">
@@ -105,10 +106,16 @@ useGsapContext(root, (c) => {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: 1rem;
+}
+.reviews__aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 1.25rem;
 }
 .reviews__title {
-  max-width: 14ch;
+  max-width: 16ch;
   color: var(--color-deep-blue);
 }
 .reviews__lede {
@@ -171,9 +178,6 @@ useGsapContext(root, (c) => {
 .reviews__count {
   color: var(--color-text-secondary);
 }
-.reviews__cta {
-  margin-top: 0.5rem;
-}
 
 /* ---------- Móvil: carrusel con scroll-snap que asoma la siguiente card ---------- */
 .reviews__list {
@@ -192,7 +196,7 @@ useGsapContext(root, (c) => {
 .reviews__list:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
-  border-radius: var(--radius-l);
+  border-radius: var(--radius-m);
 }
 .reviews__item {
   flex: 0 0 min(84%, 22rem);
@@ -200,13 +204,18 @@ useGsapContext(root, (c) => {
   scroll-snap-align: start;
 }
 
-/* ---------- Tablet y escritorio: escalonado como la referencia ---------- */
-@media (min-width: 768px) {
+/* ---------- Escritorio: las tres reseñas en una fila de igual altura (no hace falta carrusel) ---------- */
+@media (min-width: 1024px) {
+  .reviews__layout {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: clamp(2.5rem, 5vw, 5rem);
+    align-items: end;
+  }
   .reviews__list {
+    grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: stretch;
-    gap: 1.25rem 1.5rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
     margin-inline: 0;
     padding: 0;
     overflow: visible;
@@ -215,43 +224,8 @@ useGsapContext(root, (c) => {
   .reviews__item {
     flex: none;
   }
-  /* Rejilla tipo bento: la primera ocupa el alto de las otras dos, apiladas a su derecha */
-  .reviews__item:nth-child(1) {
-    grid-row: 1 / span 2;
-    align-self: stretch;
-  }
-  /* La card alta lleva la cita a mayor tamaño, para que el espacio no quede vacío */
-  .reviews__item:nth-child(1) :deep(.review__text p) {
-    font-family: var(--font-display);
-    font-size: clamp(1.25rem, 1rem + 0.9vw, 1.625rem);
-    font-weight: 500;
-    line-height: 1.3;
-    letter-spacing: -0.012em;
-    color: var(--color-ink);
-  }
-  .reviews__item:nth-child(2) {
-    grid-column: 2;
-    grid-row: 1;
-  }
-  .reviews__item:nth-child(3) {
-    grid-column: 2;
-    grid-row: 2;
-  }
-  .reviews__item:nth-child(n + 4) {
-    grid-column: auto;
-    grid-row: auto;
-    align-self: start;
-  }
-}
-
-@media (min-width: 1024px) {
-  .reviews__layout {
-    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-    gap: clamp(2.5rem, 5vw, 5rem);
-    align-items: center;
-  }
-  .reviews__list {
-    gap: 1.5rem;
+  .reviews__aside {
+    align-items: flex-end;
   }
 }
 </style>
