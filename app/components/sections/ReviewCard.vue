@@ -1,86 +1,132 @@
 <script setup lang="ts">
 /**
- * Una reseña (spec 03 §4) como fila editorial, no como tarjeta: autor, nota y procedencia en la columna lateral,
- * la cita a escala de titular en la principal. Pensada para el capítulo azul (`chapter-blue`).
+ * Una reseña (spec 03 §4) como tarjeta de papel sobre el capítulo azul: avatar con inicial, nombre, logotipo de
+ * Google como procedencia, estrellas, cita y enlace a la ficha.
  */
 import type { Review } from '~/data/reviews'
 
-defineProps<{ review: Review }>()
+const props = defineProps<{ review: Review }>()
+
+const initial = computed(() => props.review.author.trim().charAt(0).toUpperCase())
 </script>
 
 <template>
   <figure class="review">
+    <span class="review__mark" aria-hidden="true">“</span>
+
     <figcaption class="review__who">
-      <span class="review__name">{{ review.author }}</span>
-      <span v-if="review.rating" class="review__rating">
-        <svg
-          v-for="n in 5"
-          :key="n"
-          viewBox="0 0 16 16"
-          :class="{ 'is-off': n > review.rating }"
-          aria-hidden="true"
-        >
-          <path d="m8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z" />
-        </svg>
-        <span class="sr-only">{{ review.rating }} de 5</span>
+      <span class="review__avatar" aria-hidden="true">{{ initial }}</span>
+      <span class="review__id">
+        <span class="review__name">{{ review.author }}</span>
+        <span v-if="review.rating" class="review__rating">
+          <svg
+            v-for="n in 5"
+            :key="n"
+            viewBox="0 0 16 16"
+            :class="{ 'is-off': n > review.rating }"
+            aria-hidden="true"
+          >
+            <path d="m8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z" />
+          </svg>
+          <span class="sr-only">{{ review.rating }} de 5</span>
+        </span>
       </span>
-      <a :href="review.url" target="_blank" rel="noopener" class="review__source">
-        Reseña de {{ review.source }}<span class="sr-only"> (se abre en una pestaña nueva)</span>
-      </a>
+      <svg class="review__google" viewBox="0 0 48 48" aria-hidden="true">
+        <path
+          fill="#4285F4"
+          d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17Z"
+        />
+        <path
+          fill="#34A853"
+          d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46Z"
+        />
+        <path
+          fill="#FBBC05"
+          d="M11.69 28.18A13.8 13.8 0 0 1 10.96 24c0-1.45.25-2.86.73-4.18v-5.7H4.34A22 22 0 0 0 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7Z"
+        />
+        <path
+          fill="#EA4335"
+          d="M24 9.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 3.19 29.93 1 24 1 15.4 1 7.96 5.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07Z"
+        />
+      </svg>
     </figcaption>
 
     <blockquote class="review__text">
       <p>{{ review.text }}</p>
     </blockquote>
+
+    <a :href="review.url" target="_blank" rel="noopener" class="review__source">
+      Ver reseña en {{ review.source }}<span class="sr-only"> (se abre en una pestaña nueva)</span>
+    </a>
   </figure>
 </template>
 
 <style scoped>
 .review {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  position: relative;
+  display: flex;
+  flex-direction: column;
   gap: 1.25rem;
-  padding-block: clamp(1.75rem, 3.5vw, 3rem);
+  padding: clamp(1.5rem, 2.4vw, 2rem);
+  overflow: hidden;
+  background: var(--color-bone);
+  color: var(--color-text);
+  border-radius: var(--radius-l);
+  box-shadow: 0 24px 48px -28px rgb(6 26 44 / 0.55);
 }
-
-/* En móvil el autor va debajo de la cita (se lee primero lo que dice, luego quién) */
-.review__text {
-  order: -1;
-}
-.review__text p {
-  max-width: 38ch;
+.review__mark {
+  position: absolute;
+  bottom: -2.75rem;
+  right: 1.25rem;
   font-family: var(--font-display);
-  font-size: clamp(1.25rem, 0.95rem + 1.3vw, 1.875rem);
-  font-weight: 500;
-  line-height: 1.22;
-  letter-spacing: -0.015em;
-  text-wrap: pretty;
-  color: var(--color-bone);
+  font-size: 9rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-primary);
+  opacity: 0.12;
+  pointer-events: none;
 }
 
 .review__who {
   display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+.review__avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-bone);
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+}
+.review__id {
+  display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  font-size: var(--text-small);
-  line-height: 1.3;
+  gap: 0.25rem;
+  min-width: 0;
 }
 .review__name {
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: var(--color-bone);
+  line-height: 1.1;
+  color: var(--color-ink);
 }
 .review__rating {
   display: flex;
-  gap: 0.15rem;
-  color: var(--color-bone);
+  gap: 0.1rem;
+  color: var(--color-primary);
 }
 .review__rating svg {
-  width: 0.9375rem;
-  height: 0.9375rem;
+  width: 1rem;
+  height: 1rem;
   fill: currentColor;
   stroke: currentColor;
   stroke-width: 1;
@@ -88,46 +134,26 @@ defineProps<{ review: Review }>()
 }
 .review__rating svg.is-off {
   fill: none;
-  opacity: 0.55;
+  opacity: 0.45;
 }
-.review__source {
-  color: var(--color-bone);
-  text-decoration: underline;
-  text-decoration-color: rgb(241 239 233 / 0.55);
-  text-underline-offset: 4px;
-  transition: text-decoration-color var(--dur-fast) var(--ease-out-soft);
-}
-.review__source:hover {
-  text-decoration-color: currentColor;
+.review__google {
+  flex: none;
+  width: 1.375rem;
+  height: 1.375rem;
+  margin-left: auto;
+  align-self: flex-start;
 }
 
-@media (min-width: 1024px) {
-  .review {
-    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-    gap: clamp(2rem, 4vw, 4rem);
-    align-items: start;
-  }
-  .review__text {
-    order: 0;
-    grid-column: 2;
-    grid-row: 1;
-  }
-  .review__who {
-    grid-column: 1;
-    grid-row: 1;
-    padding-top: 0.35rem;
-  }
-  /* La comilla cuelga fuera del bloque de texto, como en un libro */
-  .review__text p {
-    position: relative;
-  }
-  .review__text p::before {
-    content: '“';
-    position: absolute;
-    right: 100%;
-    margin-right: 0.12em;
-    color: var(--color-ice-blue);
-    opacity: 0.7;
-  }
+.review__text p {
+  font-size: var(--text-body);
+  line-height: 1.6;
+  color: var(--color-text);
+}
+.review__source {
+  align-self: flex-start;
+  font-size: var(--text-small);
+  color: var(--color-primary-strong);
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 </style>
