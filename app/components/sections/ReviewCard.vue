@@ -1,37 +1,38 @@
 <script setup lang="ts">
 /**
- * Una reseña (spec 03 §4): card compacta con la cita y una firma de una línea («Nombre · ★★★★★ · Google»).
- * La huella que la marca y el camino que las une los pone `ReviewsSection`.
+ * Una reseña (spec 03 §4): card compacta con estrellas, cita y firma (avatar con la inicial, nombre y la
+ * procedencia en Google, enlazada a la ficha). Sin fotos: solo hay nombre abreviado y su permiso.
  */
 import type { Review } from '~/data/reviews'
 
-defineProps<{ review: Review }>()
+const props = defineProps<{ review: Review }>()
+
+const initial = computed(() => props.review.author.trim().charAt(0).toUpperCase())
 </script>
 
 <template>
   <figure class="review">
+    <div v-if="review.rating" class="review__stars">
+      <svg
+        v-for="n in 5"
+        :key="n"
+        viewBox="0 0 16 16"
+        :class="{ 'is-off': n > review.rating }"
+        aria-hidden="true"
+      >
+        <path d="m8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z" />
+      </svg>
+      <span class="sr-only">{{ review.rating }} de 5</span>
+    </div>
+
     <blockquote class="review__text">
       <p>{{ review.text }}</p>
     </blockquote>
 
     <figcaption class="review__by">
+      <span class="review__avatar" aria-hidden="true">{{ initial }}</span>
       <span class="review__name">{{ review.author }}</span>
-      <template v-if="review.rating">
-        <span class="review__sep" aria-hidden="true">·</span>
-        <span class="review__rating">
-          <svg
-            v-for="n in 5"
-            :key="n"
-            viewBox="0 0 16 16"
-            :class="{ 'is-off': n > review.rating }"
-            aria-hidden="true"
-          >
-            <path d="m8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z" />
-          </svg>
-          <span class="sr-only">{{ review.rating }} de 5</span>
-        </span>
-      </template>
-      <span class="review__sep" aria-hidden="true">·</span>
+      <span class="review__divider" aria-hidden="true" />
       <a :href="review.url" target="_blank" rel="noopener" class="review__source">
         {{ review.source }}<span class="sr-only">: ver reseña (se abre en una pestaña nueva)</span>
       </a>
@@ -40,71 +41,85 @@ defineProps<{ review: Review }>()
 </template>
 
 <style scoped>
-/* Card compacta con el radio del resto de cards del sitio (--radius-l) */
 .review {
   display: flex;
   flex-direction: column;
-  gap: 0.875rem;
-  max-width: 26rem;
-  padding: clamp(1rem, 1.6vw, 1.375rem);
+  gap: 1rem;
+  height: 100%;
+  padding: clamp(1.25rem, 2vw, 1.75rem);
   background: var(--color-white);
   border: 1px solid rgb(255 255 255 / 0.9);
   border-radius: var(--radius-l);
+  box-shadow: 0 20px 44px -26px rgb(18 112 182 / 0.4);
+}
+
+.review__stars {
+  display: flex;
+  gap: 0.15rem;
+  color: var(--color-primary);
+}
+.review__stars svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+.review__stars svg.is-off {
+  fill: none;
+  opacity: 0.45;
+}
+
+.review__text {
+  flex: 1;
 }
 .review__text p {
-  font-family: var(--font-display);
-  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
-  font-weight: 500;
-  line-height: 1.35;
-  letter-spacing: -0.008em;
-  text-wrap: pretty;
-  color: var(--color-ink);
+  font-size: var(--text-body);
+  line-height: 1.65;
+  color: var(--color-text-secondary-strong);
 }
 
 .review__by {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.25rem 0.625rem;
+  gap: 0.375rem 0.75rem;
   font-size: var(--text-small);
   line-height: 1.3;
-  color: var(--color-text-secondary);
+}
+.review__avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-bone);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
 }
 .review__name {
-  font-family: var(--font-display);
   font-weight: 600;
-  letter-spacing: -0.01em;
   color: var(--color-ink);
 }
-.review__rating {
-  display: inline-flex;
-  gap: 0.1rem;
-  color: var(--color-primary);
+.review__divider {
+  align-self: stretch;
+  width: 1px;
+  margin-block: 0.2rem;
+  background: var(--color-border);
 }
-.review__rating svg {
-  width: 0.875rem;
-  height: 0.875rem;
-  fill: currentColor;
-  stroke: currentColor;
-  stroke-width: 1;
-  stroke-linejoin: round;
-}
-.review__rating svg.is-off {
-  fill: none;
-  opacity: 0.45;
-}
-/* Google: procedencia en segundo plano, solo el nombre subrayado */
+/* Google: procedencia en segundo plano */
 .review__source {
-  color: var(--color-text-secondary);
+  color: var(--color-primary-strong);
   text-decoration: underline;
-  text-decoration-color: rgb(6 26 44 / 0.3);
+  text-decoration-color: rgb(11 94 153 / 0.35);
   text-underline-offset: 4px;
-  transition:
-    color var(--dur-fast) var(--ease-out-soft),
-    text-decoration-color var(--dur-fast) var(--ease-out-soft);
+  transition: text-decoration-color var(--dur-fast) var(--ease-out-soft);
 }
 .review__source:hover {
-  color: var(--color-primary-strong);
   text-decoration-color: currentColor;
 }
 </style>
