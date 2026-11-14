@@ -17,7 +17,7 @@ withDefaults(
   }>(),
   {
     title: 'Cada paso cuenta',
-    text: 'Cuéntanos cómo caminas y seguimos contigo desde el primero.',
+    text: 'Reserva tu cita y empezamos por lo que más te preocupa.',
     cta: () => ({ label: 'Pedir cita', to: '/contacto#cita' }),
   },
 )
@@ -205,52 +205,57 @@ onBeforeUnmount(() => {
   transform: translate(-50%, calc(-50% + (1 - var(--k)) * 6px)) rotate(var(--rot));
 }
 
-/* ---------- CTA: enlace tipográfico, no un botón ---------- */
+/* ---------- CTA: pieza sólida azul que aparece cuando el recorrido termina ---------- */
 .cta__link {
   justify-self: start;
   display: inline-flex;
   align-items: center;
-  gap: 0.9rem;
-  padding-block: 0.5rem;
+  gap: 1.1rem;
+  padding: 1.1rem 1.4rem 1.1rem 1.75rem;
+  border-radius: var(--radius-m);
+  background: var(--color-primary);
+  color: var(--color-bone);
   font-family: var(--font-display);
   font-weight: 600;
   font-stretch: 75%;
   font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
   letter-spacing: -0.02em;
   line-height: 1;
-  color: var(--color-primary-strong);
-}
-.cta__link-label {
-  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 2px no-repeat;
-  padding-bottom: 0.2em;
-  transition: background-size var(--dur-base) var(--ease-out-soft);
+  transition:
+    background-color var(--dur-base) var(--ease-out-soft),
+    opacity var(--dur-base) var(--ease-out-soft);
 }
 .cta__link-arrow {
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border: 1.5px solid currentColor;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
-  transition:
-    background-color var(--dur-base) var(--ease-out-soft),
-    color var(--dur-base) var(--ease-out-soft),
-    border-color var(--dur-base) var(--ease-out-soft);
+  background: var(--color-cyan);
+  color: var(--color-deep-blue);
 }
 .cta__link-arrow svg {
   width: 1.1rem;
   height: 1.1rem;
   transition: transform var(--dur-base) var(--ease-out-soft);
 }
+
+/* Con JS: el CTA entra cuando la última huella ya está apoyada */
+.cta[data-walk='on'] .cta__link {
+  --k2: clamp(0, calc((var(--p) * 11 - 8.6) / 1), 1);
+  opacity: var(--k2);
+  transform: translateY(calc((1 - var(--k2)) * 8px));
+}
+.cta[data-walk='on'] .cta__link:focus-visible {
+  opacity: 1;
+  transform: none;
+}
 @media (hover: hover) and (pointer: fine) {
-  .cta__link:hover .cta__link-arrow,
-  .cta__link:focus-visible .cta__link-arrow {
-    background: var(--color-cyan);
-    border-color: var(--color-cyan);
-    color: var(--color-deep-blue);
+  .cta__link:hover {
+    background: var(--color-deep-blue);
   }
   .cta__link:hover .cta__link-arrow svg {
-    transform: translateX(2px);
+    transform: translateX(3px);
   }
   /* La última huella «pisa» al señalar el CTA */
   .cta:has(.cta__link:hover) .print--last .print__body {
@@ -273,23 +278,12 @@ onBeforeUnmount(() => {
     width: 2.1rem;
   }
   .cta__link {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
     justify-self: end;
-    align-self: start;
-    margin-top: 0.5rem;
   }
 }
 @media (min-width: 1024px) and (max-width: 1279px) {
   .cta__inner {
     grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) auto;
-  }
-}
-@media (hover: hover) and (pointer: fine) {
-  .cta__link:hover .cta__link-label {
-    background-size: 0% 2px;
-    background-position: 100% 100%;
   }
 }
 </style>
