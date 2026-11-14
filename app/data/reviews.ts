@@ -11,6 +11,8 @@ export interface Review {
   /** Valoración sobre 5, si la reseña la tiene. */
   rating?: number
   source: 'Google'
+  /** Reseña protagonista de la sección (una sola; si ninguna lo marca, la primera). */
+  featured?: boolean
   /** Enlace a la reseña o al perfil de la ficha. */
   url: string
 }
@@ -37,6 +39,7 @@ export const reviews: readonly Review[] = [
     author: 'Patricia C.',
     rating: 5,
     source: 'Google',
+    featured: true,
     url: GOOGLE_URL,
   },
   {
