@@ -55,7 +55,7 @@ useGsapContext(section, (c) => {
   const link = section.value.querySelector('.cta__link')
   const tl = gsap.timeline({
     defaults: { ease: 'power2.out' },
-    scrollTrigger: { trigger: section.value, start: 'top 88%', end: 'bottom 68%', scrub: 0.6 },
+    scrollTrigger: { trigger: section.value, start: 'top 95%', end: 'bottom 80%', scrub: 0.6 },
   })
   tl.fromTo(prints, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 1, stagger: 0.55 })
   if (link) tl.fromTo(link, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 1.1, ease: 'back.out(1.4)' }, '>-0.2')
@@ -98,7 +98,7 @@ useGsapContext(section, (c) => {
       <NuxtLink :to="cta.to" class="cta__link">
         <span class="cta__link-label">{{ cta.label }}</span>
         <span class="cta__link-arrow" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none">
+          <svg v-for="n in 2" :key="n" viewBox="0 0 24 24" fill="none">
             <path d="M5 19 19 5M8 5h11v11" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" />
           </svg>
         </span>
@@ -194,11 +194,21 @@ useGsapContext(section, (c) => {
   line-height: 0.95;
   transition: background-color var(--dur-base) var(--ease-out-soft);
 }
+/* Flecha: dos copias; al señalar, una sale por arriba a la derecha y la otra entra desde abajo a la izquierda */
+.cta__link-arrow {
+  display: grid;
+  overflow: hidden;
+  width: 1.4rem;
+  height: 1.4rem;
+}
 .cta__link-arrow svg {
-  display: block;
+  grid-area: 1 / 1;
   width: 1.4rem;
   height: 1.4rem;
   transition: transform var(--dur-base) var(--ease-out-soft);
+}
+.cta__link-arrow svg:last-child {
+  transform: translate(-100%, 100%);
 }
 .cta__link:focus-visible {
   opacity: 1 !important;
@@ -206,14 +216,23 @@ useGsapContext(section, (c) => {
 }
 @media (hover: hover) and (pointer: fine) {
   .cta__link:hover {
-    background: var(--color-deep-blue);
+    background: var(--color-primary-strong);
   }
-  .cta__link:hover .cta__link-arrow svg {
-    transform: translate(3px, -3px);
+  .cta__link:hover .cta__link-arrow svg:first-child {
+    transform: translate(100%, -100%);
+  }
+  .cta__link:hover .cta__link-arrow svg:last-child {
+    transform: none;
   }
   /* La última huella «pisa» al señalar el CTA */
   .cta:has(.cta__link:hover) .print--last .print__body {
     --fp-fill: var(--color-primary);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta__link,
+  .cta__link-arrow svg {
+    transition: none;
   }
 }
 
