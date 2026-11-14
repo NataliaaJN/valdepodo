@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
- * Reseñas (spec 03 §4). Con tres reseñas reales no hace falta carrusel en escritorio: cabecera (titular y frase
- * a la izquierda; nota de Google y botón a la ficha a la derecha) y debajo las tres cards en una fila.
- * - ≥ 1024 px: tres columnas. < 1024 px: carrusel con scroll-snap (se desliza con el dedo; teclado con Tab entre los enlaces).
+ * Reseñas (spec 03 §4). Se muestran dos: el titular centrado en vertical a la izquierda (frase de apoyo, nota de
+ * Google y botón a la ficha) y las dos cards a la derecha, una junto a otra.
+ * - ≥ 768 px: dos columnas. < 768 px: carrusel con scroll-snap (se desliza con el dedo; teclado con Tab entre los enlaces).
  * - Scroll: las cards entran una tras otra (ScrollTrigger.batch). El titular no se anima. Reduced motion: todo visible.
  * **Si `reviews` está vacía, la sección no se renderiza** (solo reseñas reales con permiso).
  * Más de 6 reseñas → carrusel con flechas (pendiente: no hay datos que lo justifiquen todavía).
@@ -14,7 +14,7 @@ import { googleSummary, reviews } from '~/data/reviews'
 const root = ref<HTMLElement | null>(null)
 const list = ref<HTMLElement | null>(null)
 
-const shown = computed(() => reviews.slice(0, 6))
+const shown = computed(() => reviews.slice(0, 2))
 const rating = googleSummary.rating.toLocaleString('es-ES', { minimumFractionDigits: 1 })
 /** Porcentaje de estrellas rellenas (4,7 de 5 → 94 %). */
 const fill = `${(googleSummary.rating / 5) * 100}%`
@@ -55,9 +55,7 @@ useGsapContext(root, (c) => {
       <div class="reviews__intro">
         <h2 id="resenas-title" class="reviews__title text-display-m">Lo que dicen nuestros pacientes</h2>
         <p class="reviews__lede">La confianza de quienes nos visitan también forma parte del tratamiento.</p>
-      </div>
 
-      <div class="reviews__aside">
         <p class="reviews__score">
           <span class="reviews__number" aria-hidden="true">{{ rating }}</span>
           <span class="reviews__stars" :style="{ '--fill': fill }" aria-hidden="true">
@@ -106,16 +104,10 @@ useGsapContext(root, (c) => {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem;
-}
-.reviews__aside {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   gap: 1.25rem;
 }
 .reviews__title {
-  max-width: 16ch;
+  max-width: 14ch;
   color: var(--color-deep-blue);
 }
 .reviews__lede {
@@ -178,6 +170,9 @@ useGsapContext(root, (c) => {
 .reviews__count {
   color: var(--color-text-secondary);
 }
+.reviews__cta {
+  margin-top: 0.5rem;
+}
 
 /* ---------- Móvil: carrusel con scroll-snap que asoma la siguiente card ---------- */
 .reviews__list {
@@ -196,7 +191,7 @@ useGsapContext(root, (c) => {
 .reviews__list:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
-  border-radius: var(--radius-m);
+  border-radius: var(--radius-l);
 }
 .reviews__item {
   flex: 0 0 min(84%, 22rem);
@@ -204,18 +199,13 @@ useGsapContext(root, (c) => {
   scroll-snap-align: start;
 }
 
-/* ---------- Escritorio: las tres reseñas en una fila de igual altura (no hace falta carrusel) ---------- */
-@media (min-width: 1024px) {
-  .reviews__layout {
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: clamp(2.5rem, 5vw, 5rem);
-    align-items: end;
-  }
+/* ---------- Tablet y escritorio: escalonado como la referencia ---------- */
+@media (min-width: 768px) {
   .reviews__list {
-    grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 1.25rem 1.5rem;
     margin-inline: 0;
     padding: 0;
     overflow: visible;
@@ -224,8 +214,16 @@ useGsapContext(root, (c) => {
   .reviews__item {
     flex: none;
   }
-  .reviews__aside {
-    align-items: flex-end;
+}
+
+@media (min-width: 1024px) {
+  .reviews__layout {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(2.5rem, 5vw, 5rem);
+    align-items: center;
+  }
+  .reviews__list {
+    gap: 1.5rem;
   }
 }
 </style>

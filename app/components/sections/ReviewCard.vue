@@ -44,12 +44,12 @@ const initial = computed(() => props.review.author.trim().charAt(0).toUpperCase(
 .review {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
   height: 100%;
-  padding: clamp(1.5rem, 2.4vw, 2rem);
-  /* Hielo plano, 8 px como los botones: sin caja blanca ni borde */
-  background: var(--color-ice);
-  border-radius: var(--radius-m);
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-l);
 }
 
 .review__stars {
@@ -74,12 +74,9 @@ const initial = computed(() => props.review.author.trim().charAt(0).toUpperCase(
   flex: 1;
 }
 .review__text p {
-  font-family: var(--font-display);
-  font-size: clamp(1.125rem, 1rem + 0.35vw, 1.3125rem);
-  font-weight: 500;
-  line-height: 1.35;
-  letter-spacing: -0.012em;
-  color: var(--color-ink);
+  font-size: var(--text-body);
+  line-height: 1.65;
+  color: var(--color-text-secondary-strong);
 }
 
 .review__by {
@@ -87,8 +84,6 @@ const initial = computed(() => props.review.author.trim().charAt(0).toUpperCase(
   flex-wrap: wrap;
   align-items: center;
   gap: 0.375rem 0.75rem;
-  padding-top: 1.125rem;
-  border-top: 1px solid rgb(6 26 44 / 0.12);
   font-size: var(--text-small);
   line-height: 1.3;
 }
@@ -113,13 +108,13 @@ const initial = computed(() => props.review.author.trim().charAt(0).toUpperCase(
   align-self: stretch;
   width: 1px;
   margin-block: 0.2rem;
-  background: rgb(6 26 44 / 0.2);
+  background: var(--color-border);
 }
 /* Google: procedencia en segundo plano */
 .review__source {
-  color: var(--color-ink);
+  color: var(--color-primary-strong);
   text-decoration: underline;
-  text-decoration-color: rgb(6 26 44 / 0.35);
+  text-decoration-color: rgb(11 94 153 / 0.35);
   text-underline-offset: 4px;
   transition: text-decoration-color var(--dur-fast) var(--ease-out-soft);
 }
