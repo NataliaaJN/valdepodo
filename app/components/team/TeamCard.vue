@@ -1,13 +1,12 @@
 <script setup lang="ts">
 /**
  * Profesional (spec 05 §2): card clara con el retrato cuadrado dentro (los archivos son de 200 px: el cuadrado
- * es el formato que menos los amplía) y, debajo, nombre y cargo. Rasgos propios de Valdepodo:
- *  - Tratamiento fotográfico de la casa (el mismo de las piezas de servicios): monocromo azul de marca en
- *    reposo, color al señalar. Unifica retratos con fondos y uniformes distintos. En táctil, siempre en color.
- *  - LinkedIn (solo si la persona lo autoriza) va en una «muesca» recortada en la esquina de la foto, con
- *    esquinas cóncavas: el botón forma parte de la silueta de la card, no flota encima.
- * Lo esencial está a la vista desde el principio. Hover: la card sube 2 px, la foto vuelve a color con un zoom de
- * 1,03 y el icono se rellena; si existe `bio`, se despliega. Sin foto: marcador «Fotografía pendiente».
+ * es el formato que menos los amplía) y, debajo, nombre y cargo. Rasgo propio de Valdepodo: LinkedIn (solo si
+ * la persona lo autoriza) va en una «muesca» recortada en la esquina de la foto, con esquinas cóncavas, de modo
+ * que el botón forma parte de la silueta de la card. La muesca sobresale 1 px del marco de la foto para que no
+ * quede ninguna costura con la zona blanca de debajo, ni siquiera con la card elevada en hover.
+ * Lo esencial está a la vista desde el principio. Hover: la card sube 2 px, la foto hace zoom 1,03 y el icono
+ * se rellena; si existe `bio`, se despliega. Sin foto: marcador «Fotografía pendiente».
  */
 import { resolveValue } from '#shared/utils/pending'
 import type { TeamMember } from '~/data/team'
@@ -19,18 +18,19 @@ const name = computed(() => resolveValue(props.member.name))
 
 <template>
   <article class="person" :aria-labelledby="nameId">
-    <div class="media">
-      <img
-        v-if="member.photo"
-        :src="member.photo.src"
-        :alt="member.photo.alt"
-        width="200"
-        height="200"
-        loading="lazy"
-        class="photo"
-      />
-      <PhotoPlaceholder v-else ratio="1 / 1" variant="portrait" class="photo" />
-      <span class="tint" aria-hidden="true" />
+    <div class="frame">
+      <div class="media">
+        <img
+          v-if="member.photo"
+          :src="member.photo.src"
+          :alt="member.photo.alt"
+          width="200"
+          height="200"
+          loading="lazy"
+          class="photo"
+        />
+        <PhotoPlaceholder v-else ratio="1 / 1" variant="portrait" class="photo" />
+      </div>
 
       <div v-if="member.linkedin" class="notch">
         <a :href="resolveValue(member.linkedin)" target="_blank" rel="noopener" class="social">
@@ -65,10 +65,11 @@ const name = computed(() => resolveValue(props.member.name))
 }
 
 /* ---------- Retrato ---------- */
-.media {
+.frame {
   --r: 0.875rem;
   position: relative;
-  isolation: isolate;
+}
+.media {
   overflow: hidden;
   aspect-ratio: 1;
   border-radius: var(--radius-s);
@@ -81,38 +82,25 @@ const name = computed(() => resolveValue(props.member.name))
   height: 100%;
   object-fit: cover;
   object-position: 50% 24%;
-  filter: grayscale(1) contrast(1.08) brightness(1.05);
   scale: 1;
-  transition:
-    scale var(--dur-image) var(--ease-out-soft),
-    filter 1000ms var(--ease-out-soft);
+  transition: scale var(--dur-image) var(--ease-out-soft);
 }
 .photo :deep(.ph-label) {
   position: absolute;
   top: 0.5rem;
   left: 0.5rem;
 }
-/* Capa de color de marca en multiply: monocromo azul en reposo */
-.tint {
-  position: absolute;
-  inset: 0;
-  background: var(--color-cyan-light);
-  mix-blend-mode: multiply;
-  opacity: 0.95;
-  transition: opacity 1000ms var(--ease-out-soft);
-  pointer-events: none;
-}
-
 /* Muesca de LinkedIn: del color de la card, con esquinas cóncavas hacia la foto */
 .notch {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  right: -1px;
+  bottom: -1px;
   z-index: 1;
   display: grid;
   place-items: center;
-  width: 3.5rem;
-  height: 3.5rem;
+  width: calc(3.5rem + 1px);
+  height: calc(3.5rem + 1px);
+  padding: 0 1px 1px 0;
   border-top-left-radius: var(--r);
   background: var(--color-white);
 }
@@ -126,12 +114,12 @@ const name = computed(() => resolveValue(props.member.name))
   pointer-events: none;
 }
 .notch::before {
-  left: calc(-1 * var(--r));
+  left: calc(-1 * var(--r) + 1px);
   bottom: 0;
 }
 .notch::after {
   right: 0;
-  top: calc(-1 * var(--r));
+  top: calc(-1 * var(--r) + 1px);
 }
 .social {
   display: grid;
@@ -186,10 +174,7 @@ const name = computed(() => resolveValue(props.member.name))
 
 /* ---------- Hover / foco ---------- */
 .person:focus-within .photo {
-  filter: grayscale(0) contrast(1.02) brightness(1);
-}
-.person:focus-within .tint {
-  opacity: 0.18;
+  scale: 1.03;
 }
 .person:focus-within .more {
   grid-template-rows: 1fr;
@@ -200,11 +185,7 @@ const name = computed(() => resolveValue(props.member.name))
     translate: 0 -2px;
   }
   .person:hover .photo {
-    filter: grayscale(0) contrast(1.02) brightness(1);
     scale: 1.03;
-  }
-  .person:hover .tint {
-    opacity: 0.18;
   }
   .person:hover .more {
     grid-template-rows: 1fr;
@@ -215,14 +196,8 @@ const name = computed(() => resolveValue(props.member.name))
     color: var(--color-bone);
   }
 }
-/* Táctil: sin hover, retrato en color y descripción visible */
+/* Táctil: sin hover, descripción visible */
 @media (hover: none), (pointer: coarse) {
-  .photo {
-    filter: none;
-  }
-  .tint {
-    opacity: 0;
-  }
   .more {
     grid-template-rows: 1fr;
     opacity: 1;
@@ -231,7 +206,6 @@ const name = computed(() => resolveValue(props.member.name))
 @media (prefers-reduced-motion: reduce) {
   .person,
   .photo,
-  .tint,
   .more,
   .social {
     transition-duration: 1ms;
