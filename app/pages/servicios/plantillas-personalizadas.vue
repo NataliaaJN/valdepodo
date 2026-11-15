@@ -60,7 +60,7 @@ const description = pending(
       <StepList :steps="insoleProcess" horizontal class="mt-12" />
     </section>
 
-    <RelatedServices :slugs="service.related" />
+    <RelatedServices :current="service.slug" />
   </div>
 </template>
 

@@ -102,7 +102,7 @@ const service = useServicePage('pie-diabetico')
       />
     </section>
 
-    <RelatedServices :slugs="service.related" />
+    <RelatedServices :current="service.slug" />
   </div>
 </template>
 

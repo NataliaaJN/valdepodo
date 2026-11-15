@@ -134,7 +134,7 @@ const service = useServicePage('podologia-infantil')
       </aside>
     </section>
 
-    <RelatedServices :slugs="service.related" />
+    <RelatedServices :current="service.slug" />
   </div>
 </template>
 

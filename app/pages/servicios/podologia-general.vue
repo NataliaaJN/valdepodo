@@ -26,6 +26,6 @@ const intro = pending(
       </ul>
     </ServiceSection>
 
-    <RelatedServices :slugs="service.related" />
+    <RelatedServices :current="service.slug" />
   </div>
 </template>

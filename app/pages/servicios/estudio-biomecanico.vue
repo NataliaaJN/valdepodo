@@ -45,6 +45,6 @@ const indicators = ['Estático', 'Marcha', 'Carrera']
       <BiomechSequence />
     </div>
 
-    <RelatedServices :slugs="service.related" />
+    <RelatedServices :current="service.slug" />
   </div>
 </template>
