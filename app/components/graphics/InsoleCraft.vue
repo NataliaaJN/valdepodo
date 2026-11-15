@@ -4,7 +4,7 @@
  * scroll es el proceso. Un único modelo paramétrico de plantilla se dibuja a mano a lo largo de los cuatro pasos
  * de `insoleProcess`, y la cámara hace el camino que haría un diseñador: de la planta a la perspectiva.
  *   01 Valoración   → vista en planta: tu huella (con dedos) y su mapa de presión, desigual.
- *   02 Análisis     → sobre la misma huella se miden longitud y ancho y se acotan talón, arco y antepié.
+ *   02 Análisis     → sobre la misma huella se acota el contorno y se nombran talón, arco y antepié.
  *   03 Diseño       → la cámara se inclina y las secciones se levantan: arco, copa y elevación del talón; se
  *                     extruye el canto y se abren las nervaduras. Tres deslizadores muestran cómo viajan los
  *                     parámetros (arriba, abajo, punto medio): no es una forma fija.
@@ -16,7 +16,7 @@
  * - Metáfora visual: no representa un proceso de fabricación ni un producto concreto (spec 04 §2.2).
  */
 import { gsap } from 'gsap'
-import { CONCEPTUAL_LABEL, insoleProcess } from '~/data/insole'
+import { insoleProcess } from '~/data/insole'
 
 const steps = insoleProcess
 const N = steps.length
@@ -328,17 +328,6 @@ const zoneAt = (z: (typeof ZONES)[number]) => ({
   x: px(z.u * L, -halfWidth(z.u) - 20),
   y: py(-halfWidth(z.u) - 20, 0),
 })
-/** Medidas: longitud bajo la huella y ancho en el antepié. */
-const measure = computed(() => ({
-  lenY: py(122, 0),
-  x0: px(0, 122),
-  x1: px(L, 122),
-  wx0: px(L * 0.82, -108),
-  wy0: py(-108, 0),
-  wx1: px(L * 0.82, 108),
-  wy1: py(108, 0),
-}))
-
 /** Deslizadores del diseño: viajan con los parámetros. */
 const sliders = computed(() => [
   { label: 'arco', x: 70, v: (params.value.arch - 0.3) / 0.7 },
@@ -353,7 +342,6 @@ const v = computed(() => ({
   toes: seg(0.2, 0.7) * lerp(1, 0.35, seg(1.0, 1.3)) * (1 - seg(2.1, 2.4)),
   blobs: seg(0.4, 0.95) * lerp(1, 0.25, seg(1.2, 1.5)) * (1 - seg(2.1, 2.4)),
   load: seg(0.65, 0.95) * (1 - seg(1.1, 1.3)),
-  measure: seg(1.3, 1.8) * (1 - seg(2.0, 2.3)),
   zones: seg(1.5, 1.85) * (1 - seg(2.2, 2.5)),
   notes: [seg(2.6, 2.78), seg(2.66, 2.84), seg(2.72, 2.9), seg(2.78, 2.96)] as const,
   notesOut: 1 - seg(3.0, 3.2),
@@ -517,24 +505,6 @@ useGsapContext(root, (c) => {
             />
 
             <!-- 02 · Medidas y zonas, sobre la misma huella -->
-            <g class="k-measure" :style="{ opacity: v.measure }">
-              <path :d="`M${f1(measure.x0)} ${f1(measure.lenY)}H${f1(measure.x1)}`" />
-              <path
-                :d="`M${f1(measure.x0)} ${f1(measure.lenY - 8)}v16M${f1(measure.x1)} ${f1(measure.lenY - 8)}v16`"
-              />
-              <text
-                class="k-note"
-                :x="(measure.x0 + measure.x1) / 2"
-                :y="measure.lenY + 20"
-                text-anchor="middle"
-              >
-                longitud
-              </text>
-              <path
-                :d="`M${f1(measure.wx0)} ${f1(measure.wy0)}L${f1(measure.wx1)} ${f1(measure.wy1)}M${f1(measure.wx0 - 7)} ${f1(measure.wy0)}h14M${f1(measure.wx1 - 7)} ${f1(measure.wy1)}h14`"
-              />
-              <text class="k-note" :x="measure.wx1 + 12" :y="measure.wy1 + 6" text-anchor="start">ancho</text>
-            </g>
             <g class="k-zones" :style="{ opacity: v.zones }">
               <text
                 v-for="z in ZONES"
@@ -643,7 +613,6 @@ useGsapContext(root, (c) => {
               </g>
             </g>
           </svg>
-          <figcaption class="craft__caption">{{ CONCEPTUAL_LABEL }}</figcaption>
         </figure>
       </div>
     </div>
@@ -710,17 +679,10 @@ useGsapContext(root, (c) => {
   min-height: 0;
   overflow: visible;
 }
-.craft__caption {
-  padding-top: 0.5rem;
-  text-align: center;
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-}
 
 /* ---------- Trazos del boceto ---------- */
 .k-line,
 .k-sections path,
-.k-measure path,
 .k-notes path,
 .k-follow path {
   fill: none;
@@ -747,11 +709,6 @@ useGsapContext(root, (c) => {
   stroke-opacity: 0.55;
   stroke-width: 1;
   stroke-dasharray: 1;
-}
-.k-measure path {
-  stroke: var(--color-bone);
-  stroke-opacity: 0.55;
-  stroke-width: 1;
 }
 .k-wall {
   fill: url(#craft-wall);
