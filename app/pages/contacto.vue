@@ -44,7 +44,11 @@ async function copy(text: string, what: string) {
     />
 
     <!-- 1 · Cómo contactar -->
-    <section class="container-wide pb-(--space-section)" aria-label="Datos de contacto" data-nav-theme="bone">
+    <section
+      class="container-wide py-[clamp(3.5rem,6vw,5.5rem)]"
+      aria-label="Datos de contacto"
+      data-nav-theme="bone"
+    >
       <div class="bento">
         <!-- Ubicación: la pieza destacada -->
         <article v-reveal class="card card-place chapter-blue" aria-labelledby="c-place">
@@ -364,7 +368,7 @@ async function copy(text: string, what: string) {
 /* ---------- Cita + mapa ---------- */
 .cita {
   scroll-margin-top: calc(var(--nav-h-compact) + 8px);
-  padding-block: clamp(2.5rem, 5vw, 4.5rem) var(--space-section);
+  padding-block: clamp(3.5rem, 6vw, 5.5rem);
 }
 .cita-head {
   display: grid;
