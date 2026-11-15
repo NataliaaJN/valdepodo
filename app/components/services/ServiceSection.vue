@@ -14,8 +14,10 @@ withDefaults(
     title: string
     intro?: Maybe<string>
     tone?: 'bone' | 'bone-2'
+    /** `stacked`: título arriba y contenido a todo el ancho también en escritorio (p. ej. una composición bento). */
+    layout?: 'split' | 'stacked'
   }>(),
-  { intro: undefined, tone: 'bone' },
+  { intro: undefined, tone: 'bone', layout: 'split' },
 )
 defineSlots<{ default?: () => unknown; rail?: () => unknown }>()
 </script>
@@ -23,7 +25,10 @@ defineSlots<{ default?: () => unknown; rail?: () => unknown }>()
 <template>
   <section
     class="svc-section section-clip"
-    :class="tone === 'bone' ? 'chapter-bone' : 'chapter-bone-2'"
+    :class="[
+      tone === 'bone' ? 'chapter-bone' : 'chapter-bone-2',
+      { 'svc-section--stacked': layout === 'stacked' },
+    ]"
     :aria-labelledby="id"
     data-nav-theme="bone"
   >
@@ -66,16 +71,19 @@ defineSlots<{ default?: () => unknown; rail?: () => unknown }>()
   min-width: 0;
 }
 @media (min-width: 1024px) {
-  .svc-section__grid {
+  .svc-section:not(.svc-section--stacked) .svc-section__grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: 1.5rem;
     align-items: start;
   }
-  .svc-section__rail {
+  .svc-section:not(.svc-section--stacked) .svc-section__rail {
     grid-column: 1 / span 4;
   }
-  .svc-section__body {
+  .svc-section:not(.svc-section--stacked) .svc-section__body {
     grid-column: 5 / span 8;
+  }
+  .svc-section--stacked .svc-section__title {
+    max-width: 24ch;
   }
 }
 </style>
