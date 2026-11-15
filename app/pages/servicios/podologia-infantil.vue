@@ -202,10 +202,12 @@ const [gait, arch, toes, shoe] = kids.assessments
   padding-block: clamp(3.5rem, 7vw, 6rem);
   --mark: 3.75rem;
 }
+/* Mismo título que el resto de secciones (display-m); en hueso para contrastar con el cyan */
 .consult__title {
-  max-width: 14ch;
+  max-width: 24ch;
   font-size: var(--text-display-m);
   line-height: var(--text-display-m--line-height);
+  color: var(--color-bone);
 }
 .path {
   display: grid;
