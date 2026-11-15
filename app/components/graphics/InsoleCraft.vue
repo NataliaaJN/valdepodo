@@ -1,18 +1,19 @@
 <script setup lang="ts">
 /**
  * «Cómo hacemos tus plantillas» — experiencia de Plantillas personalizadas. Capítulo tinta fijado (`pin`): el
- * scroll es el proceso. Sobre un boceto técnico en perfil (trazo a lápiz sobre tinta) se recorren los cuatro
- * pasos de `insoleProcess`:
- *   01 Valoración   → se traza el perfil del pie y se marca dónde carga (mapa de presión desigual).
- *   02 Análisis     → se acotan las zonas y se dibuja el calzado que la va a alojar.
- *   03 Diseño       → se dibuja la plantilla; el arco se eleva, el talón sube y se ajustan las nervaduras.
- *                     Los parámetros se mueven (arriba, abajo, un punto intermedio): no es una forma fija.
- *   04 Entrega      → la plantilla se rellena, el apoyo se reparte y se marcan entrega y revisión.
+ * scroll es el proceso. Un boceto en perspectiva de UNA plantilla (modelo paramétrico proyectado a mano, como
+ * el dibujo de un diseñador industrial) se construye a lo largo de los cuatro pasos de `insoleProcess`:
+ *   01 Valoración   → la huella sobre el plano, con el reparto de la carga (desigual).
+ *   02 Análisis     → se miden longitud y ancho, se acotan las zonas y se trazan las secciones (todavía planas).
+ *   03 Diseño       → las secciones se levantan: el arco sube, el talón se eleva, se extruye el canto y se
+ *                     abren las nervaduras. Los parámetros viajan (arriba, abajo, punto medio): no es una
+ *                     forma fija. Anotaciones con flechas señalan cada parámetro.
+ *   04 Entrega      → se sombrea como un render, se retiran las cotas y se marcan entrega y revisión.
  *
- * - Un único `p` (0 … N) lo mueve ScrollTrigger con `scrub`; todo el dibujo sale de él (perfil paramétrico),
- *   así que al volver atrás se deshace solo. Los puntos de la barra saltan a cada paso (botones con teclado).
+ * - Un único `p` (0 … N) lo mueve ScrollTrigger con `scrub`; todo el dibujo sale de él, así que al volver atrás
+ *   se deshace solo. Los puntos de la barra saltan a cada paso (botones accesibles con teclado).
  * - Reduced motion y sin JS: sin pin; lista de pasos y el dibujo terminado.
- * - Es una metáfora visual: no representa un proceso de fabricación ni un producto concreto (spec 04 §2.2).
+ * - Metáfora visual: no representa un proceso de fabricación ni un producto concreto (spec 04 §2.2).
  */
 import { gsap } from 'gsap'
 import { CONCEPTUAL_LABEL, insoleProcess } from '~/data/insole'
@@ -32,135 +33,241 @@ const ease = (t: number) => 1 - (1 - t) ** 3
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 /** Tramo [a, b] del progreso, 0 → 1 con salida suave. */
 const seg = (a: number, b: number) => ease(clamp((p.value - a) / (b - a)))
-
-/* ---------- Geometría del perfil (unidades del lienzo 640 × 440) ---------- */
-const GROUND = 330
-const X0 = 60
-const X1 = 580
 const g = (x: number, c: number, w: number) => Math.exp(-(((x - c) / w) ** 2))
 const sstep = (a: number, b: number, x: number) => {
   const t = clamp((x - a) / (b - a))
   return t * t * (3 - 2 * t)
 }
 
-/** Superficie superior e inferior de la plantilla para una altura de arco y una elevación de talón (0 … 1). */
-function surf(x: number, arch: number, heel: number) {
-  const raise = heel * 36 * (1 - sstep(120, 390, x))
-  const archL = arch * 78 * g(x, 305, 88)
-  const cup = 30 * g(x, 92, 46)
-  const fore = 10 * g(x, 520, 58)
-  const taper = 1 - 0.55 * sstep(540, 585, x)
-  const low = GROUND - 5 - raise - 0.18 * archL
-  const top = low - 12 * taper - archL * 0.82 - cup - fore
-  return { top, low }
+/* ---------- Modelo: plantilla de 500 de largo (X) por ~190 de ancho (Y), alturas en Z ---------- */
+const L = 500
+/** Semianchura por posición longitudinal (0 talón → 1 puntera), interpolada con coseno entre nudos. */
+const KNOTS: readonly (readonly [number, number])[] = [
+  [0, 0],
+  [0.03, 46],
+  [0.12, 60],
+  [0.4, 51],
+  [0.62, 75],
+  [0.82, 90],
+  [0.94, 78],
+  [0.985, 44],
+  [1, 0],
+]
+function halfWidth(u: number) {
+  for (let i = 1; i < KNOTS.length; i++) {
+    const [u1, w1] = KNOTS[i]!
+    if (u <= u1) {
+      const [u0, w0] = KNOTS[i - 1]!
+      const t = (u - u0) / (u1 - u0)
+      return lerp(w0, w1, (1 - Math.cos(Math.PI * t)) / 2)
+    }
+  }
+  return 0
+}
+/** t = 0 borde lateral · t = 1 borde medial (el que mira al espectador, con el arco). */
+const yAt = (u: number, t: number) => {
+  const w = halfWidth(u)
+  const med = w - 16 * g(u, 0.42, 0.13)
+  return -w + t * (w + med)
 }
 
-const XS: number[] = []
-for (let x = X0; x <= X1; x += 8) XS.push(x)
-const poly = (f: (x: number) => number) =>
-  XS.map((x, i) => `${i ? 'L' : 'M'}${x} ${f(x).toFixed(1)}`).join('')
+/** Proyección oblicua (cabinet): X a la derecha, Y hacia el espectador, Z hacia arriba. */
+const OX = 62
+const OY = 268
+const K = 0.45
+const SP = 0.5
+const CP = 0.92
+const px = (X: number, Y: number) => OX + X + K * Y
+const py = (Y: number, Z: number) => OY + SP * Y - CP * Z
+const f1 = (n: number) => n.toFixed(1)
 
-const params = computed(() => {
-  // Los parámetros viajan: el arco sube, se pasa de largo y se asienta; el talón sube y baja a un punto medio.
-  const a1 = seg(2.15, 2.55)
-  const a2 = seg(2.62, 2.9)
-  const arch = lerp(lerp(0.15, 1, a1), 0.68, a2)
-  const h1 = seg(2.4, 2.7)
-  const h2 = seg(2.7, 2.95)
-  const heel = lerp(lerp(0, 1, h1), 0.45, h2)
-  return { arch, heel }
+interface Params {
+  lift: number
+  arch: number
+  heel: number
+}
+/** Altura de la cara superior y de la inferior (hueca bajo el arco) en (u, t). */
+function zTop(u: number, t: number, q: Params) {
+  const med = t ** 1.6
+  const edge = (2 * t - 1) ** 2
+  const arch = q.arch * 66 * g(u, 0.4, 0.15) * med
+  const cup = 26 * g(u, 0.1, 0.13) * edge
+  const fore = 7 * g(u, 0.78, 0.18)
+  const raise = q.heel * 24 * (1 - sstep(0.04, 0.5, u))
+  return q.lift * (11 + arch + cup + fore + raise)
+}
+function zLow(u: number, t: number, q: Params) {
+  return q.lift * q.arch * 40 * g(u, 0.4, 0.14) * t ** 2
+}
+
+const params = computed<Params>(() => {
+  const a1 = seg(2.15, 2.5)
+  const a2 = seg(2.62, 2.92)
+  const h1 = seg(2.3, 2.6)
+  const h2 = seg(2.65, 2.95)
+  return {
+    lift: seg(2.0, 2.4),
+    arch: lerp(lerp(0.3, 1, a1), 0.7, a2),
+    heel: lerp(lerp(0, 1, h1), 0.5, h2),
+  }
 })
 
-const topD = computed(() => poly((x) => surf(x, params.value.arch, params.value.heel).top))
-const lowD = computed(() => poly((x) => surf(x, params.value.arch, params.value.heel).low))
-const fillD = computed(() => {
-  const { arch, heel } = params.value
-  const top = XS.map((x, i) => `${i ? 'L' : 'M'}${x} ${surf(x, arch, heel).top.toFixed(1)}`).join('')
-  const low = [...XS]
-    .reverse()
-    .map((x) => `L${x} ${surf(x, arch, heel).low.toFixed(1)}`)
-    .join('')
-  return `${top}${low}Z`
+const NU = 44
+const US = Array.from({ length: NU + 1 }, (_, i) => i / NU)
+const poly = (pts: [number, number][], close = false) =>
+  pts.map(([x, y], i) => `${i ? 'L' : 'M'}${f1(x)} ${f1(y)}`).join('') + (close ? 'Z' : '')
+
+/** Punto de la cara superior proyectado. */
+const top = (u: number, t: number, q: Params): [number, number] => [
+  px(u * L, yAt(u, t)),
+  py(yAt(u, t), zTop(u, t, q)),
+]
+const low = (u: number, t: number, q: Params): [number, number] => [
+  px(u * L, yAt(u, t)),
+  py(yAt(u, t), zLow(u, t, q)),
+]
+
+/** Contorno en el plano (la huella): lateral de ida y medial de vuelta. */
+const outlinePts = (f: (u: number, t: number) => [number, number]) => [
+  ...US.map((u) => f(u, 0)),
+  ...[...US].reverse().map((u) => f(u, 1)),
+]
+const footprintD = computed(() =>
+  poly(
+    outlinePts((u, t) => top(u, t, { lift: 0, arch: 0, heel: 0 })),
+    true,
+  ),
+)
+const rimD = computed(() =>
+  poly(
+    outlinePts((u, t) => top(u, t, params.value)),
+    true,
+  ),
+)
+/** Borde medial inferior (canto): baja desde la cara superior al extruir. */
+const lowRimD = computed(() => {
+  const w = seg(2.5, 2.85)
+  const q = params.value
+  return poly(
+    US.map((u) => {
+      const [x, y] = top(u, 1, q)
+      const [, yl] = low(u, 1, q)
+      return [x, lerp(y, yl, w)] as [number, number]
+    }),
+  )
+})
+/** Pared medial: polígono entre el borde superior y el inferior. */
+const wallD = computed(() => {
+  const w = seg(2.5, 2.85)
+  const q = params.value
+  const a = US.map((u) => top(u, 1, q))
+  const b = [...US].reverse().map((u) => {
+    const [x, y] = top(u, 1, q)
+    const [, yl] = low(u, 1, q)
+    return [x, lerp(y, yl, w)] as [number, number]
+  })
+  return poly([...a, ...b], true)
 })
 
-/** Perfil del pie (trazo fino): sigue el arco con holgura y sube al tobillo. */
-const footD = computed(() => {
-  const ft = (x: number) => surf(x, 0.55, 0).top - 26
-  const xs = XS.filter((x) => x >= 92 && x <= 552)
-  const mid = xs.map((x) => `L${x} ${ft(x).toFixed(1)}`).join('')
-  return `M82 150C74 196 80 238 92 ${ft(92).toFixed(1)}${mid}C590 ${ft(552).toFixed(1)} 604 300 598 ${GROUND - 10}`
-})
+/** Secciones transversales: planas en el análisis (paso 02), se levantan en el diseño. */
+const SECTIONS = Array.from({ length: 15 }, (_, i) => 0.07 + i * 0.062)
+const sections = computed(() =>
+  SECTIONS.map((u, i) => {
+    const pts = Array.from({ length: 17 }, (_, j) => top(u, j / 16, params.value))
+    return { d: poly(pts), k: i }
+  }),
+)
+const sectionDraw = (k: number) => seg(1.1 + k * 0.035, 1.5 + k * 0.035)
 
-/** Calzado: suela, contrafuerte y puntera (silueta genérica, sin marca ni modelo). */
-const SHOE_D = `M46 ${GROUND}H606C624 ${GROUND} 628 296 596 278C540 250 470 240 410 224C330 204 240 168 150 138C110 124 80 126 62 160C44 204 40 268 46 ${GROUND}Z`
-
-/** Nervaduras bajo el arco: solo donde hay hueco. */
+/** Nervaduras: ranuras en el canto medial bajo el arco. */
 const ribs = computed(() => {
-  const out: { x: number; y1: number; y2: number; k: number }[] = []
-  let k = 0
-  for (let x = 214; x <= 408; x += 14) {
-    const { top, low } = surf(x, params.value.arch, params.value.heel)
-    out.push({ x, y1: top + 3, y2: low - 1, k: k++ })
+  const q = params.value
+  const w = seg(2.5, 2.85)
+  const out: { d: string; k: number }[] = []
+  for (let k = 0; k < 12; k++) {
+    const u = 0.25 + k * 0.026
+    const [x, y1] = top(u, 1, q)
+    const [, yl] = low(u, 1, q)
+    const y0 = y1 + 4
+    const y2 = lerp(y1, yl, w) - 3
+    if (y2 - y0 > 6) out.push({ d: `M${f1(x)} ${f1(y0)}V${f1(y2)}`, k })
   }
   return out
 })
-const ribGrow = (k: number) => seg(2.5 + k * 0.022, 2.72 + k * 0.022)
+const ribShow = (k: number) => seg(2.7 + k * 0.02, 2.88 + k * 0.02)
 
-/** Marcas de la elevación del talón: tramos entre el suelo y la plantilla. */
-const hatch = computed(() => {
-  const out: { x: number; y1: number; y2: number }[] = []
-  for (let x = 66; x <= 392; x += 13) {
-    const { low } = surf(x, params.value.arch, params.value.heel)
-    if (GROUND - low > 8) out.push({ x, y1: GROUND, y2: low + 1 })
+/** Superficie sombreada (paso 04): rejilla de losetas ordenadas de lejos a cerca, luz desde arriba-izquierda. */
+const shaded = computed(() => {
+  if (p.value < 3) return []
+  const q = params.value
+  const NX = 26
+  const NT = 10
+  const Z = (u: number, t: number) => zTop(u, t, q)
+  const tiles: { d: string; fill: string; depth: number }[] = []
+  for (let i = 0; i < NX; i++) {
+    for (let j = 0; j < NT; j++) {
+      const u0 = i / NX
+      const u1 = (i + 1) / NX
+      const t0 = j / NT
+      const t1 = (j + 1) / NT
+      const um = (u0 + u1) / 2
+      const tm = (t0 + t1) / 2
+      if (halfWidth(um) < 1) continue
+      // normal por diferencias finitas (en unidades de lienzo)
+      const dzu = (Z(u1, tm) - Z(u0, tm)) / ((u1 - u0) * L)
+      const wd = halfWidth(um) * 2
+      const dzt = (Z(um, t1) - Z(um, t0)) / ((t1 - t0) * wd)
+      const nl = Math.hypot(dzu, dzt, 1)
+      const lit = clamp((-dzu * -0.55 + dzt * -0.45 + 1 * 0.75) / nl / 1.05)
+      const shade = 0.18 + 0.82 * lit
+      // de la tinta al cian claro
+      const r = Math.round(lerp(8, 160, shade ** 1.2))
+      const gC = Math.round(lerp(34, 232, shade ** 1.1))
+      const b = Math.round(lerp(58, 246, shade))
+      const pts = [top(u0, t0, q), top(u1, t0, q), top(u1, t1, q), top(u0, t1, q)]
+      tiles.push({ d: poly(pts, true), fill: `rgb(${r} ${gC} ${b})`, depth: yAt(um, tm) })
+    }
   }
-  return out
+  return tiles.sort((a, b) => a.depth - b.depth)
 })
 
-/** Cota vertical del arco, a la altura del punto más alto. */
-const dim = computed(() => {
-  const { top, low } = surf(305, params.value.arch, params.value.heel)
-  return { top, low, len: low - top }
+/** Puntos señalados por las anotaciones (en pantalla). */
+const marks = computed(() => {
+  const q = params.value
+  return {
+    arch: top(0.4, 0.9, q),
+    cup: top(0.07, 0.12, q),
+    rib: (() => {
+      const [x, y] = top(0.31, 1, q)
+      const [, yl] = low(0.31, 1, q)
+      return [x, lerp(y, yl, seg(2.5, 2.85) * 0.5)] as [number, number]
+    })(),
+    heel: (() => {
+      const [x, y] = top(0.03, 0.9, q)
+      return [x, y + 6] as [number, number]
+    })(),
+  }
 })
-const heelPoint = computed(() => surf(92, params.value.arch, params.value.heel).top)
-const forePoint = computed(() => surf(520, params.value.arch, params.value.heel).top)
 
-/** Huella de presión bajo el perfil: desigual al valorar, repartida al entregar. */
-const pressure = computed(() => {
-  const even = seg(3.15, 3.7)
-  const a = [
-    { x: 110, rx: 46, ry: 7, o: 1 },
-    { x: 305, rx: 20, ry: 3, o: 0.35 },
-    { x: 520, rx: 40, ry: 6, o: 0.7 },
-  ]
-  const target = [
-    { rx: 42, ry: 5.5, o: 0.75 },
-    { rx: 38, ry: 5, o: 0.75 },
-    { rx: 40, ry: 5.5, o: 0.75 },
-  ]
-  return a.map((e, i) => ({
-    x: e.x,
-    rx: lerp(e.rx, target[i]!.rx, even),
-    ry: lerp(e.ry, target[i]!.ry, even),
-    o: lerp(e.o, target[i]!.o, even),
-    // rampa clínica: carga alta (rojo) → repartida (verde)
-    fill: `color-mix(in srgb, #33d940 ${Math.round(even * 100)}%, ${i === 0 ? '#e61a1a' : i === 1 ? '#00bff2' : '#ffe61a'})`,
-  }))
+/** Huella de presión sobre el plano (paso 01): desigual al valorar. */
+const blobs = [
+  { u: 0.1, t: 0.5, rx: 52, ry: 44, col: '#e61a1a', o: 0.85 },
+  { u: 0.4, t: 0.85, rx: 26, ry: 12, col: '#00bff2', o: 0.55 },
+  { u: 0.8, t: 0.45, rx: 56, ry: 56, col: '#ffe61a', o: 0.75 },
+]
+const blobAt = (b: (typeof blobs)[number]) => ({
+  cx: px(b.u * L, yAt(b.u, b.t)),
+  cy: py(yAt(b.u, b.t), 0),
 })
 
 const v = computed(() => ({
-  ground: seg(0, 0.35),
-  foot: seg(0.1, 0.95),
-  footFade: lerp(1, 0.22, seg(1.6, 2.2)),
-  press: seg(0.45, 1.05) * lerp(1, 0.3, seg(1.9, 2.1)) + seg(3.0, 3.2) * 0.7,
-  brackets: seg(1.15, 1.6) * (1 - seg(3.0, 3.25)),
-  shoe: seg(1.3, 2.0),
-  shoeFade: lerp(1, 0.4, seg(2.2, 2.6)),
-  top: seg(2.0, 2.45),
-  low: seg(2.15, 2.6),
-  leaders: [seg(2.55, 2.75), seg(2.62, 2.82), seg(2.7, 2.9), seg(2.76, 2.95)] as const,
-  leadersOut: 1 - seg(3.0, 3.2),
+  outline: seg(0.05, 0.65),
+  blobs: seg(0.45, 1.0) * lerp(1, 0.25, seg(1.2, 1.5)) * (1 - seg(2.1, 2.4)),
+  measure: seg(1.3, 1.8) * (1 - seg(2.0, 2.3)),
+  zones: seg(1.5, 1.85) * (1 - seg(2.4, 2.7)),
+  notes: [seg(2.55, 2.75), seg(2.62, 2.82), seg(2.7, 2.9), seg(2.76, 2.95)] as const,
+  notesOut: 1 - seg(3.0, 3.2),
   fill: seg(3.0, 3.4),
-  cover: seg(3.1, 3.45),
   follow: seg(3.4, 3.95),
 }))
 
@@ -258,134 +365,139 @@ useGsapContext(root, (c) => {
         </div>
 
         <figure class="craft__visual" aria-hidden="true">
-          <svg viewBox="0 70 640 370" class="craft__svg" focusable="false">
-            <!-- Suelo -->
-            <line
-              class="k-line k-line--ground"
-              x1="30"
-              :y1="GROUND"
-              x2="610"
-              :y2="GROUND"
-              pathLength="1"
-              :style="{ strokeDashoffset: 1 - v.ground }"
-            />
+          <svg viewBox="30 90 600 300" class="craft__svg" focusable="false">
+            <defs>
+              <linearGradient id="craft-wall" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#14b8d4" stop-opacity="0.55" />
+                <stop offset="1" stop-color="#061a2c" stop-opacity="0.9" />
+              </linearGradient>
+            </defs>
 
-            <!-- 01 · Perfil del pie -->
-            <path
-              class="k-line k-line--foot"
-              :d="footD"
-              pathLength="1"
-              :style="{ strokeDashoffset: 1 - v.foot, opacity: v.footFade }"
-            />
-
-            <!-- Mapa de presión bajo el suelo -->
-            <g :style="{ opacity: v.press }">
+            <!-- 01 · Huella sobre el plano y reparto de la carga -->
+            <g :style="{ opacity: v.blobs }">
               <ellipse
-                v-for="e in pressure"
-                :key="e.x"
-                :cx="e.x"
-                :cy="GROUND + 22"
-                :rx="e.rx"
-                :ry="e.ry"
-                :fill="e.fill"
-                :fill-opacity="e.o"
+                v-for="b in blobs"
+                :key="b.u"
+                :cx="blobAt(b).cx"
+                :cy="blobAt(b).cy"
+                :rx="b.rx"
+                :ry="b.ry * SP"
+                :fill="b.col"
+                :fill-opacity="b.o"
+              />
+            </g>
+            <path
+              class="k-line k-line--plan"
+              :d="footprintD"
+              pathLength="1"
+              :style="{ strokeDashoffset: 1 - v.outline, opacity: 1 - seg(2.0, 2.4) * 0.7 }"
+            />
+
+            <!-- 02 · Medidas y zonas (en el plano) -->
+            <g class="k-measure" :style="{ opacity: v.measure }">
+              <path :d="`M${f1(px(0, 0) + 0)} ${f1(py(124, 0))}H${f1(px(L, 0) + K * 124)}`" />
+              <path :d="`M${f1(px(0, 0))} ${f1(py(114, 0))}v10M${f1(px(L, 124))} ${f1(py(114, 0))}v10`" />
+              <text class="k-note" :x="px(L / 2, 124)" :y="py(124, 0) + 16" text-anchor="middle">
+                longitud
+              </text>
+              <path
+                :d="`M${f1(px(L * 0.82, -112))} ${f1(py(-112, 0))}L${f1(px(L * 0.82, 112))} ${f1(py(112, 0))}`"
+              />
+              <text class="k-note" :x="px(L * 0.82, 112) + 8" :y="py(112, 0) + 34" text-anchor="start">
+                ancho
+              </text>
+            </g>
+            <g class="k-zones" :style="{ opacity: v.zones }">
+              <text class="k-note" :x="px(L * 0.1, -86)" :y="py(-86, 0) - 6" text-anchor="middle">talón</text>
+              <text class="k-note" :x="px(L * 0.4, -70)" :y="py(-70, 0) - 6" text-anchor="middle">arco</text>
+              <text class="k-note" :x="px(L * 0.8, -104)" :y="py(-104, 0) - 6" text-anchor="middle">
+                antepié
+              </text>
+            </g>
+
+            <!-- Secciones: planas al medir, se levantan al diseñar -->
+            <g class="k-sections">
+              <path
+                v-for="s in sections"
+                :key="s.k"
+                :d="s.d"
+                pathLength="1"
+                :style="{ strokeDashoffset: 1 - sectionDraw(s.k), opacity: 1 - v.fill * 0.65 }"
               />
             </g>
 
-            <!-- 02 · Zonas y calzado -->
-            <g class="k-zones" :style="{ opacity: v.brackets }">
-              <g
-                v-for="z in [
-                  { a: 62, b: 180, t: 'Talón' },
-                  { a: 222, b: 392, t: 'Arco' },
-                  { a: 440, b: 580, t: 'Antepié' },
-                ]"
-                :key="z.t"
-              >
-                <path class="k-zone" :d="`M${z.a} ${GROUND + 48}v6H${z.b}v-6`" />
-                <text class="k-text" :x="(z.a + z.b) / 2" :y="GROUND + 74" text-anchor="middle">
-                  {{ z.t }}
-                </text>
-              </g>
+            <!-- 04 · Sombreado -->
+            <g class="k-shade" :style="{ opacity: v.fill }">
+              <path v-for="(t, i) in shaded" :key="i" :d="t.d" :fill="t.fill" :stroke="t.fill" />
             </g>
-            <path
-              class="k-line k-line--shoe"
-              :d="SHOE_D"
-              pathLength="1"
-              :style="{ strokeDashoffset: 1 - v.shoe, opacity: v.shoeFade }"
-            />
 
-            <!-- 03 · Plantilla -->
-            <path class="k-fill" :d="fillD" :style="{ opacity: v.fill * 0.3 }" />
-            <g class="k-hatch" :style="{ opacity: v.top }">
-              <line v-for="h in hatch" :key="h.x" :x1="h.x" :y1="h.y1" :x2="h.x + 6" :y2="h.y2" />
-            </g>
-            <path
-              class="k-line k-line--low"
-              :d="lowD"
-              pathLength="1"
-              :style="{ strokeDashoffset: 1 - v.low }"
-            />
+            <!-- 03 · Canto y nervaduras -->
+            <path class="k-wall" :d="wallD" :style="{ opacity: seg(2.5, 2.85) }" />
             <g class="k-ribs">
-              <line
+              <path
                 v-for="r in ribs"
                 :key="r.k"
-                :x1="r.x"
-                :y1="r.y1"
-                :x2="r.x"
-                :y2="r.y1 + (r.y2 - r.y1) * ribGrow(r.k)"
-                :style="{ opacity: ribGrow(r.k) * (1 - v.fill * 0.55) }"
+                :d="r.d"
+                :style="{ opacity: ribShow(r.k) * (1 - v.fill * 0.3) }"
               />
             </g>
             <path
-              class="k-line k-line--top"
-              :class="{ 'is-final': v.cover > 0.02 }"
-              :d="topD"
-              pathLength="1"
-              :style="{ strokeDashoffset: 1 - v.top }"
+              class="k-line k-line--rim"
+              :d="rimD"
+              :class="{ 'is-final': v.fill > 0.02 }"
+              :style="{ opacity: seg(2.0, 2.2) }"
             />
+            <path class="k-line k-line--rim k-line--low" :d="lowRimD" :style="{ opacity: seg(2.5, 2.85) }" />
 
-            <!-- Acotaciones del diseño -->
-            <g class="k-leaders" :style="{ opacity: v.leadersOut }">
-              <g :style="{ opacity: v.leaders[0] }">
-                <line :x1="92" y1="104" :x2="92" :y2="heelPoint - 5" />
-                <text class="k-text" x="92" y="94" text-anchor="middle">Copa del talón</text>
-              </g>
-              <g :style="{ opacity: v.leaders[1] }">
-                <line x1="305" y1="104" x2="305" :y2="dim.top - 5" />
-                <text class="k-text" x="305" y="94" text-anchor="middle">Altura del arco</text>
+            <!-- Anotaciones de diseño, con flecha al punto que describen -->
+            <g class="k-notes" :style="{ opacity: v.notesOut }">
+              <g :style="{ opacity: v.notes[0] }">
                 <path
-                  class="k-dim"
-                  :d="`M328 ${dim.top}V${dim.low}M323 ${dim.top + 6}l5 -6l5 6M323 ${dim.low - 6}l5 6l5 -6`"
+                  :d="`M${f1(marks.cup[0] - 40)} 104Q${f1(marks.cup[0] - 40)} ${f1(marks.cup[1] - 30)} ${f1(marks.cup[0] - 3)} ${f1(marks.cup[1] - 3)}`"
+                />
+                <text class="k-note" :x="marks.cup[0] - 44" y="96" text-anchor="start">copa del talón</text>
+              </g>
+              <g :style="{ opacity: v.notes[1] }">
+                <path :d="`M${f1(marks.arch[0])} 104V${f1(marks.arch[1] - 6)}`" />
+                <path :d="`M${f1(marks.arch[0] - 5)} ${f1(marks.arch[1] - 12)}l5 6l5 -6`" />
+                <text class="k-note" :x="marks.arch[0]" y="96" text-anchor="middle">
+                  bóveda · arriba y abajo
+                </text>
+                <path
+                  class="k-updown"
+                  :d="`M${f1(marks.arch[0] + 22)} ${f1(marks.arch[1] + 4)}v22m-4 -17l4 -5l4 5m-8 12l4 5l4 -5`"
                 />
               </g>
-              <g :style="{ opacity: v.leaders[2] }">
-                <line x1="520" y1="104" x2="520" :y2="forePoint - 5" />
-                <text class="k-text" x="520" y="94" text-anchor="middle">Apoyo del antepié</text>
+              <g :style="{ opacity: v.notes[2] }">
+                <path
+                  :d="`M${f1(marks.rib[0] + 70)} 352Q${f1(marks.rib[0] + 40)} 352 ${f1(marks.rib[0] + 6)} ${f1(marks.rib[1] + 2)}`"
+                />
+                <text class="k-note" :x="marks.rib[0] + 74" y="356" text-anchor="start">nervaduras</text>
               </g>
-              <g :style="{ opacity: v.leaders[3] }">
-                <line x1="200" :y1="GROUND + 6" x2="200" :y2="GROUND + 40" />
-                <text class="k-text" x="200" :y="GROUND + 58" text-anchor="middle">Elevación del talón</text>
+              <g :style="{ opacity: v.notes[3] }">
+                <path
+                  :d="`M${f1(marks.heel[0] - 18)} 336Q${f1(marks.heel[0] - 18)} 318 ${f1(marks.heel[0] - 2)} ${f1(marks.heel[1])}`"
+                />
+                <text class="k-note" :x="marks.heel[0] - 20" y="352" text-anchor="start">
+                  elevación del talón
+                </text>
               </g>
             </g>
 
             <!-- 04 · Entrega y revisión -->
             <g class="k-follow">
-              <line
-                x1="150"
-                y1="402"
-                x2="490"
-                y2="402"
+              <path
+                d="M190 372H470"
                 pathLength="1"
                 :style="{ strokeDasharray: 1, strokeDashoffset: 1 - v.follow }"
               />
               <g :style="{ opacity: seg(3.45, 3.6) }">
-                <circle cx="150" cy="402" r="5" />
-                <text class="k-text" x="150" y="424" text-anchor="middle">Entrega</text>
+                <circle cx="190" cy="372" r="5" />
+                <text class="k-note" x="190" y="390" text-anchor="middle">entrega</text>
               </g>
               <g :style="{ opacity: seg(3.75, 3.95) }">
-                <circle cx="490" cy="402" r="5" />
-                <text class="k-text" x="490" y="424" text-anchor="middle">Revisión</text>
+                <circle cx="470" cy="372" r="5" />
+                <text class="k-note" x="470" y="390" text-anchor="middle">revisión</text>
               </g>
             </g>
           </svg>
@@ -464,74 +576,72 @@ useGsapContext(root, (c) => {
 }
 
 /* ---------- Trazos del boceto ---------- */
-.k-line {
+.k-line,
+.k-sections path,
+.k-measure path,
+.k-notes path,
+.k-follow path {
   fill: none;
-  stroke: var(--color-bone);
-  stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+.k-line {
+  stroke: var(--color-bone);
+  stroke-width: 1.8;
+}
+.k-line--plan {
+  stroke-width: 1.4;
+  stroke-opacity: 0.7;
   stroke-dasharray: 1;
 }
-.k-line--ground {
-  stroke-opacity: 0.4;
-}
-.k-line--foot {
-  stroke-width: 1.2;
-  stroke-opacity: 0.8;
-}
-.k-line--shoe {
-  stroke-width: 1.2;
-  stroke-opacity: 0.55;
+.k-line--rim.is-final {
+  stroke: var(--color-cyan);
 }
 .k-line--low {
-  stroke-width: 1.4;
   stroke-opacity: 0.8;
 }
-.k-line--top {
-  stroke-width: 2.2;
-  transition: stroke 240ms ease;
-}
-.k-line--top.is-final {
-  stroke: var(--color-cyan);
-}
-.k-fill {
-  fill: var(--color-cyan);
-}
-.k-hatch line,
-.k-ribs line {
+.k-sections path {
   stroke: var(--color-bone);
-  stroke-width: 1.2;
-  stroke-linecap: round;
+  stroke-opacity: 0.55;
+  stroke-width: 1;
+  stroke-dasharray: 1;
 }
-.k-hatch line {
-  stroke-opacity: 0.35;
+.k-measure path {
+  stroke: var(--color-bone);
+  stroke-opacity: 0.55;
+  stroke-width: 1;
 }
-.k-ribs line {
-  stroke-opacity: 0.85;
+.k-wall {
+  fill: url(#craft-wall);
+  stroke: none;
 }
-.k-leaders line,
-.k-dim,
-.k-zone {
+.k-ribs path {
   fill: none;
-  stroke: var(--color-cyan);
-  stroke-width: 1.2;
+  stroke: var(--color-ink);
+  stroke-width: 4;
   stroke-linecap: round;
+}
+.k-shade path {
+  stroke-width: 0.8;
   stroke-linejoin: round;
 }
-.k-zone {
-  stroke-opacity: 0.8;
-}
-.k-text {
-  fill: var(--color-bone);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: 0.85;
-}
-.k-follow line {
+.k-notes path,
+.k-follow path {
   stroke: var(--color-cyan);
   stroke-width: 1.4;
-  stroke-linecap: round;
+}
+.k-updown {
+  stroke-width: 1.4;
+}
+.k-note {
+  fill: var(--color-bone);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  opacity: 0.92;
+}
+.k-follow path {
   stroke-dasharray: 1;
 }
 .k-follow circle {
@@ -648,12 +758,12 @@ useGsapContext(root, (c) => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    grid-column: 1 / span 5;
+    grid-column: 1 / span 4;
     gap: 2.5rem;
     min-height: 0;
   }
   .craft.is-live .craft__visual {
-    grid-column: 6 / span 7;
+    grid-column: 5 / span 8;
     justify-content: center;
   }
   .craft.is-live .craft__rail {
@@ -679,8 +789,7 @@ useGsapContext(root, (c) => {
 
 @media (prefers-reduced-motion: reduce) {
   .craft__item,
-  .craft__dot,
-  .k-line--top {
+  .craft__dot {
     transition: none;
   }
 }
