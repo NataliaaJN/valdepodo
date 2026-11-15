@@ -16,7 +16,9 @@
  * - Metáfora visual: no representa un proceso de fabricación ni un producto concreto (spec 04 §2.2).
  */
 import { gsap } from 'gsap'
+import { pressureStates } from '~/data/biomech'
 import { insoleProcess } from '~/data/insole'
+import { FOOT_W, INSOLE_PATH } from '~/utils/pressure'
 
 const steps = insoleProcess
 const N = steps.length
@@ -41,43 +43,76 @@ const sstep = (a: number, b: number, x: number) => {
 
 /* ---------- Modelo: plantilla de 500 de largo (X) por ~190 de ancho (Y), alturas en Z ---------- */
 const L = 500
-/** Semianchura por posición longitudinal (0 talón → 1 puntera), interpolada con coseno entre nudos. */
-const KNOTS: readonly (readonly [number, number])[] = [
-  [0, 0],
-  [0.03, 46],
-  [0.12, 60],
-  [0.4, 51],
-  [0.62, 75],
-  [0.82, 90],
-  [0.92, 86],
-  [0.97, 78],
-  [0.995, 48],
-  [1, 0],
-]
-function baseWidth(u: number) {
-  for (let i = 1; i < KNOTS.length; i++) {
-    const [u1, w1] = KNOTS[i]!
-    if (u <= u1) {
-      const [u0, w0] = KNOTS[i - 1]!
-      const t = (u - u0) / (u1 - u0)
-      return lerp(w0, w1, (1 - Math.cos(Math.PI * t)) / 2)
+/**
+ * Contorno: el de `INSOLE_PATH` (la silueta de plantilla que ya acompaña a las huellas del estudio), escalado a L
+ * y girado para que el talón quede a la izquierda. El pie se refleja (izquierdo): el lado medial (con el arco) queda
+ * hacia el espectador, en +Y. Los bordes lateral y medial se tabulan por posición longitudinal (X).
+ */
+const FS = L / 230 // escala huella → plano
+const F_HEEL = 252 // ordenada del talón en la huella
+const F_XC = 53 // eje longitudinal de la huella (ya reflejada)
+const footToPlan = (x: number, y: number): [number, number] => [FS * (F_HEEL - y), FS * (FOOT_W - x - F_XC)]
+
+function samplePath(d: string): [number, number][] {
+  const out: [number, number][] = []
+  let cur: [number, number] = [0, 0]
+  for (const m of d.replace(/Z/g, '').matchAll(/([MC])([^MC]+)/g)) {
+    const n = m[2]!
+      .trim()
+      .split(/[\s,]+/)
+      .map(Number)
+    if (m[1] === 'M') {
+      cur = [n[0]!, n[1]!]
+      out.push(cur)
+      continue
+    }
+    for (let i = 0; i < n.length; i += 6) {
+      const [x1, y1, x2, y2, x3, y3] = n.slice(i, i + 6) as [number, number, number, number, number, number]
+      const [x0, y0] = cur
+      for (let k = 1; k <= 24; k++) {
+        const t = k / 24
+        const mt = 1 - t
+        out.push([
+          mt ** 3 * x0 + 3 * mt * mt * t * x1 + 3 * mt * t * t * x2 + t ** 3 * x3,
+          mt ** 3 * y0 + 3 * mt * mt * t * y1 + 3 * mt * t * t * y2 + t ** 3 * y3,
+        ])
+      }
+      cur = [x3, y3]
     }
   }
-  return 0
+  return out
 }
-/** Talón y puntera se cierran en elipse (tangente vertical), no en pico. */
-const END = 0.07
-function halfWidth(u: number) {
-  if (u < END) return baseWidth(END) * Math.sqrt(Math.max(0, 1 - ((END - u) / END) ** 2))
-  if (u > 1 - END) return baseWidth(1 - END) * Math.sqrt(Math.max(0, 1 - ((u - (1 - END)) / END) ** 2))
-  return baseWidth(u)
+const PLAN = samplePath(INSOLE_PATH).map(([x, y]) => footToPlan(x, y))
+const iMin = PLAN.reduce((b, p, i) => (p[0] < PLAN[b]![0] ? i : b), 0)
+const iMax = PLAN.reduce((b, p, i) => (p[0] > PLAN[b]![0] ? i : b), 0)
+const walk = (from: number, to: number) => {
+  const out: [number, number][] = []
+  for (let i = from; ; i = (i + 1) % PLAN.length) {
+    out.push(PLAN[i]!)
+    if (i === to) break
+  }
+  return out
 }
-/** t = 0 borde lateral · t = 1 borde medial (el que mira al espectador, con el arco). */
-const yAt = (u: number, t: number) => {
-  const w = halfWidth(u)
-  const med = w - 16 * g(u, 0.42, 0.13)
-  return -w + t * (w + med)
+const sideA = walk(iMin, iMax)
+const sideB = walk(iMax, iMin).reverse()
+const meanY = (c: [number, number][]) => c.reduce((a, p) => a + p[1], 0) / c.length
+const [LAT, MED] = meanY(sideA) < meanY(sideB) ? [sideA, sideB] : [sideB, sideA]
+function edgeY(chain: [number, number][], X: number) {
+  const x = clamp(X, chain[0]![0], chain[chain.length - 1]![0])
+  for (let i = 1; i < chain.length; i++) {
+    const [x1, y1] = chain[i]!
+    if (x <= x1) {
+      const [x0, y0] = chain[i - 1]!
+      return x1 === x0 ? y1 : lerp(y0, y1, (x - x0) / (x1 - x0))
+    }
+  }
+  return chain[chain.length - 1]![1]
 }
+const latY = (u: number) => edgeY(LAT, u * L)
+const medY = (u: number) => edgeY(MED, u * L)
+const halfWidth = (u: number) => (medY(u) - latY(u)) / 2
+/** t = 0 borde lateral · t = 1 borde medial. */
+const yAt = (u: number, t: number) => lerp(latY(u), medY(u), t)
 
 /**
  * Cámara: de la planta (90°) a una perspectiva oblicua (36°). X a la derecha, Y hacia el espectador, Z arriba.
@@ -274,72 +309,30 @@ const marks = computed(() => {
 })
 
 /**
- * Huella (paso 01): planta del pie (la plantilla menos un margen, con el antepié cerrado en curva), dedos como
- * almohadillas y mapa de presión desigual. Coordenadas del plano (X a lo largo, Y a lo ancho; + = lado medial).
+ * Huella (paso 01): el mismo `PressureMap` del estudio biomecánico (silueta, dedos y mapa clínico), colocado sobre
+ * el plano con la cámara actual. Es una transformación afín: al inclinar la cámara la huella se aplasta con el suelo.
  */
-const SOLE_END = 0.82
-const SOLE_MARGIN = 9
-const soleD = computed(() => {
-  const us = US.filter((u) => u >= 0.02 && u <= SOLE_END)
-  const lat = us.map((u) => [u * L, yAt(u, 0) + SOLE_MARGIN] as [number, number])
-  const med = [...us].reverse().map((u) => [u * L, yAt(u, 1) - SOLE_MARGIN] as [number, number])
-  const yl = lat[lat.length - 1]![1]
-  const ym = med[0]![1]
-  const front = Array.from({ length: 9 }, (_, i) => {
-    const a = (i + 1) / 10
-    const y = lerp(yl, ym, a)
-    return [SOLE_END * L + 34 * Math.sin(Math.PI * a) ** 0.7, y] as [number, number]
-  })
-  const heel = Array.from({ length: 9 }, (_, i) => {
-    const t = (i + 1) / 10
-    const y = lerp(med[med.length - 1]![1], lat[0]![1], t)
-    return [us[0]! * L - 6 * Math.sin(Math.PI * t) ** 0.7, y] as [number, number]
-  })
-  const pts = [...lat, ...front, ...med, ...heel].map(([X, Y]) => [px(X, Y), py(Y, 0)] as [number, number])
-  return smooth(pts, true)
+const footMatrix = computed(() => {
+  const { sp, k } = cam.value
+  const n = (x: number) => x.toFixed(3)
+  return `matrix(${n(k * FS)} ${n(sp * FS)} ${n(-FS)} 0 ${n(OX + FS * F_HEEL - k * FS * F_XC)} ${n(OY - sp * FS * F_XC)})`
 })
-const TOES = [
-  { x: 466, y: 38, rx: 21, ry: 19 },
-  { x: 474, y: 4, rx: 13.5, ry: 12.5 },
-  { x: 468, y: -20, rx: 12, ry: 11 },
-  { x: 455, y: -40, rx: 10.5, ry: 10 },
-  { x: 440, y: -56, rx: 9.5, ry: 9 },
-]
-const toeAt = (t: (typeof TOES)[number]) => ({
-  cx: px(t.x, t.y),
-  cy: py(t.y, 0),
-  rx: t.rx,
-  ry: t.ry * cam.value.sp,
-})
-const BLOBS = [
-  { x: 56, y: 0, rx: 64, ry: 56, grad: 'hot' },
-  { x: 380, y: 48, rx: 50, ry: 50, grad: 'warm' },
-  { x: 372, y: -48, rx: 38, ry: 40, grad: 'cool' },
-  { x: 205, y: -34, rx: 54, ry: 18, grad: 'cool' },
-  { x: 300, y: 24, rx: 30, ry: 12, grad: 'low' },
-  { x: 466, y: 38, rx: 28, ry: 25, grad: 'warm' },
-  { x: 474, y: 4, rx: 17, ry: 15, grad: 'cool' },
-] as const
-const blobAt = (b: (typeof BLOBS)[number]) => ({
-  cx: px(b.x, b.y),
-  cy: py(b.y, 0),
-  rx: b.rx,
-  ry: b.ry * cam.value.sp,
-})
-/** Notas del paso 01: flecha a los puntos de mayor y menor carga. */
+/** Notas del paso 01: flecha a los focos de mayor (talón) y menor (mediopié) carga. */
 const loadNotes = computed(() => {
-  const a = { x: px(-6, -122), y: py(-122, 0) }
-  const b = { x: px(210, 122), y: py(122, 0) }
+  const heel = footToPlan(54, 214)
+  const mid = footToPlan(72, 162)
+  const a = { x: px(-6, -128), y: py(-128, 0) }
+  const b = { x: px(190, -136), y: py(-136, 0) }
   return {
     hi: {
       tx: a.x,
       ty: a.y,
-      d: `M${f1(a.x + 34)} ${f1(a.y + 8)}Q${f1(a.x + 52)} ${f1(py(-60, 0) - 6)} ${f1(px(48, -30))} ${f1(py(-30, 0))}`,
+      d: `M${f1(a.x + 34)} ${f1(a.y + 8)}Q${f1(a.x + 52)} ${f1(py(-60, 0))} ${f1(px(heel[0], heel[1] - 14))} ${f1(py(heel[1] - 14, 0))}`,
     },
     lo: {
       tx: b.x,
       ty: b.y,
-      d: `M${f1(b.x + 40)} ${f1(b.y - 18)}Q${f1(px(280, 90))} ${f1(py(70, 0))} ${f1(px(296, 30))} ${f1(py(30, 0))}`,
+      d: `M${f1(b.x + 36)} ${f1(b.y + 8)}Q${f1(b.x + 40)} ${f1(py(-70, 0))} ${f1(px(mid[0], mid[1] - 10))} ${f1(py(mid[1] - 10, 0))}`,
     },
   }
 })
@@ -351,8 +344,8 @@ const ZONES = [
   { u: 0.8, label: 'antepié' },
 ]
 const zoneAt = (z: (typeof ZONES)[number]) => ({
-  x: px(z.u * L, -halfWidth(z.u) - 20),
-  y: py(-halfWidth(z.u) - 20, 0),
+  x: px(z.u * L, latY(z.u) - 20),
+  y: py(latY(z.u) - 20, 0),
 })
 /** Deslizadores del diseño: viajan con los parámetros. */
 const sliders = computed(() => [
@@ -365,8 +358,6 @@ const v = computed(() => ({
   sole: seg(0.05, 0.6),
   soleFade: lerp(1, 0.3, seg(1.0, 1.4)) * (1 - seg(2.1, 2.4)),
   outline: seg(1.05, 1.5),
-  toes: seg(0.2, 0.7) * lerp(1, 0.35, seg(1.0, 1.3)) * (1 - seg(2.1, 2.4)),
-  blobs: seg(0.4, 0.95) * lerp(1, 0.25, seg(1.2, 1.5)) * (1 - seg(2.1, 2.4)),
   load: seg(0.65, 0.95) * (1 - seg(1.1, 1.3)),
   zones: seg(1.5, 1.85) * (1 - seg(2.2, 2.5)),
   notes: [seg(2.6, 2.78), seg(2.66, 2.84), seg(2.72, 2.9), seg(2.78, 2.96)] as const,
@@ -476,46 +467,19 @@ useGsapContext(root, (c) => {
                 <stop offset="0" stop-color="#14b8d4" stop-opacity="0.55" />
                 <stop offset="1" stop-color="#061a2c" stop-opacity="0.9" />
               </linearGradient>
-              <radialGradient id="craft-hot">
-                <stop offset="0" stop-color="#e61a1a" stop-opacity="0.95" />
-                <stop offset="0.4" stop-color="#ff8010" stop-opacity="0.7" />
-                <stop offset="0.75" stop-color="#ffe61a" stop-opacity="0.3" />
-                <stop offset="1" stop-color="#ffe61a" stop-opacity="0" />
-              </radialGradient>
-              <radialGradient id="craft-warm">
-                <stop offset="0" stop-color="#ffe61a" stop-opacity="0.9" />
-                <stop offset="0.55" stop-color="#7ddc30" stop-opacity="0.5" />
-                <stop offset="1" stop-color="#33d940" stop-opacity="0" />
-              </radialGradient>
-              <radialGradient id="craft-cool">
-                <stop offset="0" stop-color="#33d940" stop-opacity="0.75" />
-                <stop offset="0.6" stop-color="#00bff2" stop-opacity="0.35" />
-                <stop offset="1" stop-color="#00bff2" stop-opacity="0" />
-              </radialGradient>
-              <radialGradient id="craft-low">
-                <stop offset="0" stop-color="#1a33d9" stop-opacity="0.8" />
-                <stop offset="1" stop-color="#1a33d9" stop-opacity="0" />
-              </radialGradient>
             </defs>
 
-            <!-- 01 · Huella: planta, dedos y mapa de presión -->
-            <g :style="{ opacity: v.soleFade }">
-              <path
-                class="k-sole"
-                :d="soleD"
-                pathLength="1"
-                :style="{ strokeDashoffset: 1 - v.sole, fillOpacity: v.sole * 0.07 }"
-              />
-              <g class="k-toes" :style="{ opacity: v.toes }">
-                <ellipse v-for="(t, i) in TOES" :key="i" v-bind="toeAt(t)" />
+            <!-- 01 · Huella: el mismo mapa de presión del estudio biomecánico, sobre el plano -->
+            <g class="k-foot" :style="{ opacity: v.sole * v.soleFade }">
+              <g :transform="footMatrix">
+                <PressureMap
+                  :state="pressureStates.standingAlt"
+                  side="left"
+                  ramp="clinical"
+                  :lit="p > 0.35"
+                  :transition="'morph'"
+                />
               </g>
-            </g>
-            <clipPath id="craft-sole-clip">
-              <path :d="soleD" />
-              <ellipse v-for="(t, i) in TOES" :key="i" v-bind="toeAt(t)" />
-            </clipPath>
-            <g clip-path="url(#craft-sole-clip)" :style="{ opacity: v.blobs }">
-              <ellipse v-for="(b, i) in BLOBS" :key="i" v-bind="blobAt(b)" :fill="`url(#craft-${b.grad})`" />
             </g>
             <g class="k-notes" :style="{ opacity: v.load }">
               <path :d="loadNotes.hi.d" />
@@ -758,20 +722,9 @@ useGsapContext(root, (c) => {
 .k-updown {
   stroke-width: 1.4;
 }
-.k-sole {
-  fill: rgb(241 239 233 / 1);
-  fill-opacity: 0.05;
-  stroke: var(--color-bone);
-  stroke-opacity: 0.85;
-  stroke-width: 1.6;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-}
-.k-toes ellipse {
-  fill: rgb(241 239 233 / 0.05);
-  stroke: var(--color-bone);
-  stroke-opacity: 0.55;
-  stroke-width: 1.2;
+.k-foot {
+  --fp-fill: rgb(241 239 233 / 0.07);
+  --fp-stroke: rgb(241 239 233 / 0.85);
 }
 .k-sliders path {
   fill: none;
