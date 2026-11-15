@@ -8,6 +8,10 @@ export interface DiabeticItem {
   text: string
 }
 
+export interface DiabeticSign extends DiabeticItem {
+  icon: 'wound' | 'temperature' | 'tingle' | 'swelling'
+}
+
 export const diabetic = {
   description:
     'Revisiones periódicas y cuidados podológicos para prevenir complicaciones en el pie de las personas con diabetes.',
@@ -46,21 +50,25 @@ export const diabetic = {
   signs: [
     {
       title: 'Heridas que no mejoran',
+      icon: 'wound',
       text: 'Una herida, ampolla o grieta que no cicatriza en unos días.',
     },
     {
       title: 'Cambios de color o temperatura',
+      icon: 'temperature',
       text: 'Una zona del pie más roja, más pálida, más oscura o más fría o caliente que el resto.',
     },
     {
       title: 'Hormigueo o pérdida de sensibilidad',
+      icon: 'tingle',
       text: 'Adormecimiento, pinchazos o la sensación de llevar un calcetín puesto sin llevarlo.',
     },
     {
       title: 'Hinchazón o dolor sin causa',
+      icon: 'swelling',
       text: 'Un pie hinchado o dolorido sin golpe ni esfuerzo que lo explique.',
     },
-  ] as readonly DiabeticItem[],
+  ] as readonly DiabeticSign[],
   urgentNotice:
     'Ante una herida que no cicatriza, enrojecimiento que se extiende, supuración o fiebre, acude a tu médico o a urgencias sin esperar a la cita.',
   /** Cuidados diarios en casa. */

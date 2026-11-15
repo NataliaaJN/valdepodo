@@ -28,11 +28,11 @@ const service = useServicePage('pie-diabetico')
     </ServiceSection>
 
     <section class="signs chapter-ink section-clip" aria-labelledby="diab-signs-title" data-nav-theme="ink">
-      <div class="container-wide">
+      <div class="container-wide signs__grid">
         <h2 id="diab-signs-title" v-reveal class="signs__title">{{ diabetic.signsTitle }}</h2>
         <ul class="signs__list" role="list">
           <li v-for="(s, i) in diabetic.signs" :key="s.title" v-reveal="i" class="sign">
-            <BaseIcon name="alert" class="sign__icon" />
+            <span class="sign__icon" aria-hidden="true"><SignIcon :kind="s.icon" /></span>
             <div>
               <h3 class="sign__name">{{ s.title }}</h3>
               <p class="sign__text">{{ s.text }}</p>
@@ -103,48 +103,63 @@ const service = useServicePage('pie-diabetico')
   }
 }
 
-/* ---------- Señales: capítulo tinta ---------- */
+/* ---------- Señales: capítulo tinta ----------
+   Escritorio: a la izquierda el título y el aviso de urgencias (siempre a la vista); a la derecha, las cuatro señales
+   como cards 2 × 2 con su icono propio. Tablet y móvil: título, cards y aviso en una columna. */
 .signs {
   padding-block: clamp(3.5rem, 7vw, 6rem);
 }
+.signs__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 3rem);
+}
 .signs__title {
-  max-width: 24ch;
+  max-width: 14ch;
   font-size: var(--text-display-m);
   line-height: var(--text-display-m--line-height);
 }
 .signs__list {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 0;
-  margin-top: clamp(2rem, 5vw, 3.5rem);
+  gap: 0.875rem;
 }
 .sign {
   display: flex;
-  gap: 1rem;
-  padding-block: 1.5rem;
-  border-top: 1px solid var(--color-border);
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-radius: var(--radius-l);
+  border: 1px solid var(--color-border);
+  background: rgb(241 239 233 / 0.05);
+  transition: translate var(--dur-base) var(--ease-out-soft);
 }
 .sign__icon {
-  flex: none;
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-top: 0.125rem;
-  color: var(--color-cyan);
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--color-cyan);
+  color: var(--color-ink);
+}
+.sign__icon svg {
+  width: 1.75rem;
+  height: 1.75rem;
 }
 .sign__name {
-  font-size: var(--text-body-l);
-  font-weight: 600;
-  line-height: 1.25;
+  font-size: var(--text-heading-s);
+  line-height: 1.12;
 }
 .sign__text {
-  margin-top: 0.375rem;
-  max-width: 36ch;
+  margin-top: 0.5rem;
+  max-width: 34ch;
   color: var(--color-text-secondary);
 }
 .urgent {
   display: flex;
   gap: 1rem;
-  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+  margin-top: clamp(1.5rem, 3vw, 2rem);
   padding: 1.5rem;
   border-radius: var(--radius-l);
   background: var(--color-primary);
@@ -152,29 +167,39 @@ const service = useServicePage('pie-diabetico')
 }
 .urgent__icon {
   flex: none;
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-top: 0.125rem;
+  width: 1.75rem;
+  height: 1.75rem;
 }
 .urgent__text {
-  max-width: 60ch;
+  max-width: 34ch;
   font-size: var(--text-body-l);
   font-weight: 600;
   line-height: 1.35;
 }
-@media (min-width: 768px) {
+@media (min-width: 640px) {
   .signs__list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: clamp(2rem, 6vw, 5rem);
   }
 }
 @media (min-width: 1024px) {
-  .signs__list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: 2rem;
+  .signs__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.5rem;
+    align-items: start;
   }
-  .sign {
-    flex-direction: column;
+  .signs__title {
+    grid-column: 1 / span 4;
+    grid-row: 1;
+  }
+  .signs__list {
+    grid-column: 5 / span 8;
+    grid-row: 1 / span 2;
+    gap: 1rem;
+  }
+  .urgent {
+    grid-column: 1 / span 4;
+    grid-row: 2;
+    margin-top: 0;
   }
 }
 
@@ -214,11 +239,13 @@ const service = useServicePage('pie-diabetico')
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .sign:hover,
   .review__item:hover {
     translate: 0 -2px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .sign,
   .review__item {
     transition: none;
   }
