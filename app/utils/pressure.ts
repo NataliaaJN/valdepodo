@@ -123,6 +123,17 @@ export function lerpState(a: PressureState, b: PressureState, t: number): Pressu
  * Se aplica en un filtro SVG (feComponentTransfer) sobre la opacidad acumulada de los focos.
  * Seis paradas equiespaciadas (t = 0, 0.2 … 1); valores 0..1 en sRGB.
  */
+/**
+ * Rampa «clínica» de los mapas de presión habituales (baropodometría): azul → cian → verde → amarillo → naranja → rojo.
+ * Mismas seis paradas y mismo formato que `PRESSURE_RAMP`; «El paseo» la usa para que el mapa se lea como en consulta.
+ */
+export const CLINICAL_RAMP = {
+  r: [0.1, 0.0, 0.2, 1, 1, 0.9],
+  g: [0.2, 0.75, 0.85, 0.9, 0.5, 0.1],
+  b: [0.85, 0.95, 0.25, 0.1, 0.05, 0.1],
+  a: [0, 0.6, 0.92, 1, 1, 1],
+} as const
+
 export const PRESSURE_RAMP = {
   r: [0.086, 0.043, 0.071, 0.118, 0.725, 1],
   g: [0.235, 0.369, 0.439, 0.671, 0.898, 1],

@@ -15,6 +15,7 @@ import { gsap } from 'gsap'
 import {
   FOOT_W,
   PRESSURE_RAMP,
+  CLINICAL_RAMP,
   CONTACT_INTENSITY,
   SOLE_PATH,
   TOES,
@@ -39,6 +40,8 @@ const props = withDefaults(
     footprint?: boolean
     /** Difuminado del mapa, en unidades de huella. */
     blur?: number
+    /** `brand`: rampa de marca (por defecto). `clinical`: azul → verde → amarillo → rojo, como en consulta. */
+    ramp?: 'brand' | 'clinical'
   }>(),
   {
     side: 'right',
@@ -48,10 +51,12 @@ const props = withDefaults(
     breathing: false,
     footprint: true,
     blur: 3,
+    ramp: 'brand',
   },
 )
 
 const uid = useId()
+const colors = computed(() => (props.ramp === 'clinical' ? CLINICAL_RAMP : PRESSURE_RAMP))
 const reducedMotion = useReducedMotion()
 
 const target = computed(() =>
@@ -143,10 +148,10 @@ onBeforeUnmount(() => {
         <feGaussianBlur :stdDeviation="blur" />
         <feColorMatrix type="matrix" values="0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 1 0" />
         <feComponentTransfer>
-          <feFuncR type="table" :tableValues="table(PRESSURE_RAMP.r)" />
-          <feFuncG type="table" :tableValues="table(PRESSURE_RAMP.g)" />
-          <feFuncB type="table" :tableValues="table(PRESSURE_RAMP.b)" />
-          <feFuncA type="table" :tableValues="table(PRESSURE_RAMP.a)" />
+          <feFuncR type="table" :tableValues="table(colors.r)" />
+          <feFuncG type="table" :tableValues="table(colors.g)" />
+          <feFuncB type="table" :tableValues="table(colors.b)" />
+          <feFuncA type="table" :tableValues="table(colors.a)" />
         </feComponentTransfer>
       </filter>
       <clipPath :id="`${uid}-clip`">
