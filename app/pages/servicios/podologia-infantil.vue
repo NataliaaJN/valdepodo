@@ -200,7 +200,7 @@ const [gait, arch, toes, shoe] = kids.assessments
    exteriores coinciden con los del contenedor. En móvil, una columna con sangría alterna y el pie dentro de la card. */
 .consult {
   padding-block: clamp(3.5rem, 7vw, 6rem);
-  --mark: 4.5rem;
+  --mark: 3.75rem;
 }
 .consult__title {
   max-width: 14ch;
@@ -266,9 +266,9 @@ const [gait, arch, toes, shoe] = kids.assessments
 @media (min-width: 1024px) {
   .path {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 2rem;
-    row-gap: 0.875rem;
-    grid-auto-rows: minmax(4.5rem, auto);
+    column-gap: clamp(3.5rem, 6vw, 5rem);
+    row-gap: 0.75rem;
+    grid-auto-rows: minmax(3.25rem, auto);
   }
   .step {
     grid-row: calc(var(--i) + 1) / span 2;
@@ -282,13 +282,13 @@ const [gait, arch, toes, shoe] = kids.assessments
   }
   .step__card {
     display: block;
-    padding: 1.75rem 2rem;
+    padding: 1.125rem 1.5rem;
   }
   .step--left .step__card {
-    padding-right: calc(var(--mark) / 2 + 2rem);
+    padding-right: calc(var(--mark) / 2 + 1.25rem);
   }
   .step--right .step__card {
-    padding-left: calc(var(--mark) / 2 + 2rem);
+    padding-left: calc(var(--mark) / 2 + 1.25rem);
   }
   /* La huella a caballo sobre el borde interior, con un anillo del color del fondo que la recorta de la card */
   .step__mark {
@@ -296,7 +296,7 @@ const [gait, arch, toes, shoe] = kids.assessments
     top: 50%;
     width: var(--mark);
     height: var(--mark);
-    box-shadow: 0 0 0 6px var(--color-primary);
+    box-shadow: 0 0 0 5px var(--color-primary);
   }
   .step--left .step__mark {
     right: 0;
@@ -307,7 +307,7 @@ const [gait, arch, toes, shoe] = kids.assessments
     translate: -50% -50%;
   }
   .step__foot {
-    width: 1.4rem;
+    width: 1.15rem;
   }
 }
 
