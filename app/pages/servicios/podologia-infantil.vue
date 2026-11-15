@@ -62,16 +62,18 @@ const [gait, arch, toes, shoe] = kids.assessments
             :class="i % 2 ? 'step--right' : 'step--left'"
             :style="{ '--i': i }"
           >
-            <span class="step__mark" aria-hidden="true">
-              <svg viewBox="0 0 112 256" class="step__foot">
-                <g style="--fp-fill: var(--color-primary); --fp-stroke: var(--color-ink)">
-                  <Footprint :side="i % 2 ? 'right' : 'left'" variant="both" :stroke-width="9" />
-                </g>
-              </svg>
-            </span>
             <div class="step__card">
-              <h3 class="step__name">{{ c.title }}</h3>
-              <p class="step__text">{{ c.text }}</p>
+              <span class="step__mark" aria-hidden="true">
+                <svg viewBox="0 0 112 256" class="step__foot">
+                  <g style="--fp-fill: var(--color-primary); --fp-stroke: var(--color-ink)">
+                    <Footprint :side="i % 2 ? 'right' : 'left'" variant="both" :stroke-width="9" />
+                  </g>
+                </svg>
+              </span>
+              <div>
+                <h3 class="step__name">{{ c.title }}</h3>
+                <p class="step__text">{{ c.text }}</p>
+              </div>
             </div>
           </li>
         </ol>
@@ -190,13 +192,12 @@ const [gait, arch, toes, shoe] = kids.assessments
   }
 }
 
-/* ---------- Banda de motivos de consulta: camino de pasos ----------
-   Sobre el cyan de marca, una línea de puntos central con una huella por motivo: pie izquierdo → tarjeta a la
-   izquierda, pie derecho → tarjeta a la derecha, cada una media fila más abajo que la anterior (como al caminar).
-   Los bordes exteriores de las dos columnas coinciden con los del contenedor. En móvil, el camino pasa a la izquierda. */
+/* ---------- Banda de motivos de consulta: cards salteadas ----------
+   Sobre el cyan de marca, una card independiente por motivo, cada una con su huella: pie izquierdo en las de
+   la columna izquierda, pie derecho en las de la derecha. Las columnas se escalonan media fila (nunca quedan
+   alineadas) y los bordes exteriores coinciden con los del contenedor. En móvil, una columna con sangría alterna. */
 .consult {
   padding-block: clamp(3.5rem, 7vw, 6rem);
-  --mark: 3rem;
 }
 .consult__title {
   max-width: 14ch;
@@ -204,50 +205,43 @@ const [gait, arch, toes, shoe] = kids.assessments
   line-height: var(--text-display-m--line-height);
 }
 .path {
-  position: relative;
   display: grid;
   gap: 0.875rem;
   margin-top: clamp(2rem, 5vw, 3.5rem);
-  padding-left: calc(var(--mark) + 1rem);
 }
-.path::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: calc(var(--mark) / 2);
-  border-left: 3px dotted rgb(6 26 44 / 0.4);
+.step--left {
+  margin-right: 1.5rem;
 }
-.step {
-  position: relative;
-}
-.step__mark {
-  position: absolute;
-  top: 50%;
-  left: calc(-1 * (var(--mark) + 1rem));
-  display: grid;
-  place-items: center;
-  width: var(--mark);
-  height: var(--mark);
-  translate: 0 -50%;
-  border-radius: 50%;
-  background: var(--color-white);
-  box-shadow: 0 0 0 6px var(--color-primary);
-}
-.step__foot {
-  width: 0.95rem;
-}
-.step--left .step__foot {
-  rotate: -10deg;
-}
-.step--right .step__foot {
-  rotate: 10deg;
+.step--right {
+  margin-left: 1.5rem;
 }
 .step__card {
-  padding: 1.125rem 1.25rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.125rem;
+  height: 100%;
+  padding: 1.25rem;
   border-radius: var(--radius-l);
   background: var(--color-white);
   transition: translate var(--dur-base) var(--ease-out-soft);
+}
+.step__mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--color-cyan-light);
+}
+.step__foot {
+  width: 1.1rem;
+}
+.step--left .step__foot {
+  rotate: -12deg;
+}
+.step--right .step__foot {
+  rotate: 12deg;
 }
 .step__name {
   font-size: var(--text-body-l);
@@ -261,23 +255,15 @@ const [gait, arch, toes, shoe] = kids.assessments
 }
 
 @media (min-width: 1024px) {
-  .consult {
-    --mark: 3.75rem;
-    --path-gap: clamp(5rem, 9vw, 8rem);
-  }
   .path {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--path-gap);
+    column-gap: 1.5rem;
     row-gap: 0.875rem;
-    grid-auto-rows: minmax(3.75rem, auto);
-    padding-left: 0;
-  }
-  .path::before {
-    left: 50%;
-    translate: -1.5px 0;
+    grid-auto-rows: minmax(4.5rem, auto);
   }
   .step {
     grid-row: calc(var(--i) + 1) / span 2;
+    margin: 0;
   }
   .step--left {
     grid-column: 1;
@@ -286,32 +272,15 @@ const [gait, arch, toes, shoe] = kids.assessments
     grid-column: 2;
   }
   .step__card {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 1.25rem 1.75rem;
+    padding: 1.5rem 1.75rem;
+    gap: 1.375rem;
   }
-  /* Huella sobre la línea central, con un hilo de puntos hasta la tarjeta */
-  .step--left .step__mark {
-    left: auto;
-    right: calc(-1 * (var(--path-gap) / 2 + var(--mark) / 2));
+  .step__mark {
+    width: 4rem;
+    height: 4rem;
   }
-  .step--right .step__mark {
-    left: calc(-1 * (var(--path-gap) / 2 + var(--mark) / 2));
-  }
-  .step__card::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: calc(var(--path-gap) / 2 - var(--mark) / 2);
-    border-top: 3px dotted rgb(6 26 44 / 0.4);
-  }
-  .step--left .step__card::after {
-    left: 100%;
-  }
-  .step--right .step__card::after {
-    right: 100%;
+  .step__foot {
+    width: 1.3rem;
   }
 }
 
