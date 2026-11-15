@@ -17,8 +17,9 @@ const indicators = ['Estático', 'Marcha', 'Carrera']
 
 <template>
   <div>
-    <!-- Hero -->
-    <ServiceHero :service="service" :description="description" cta-label="Solicitar estudio">
+    <ServiceHero :service="service" :description="description" cta-label="Solicitar estudio" />
+
+    <ServiceOverview :service="service" title="Entender tu pisada" :intro="intro">
       <svg
         viewBox="-24 -12 160 280"
         aria-hidden="true"
@@ -27,27 +28,20 @@ const indicators = ['Estático', 'Marcha', 'Carrera']
       >
         <PressureMap :state="pressureStates.standing" side="right" breathing :blur="3.5" />
       </svg>
+      <ul class="mt-6 flex flex-wrap justify-center gap-2" role="list">
+        <li
+          v-for="label in indicators"
+          :key="label"
+          class="rounded-s bg-white px-3 py-1 text-sm font-semibold"
+        >
+          {{ label }}
+        </li>
+      </ul>
       <template #caption>{{ ILLUSTRATIVE_LABEL }}</template>
-    </ServiceHero>
-
-    <!-- Introducción -->
-    <section class="container-site py-(--space-section)" aria-labelledby="bio-intro">
-      <h2 id="bio-intro" class="max-w-[20ch] font-display text-display-m text-deep-blue">
-        Cada paso <em>cuenta</em>.
-      </h2>
-      <div class="mt-8 grid gap-10 lg:grid-cols-12">
-        <ContentValue :value="intro" as="p" class="text-body-l text-text-secondary lg:col-span-6" />
-        <ul class="grid grid-cols-3 gap-4 lg:col-span-5 lg:col-start-8" role="list">
-          <li v-for="(label, i) in indicators" :key="label" class="rounded-m bg-white p-4 text-center">
-            <span class="font-display text-heading-s text-primary-strong">0{{ i + 1 }}</span>
-            <span class="mt-1 block text-sm font-semibold text-deep-blue">{{ label }}</span>
-          </li>
-        </ul>
-      </div>
-    </section>
+    </ServiceOverview>
 
     <!-- Secuencia de huellas (experiencia nº 2) -->
-    <div class="chapter-bone-2 py-(--space-section)">
+    <div class="chapter-bone-2 py-[clamp(3.5rem,6vw,5.5rem)]">
       <BiomechSequence />
     </div>
 

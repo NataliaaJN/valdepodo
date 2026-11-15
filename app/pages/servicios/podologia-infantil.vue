@@ -10,13 +10,11 @@ const service = useServicePage('podologia-infantil')
 
 <template>
   <div>
-    <ServiceHero
-      :service="service"
-      :title="{ before: 'Los pies también ', accent: 'crecen', after: '.' }"
-      :description="kids.description"
-    >
+    <ServiceHero :service="service" :description="kids.description" />
+
+    <ServiceOverview :service="service" title="Los pies también crecen.">
       <GrowingFootprints class="mx-auto max-w-[30rem]" />
-    </ServiceHero>
+    </ServiceOverview>
 
     <!-- 2. Introducción al desarrollo del pie -->
     <section class="container-site grid gap-12 py-(--space-section) lg:grid-cols-12 lg:items-center">
@@ -50,7 +48,9 @@ const service = useServicePage('podologia-infantil')
             v-reveal="i"
             class="flex gap-4 rounded-l bg-white/80 p-5"
           >
-            <span class="grid size-10 flex-none place-items-center rounded-m bg-light-blue text-primary-strong">
+            <span
+              class="grid size-10 flex-none place-items-center rounded-m bg-light-blue text-primary-strong"
+            >
               <BaseIcon name="check" />
             </span>
             <ContentValue :value="item" as="p" class="self-center text-body-l text-text" />

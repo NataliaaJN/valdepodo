@@ -5,7 +5,7 @@
  * Un único lienzo WebGL por página (spec 08 §1.2): el hero usa el póster de Blender de la plantilla completa
  * y la escena 3D vive en la experiencia de capas y fibras.
  */
-import { pending } from '#shared/utils/pending'
+import { pending, resolveValue } from '#shared/utils/pending'
 import { CONCEPTUAL_LABEL, insoleProcess } from '~/data/insole'
 import { bookingPath } from '~/data/services'
 
@@ -20,13 +20,9 @@ const cta = { label: 'Pedir cita', to: bookingPath(service.slug) }
 
 <template>
   <div>
-    <!-- Hero -->
-    <ServiceHero
-      :service="service"
-      :statement="description"
-      :description="service.description"
-      :cta-label="cta.label"
-    >
+    <ServiceHero :service="service" :description="service.description" :cta-label="cta.label" />
+
+    <ServiceOverview :service="service" :title="resolveValue(description)">
       <picture>
         <source
           srcset="
@@ -51,7 +47,7 @@ const cta = { label: 'Pedir cita', to: bookingPath(service.slug) }
         />
       </picture>
       <template #caption>{{ CONCEPTUAL_LABEL }}</template>
-    </ServiceHero>
+    </ServiceOverview>
 
     <!-- Plantilla descompuesta + fibras (experiencia nº 3) -->
     <InsoleStory class="pt-(--space-section)" />

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
- * Podología general (spec 04 §3): hero, intro breve y cuatro tratamientos en filas editoriales.
+ * Podología general (spec 04 §3): estructura común de servicio (cabecera · «Te ayuda si…» · secciones) con los
+ * cuatro tratamientos en filas editoriales.
  */
 import { pending } from '#shared/utils/pending'
-import { bookingPath } from '~/data/services'
 import { treatments } from '~/data/treatments'
 
 const service = useServicePage('podologia-general')
@@ -16,35 +16,15 @@ const intro = pending(
 
 <template>
   <div>
-    <ServiceHero
-      :service="service"
-      :title="{ before: 'Cuidar tus pies también es ', accent: 'prevenir', after: '.' }"
-      :description="service.description"
-    >
-      <div class="mx-auto aspect-[200/170] w-full max-w-[22rem] rounded-m bg-white p-8">
-        <TreatmentIllustration kind="ingrown" />
-      </div>
-    </ServiceHero>
+    <ServiceHero :service="service" :description="service.description" />
 
-    <section class="chapter-bone-2 py-(--space-section)" aria-labelledby="treatments-title">
-      <div class="container-site">
-        <SectionHeading
-          id="treatments-title"
-          eyebrow="Tratamientos"
-          :title="{ before: 'Las molestias ', accent: 'más frecuentes', after: '.' }"
-          :intro="intro"
-        />
-        <ul class="mt-12 border-t border-border" role="list">
-          <TreatmentRow
-            v-for="t in treatments"
-            :key="t.number"
-            v-reveal
-            :treatment="t"
-            :to="bookingPath(service.slug)"
-          />
-        </ul>
-      </div>
-    </section>
+    <ServiceOverview :service="service" title="Cuidar tus pies también es prevenir." :intro="intro" />
+
+    <ServiceSection id="treatments-title" title="Las molestias más frecuentes" tone="bone-2">
+      <ul role="list">
+        <TreatmentRow v-for="t in treatments" :key="t.number" v-reveal :treatment="t" />
+      </ul>
+    </ServiceSection>
 
     <RelatedServices :slugs="service.related" />
   </div>

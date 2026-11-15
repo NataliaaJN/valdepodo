@@ -11,15 +11,13 @@ const service = useServicePage('pie-diabetico')
 
 <template>
   <div style="--reveal-shift: 12px">
-    <ServiceHero
-      :service="service"
-      :title="{ before: 'Cuidar tus pies es cuidar tu ', accent: 'salud', after: '.' }"
-      :description="diabetic.description"
-    >
+    <ServiceHero :service="service" :description="diabetic.description" />
+
+    <ServiceOverview :service="service" title="Cuidar tus pies es cuidar tu salud.">
       <div class="mx-auto w-full max-w-[14rem]" aria-hidden="true">
         <ServiceGraphic kind="control" :active="false" />
       </div>
-    </ServiceHero>
+    </ServiceOverview>
 
     <!-- 1. Importancia de la prevención -->
     <section class="container-site border-t border-border py-(--space-section)">
