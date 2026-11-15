@@ -49,8 +49,9 @@ const KNOTS: readonly (readonly [number, number])[] = [
   [0.4, 51],
   [0.62, 75],
   [0.82, 90],
-  [0.94, 78],
-  [0.985, 44],
+  [0.92, 86],
+  [0.97, 78],
+  [0.995, 48],
   [1, 0],
 ]
 function halfWidth(u: number) {
@@ -246,32 +247,75 @@ const marks = computed(() => {
   }
 })
 
-/** Huella (paso 01): dedos y mapa de presión desigual sobre el plano. */
+/**
+ * Huella (paso 01): planta del pie (la plantilla menos un margen, con el antepié cerrado en curva), dedos como
+ * almohadillas y mapa de presión desigual. Coordenadas del plano (X a lo largo, Y a lo ancho; + = lado medial).
+ */
+const SOLE_END = 0.85
+const SOLE_MARGIN = 7
+const soleD = computed(() => {
+  const us = US.filter((u) => u >= 0.02 && u <= SOLE_END)
+  const lat = us.map((u) => [u * L, yAt(u, 0) + SOLE_MARGIN] as [number, number])
+  const med = [...us].reverse().map((u) => [u * L, yAt(u, 1) - SOLE_MARGIN] as [number, number])
+  const yl = lat[lat.length - 1]![1]
+  const ym = med[0]![1]
+  const front = Array.from({ length: 9 }, (_, i) => {
+    const a = (i + 1) / 10
+    const y = lerp(yl, ym, a)
+    return [SOLE_END * L + 34 * Math.sin(Math.PI * a) ** 0.7, y] as [number, number]
+  })
+  const heel = Array.from({ length: 9 }, (_, i) => {
+    const t = (i + 1) / 10
+    const y = lerp(med[med.length - 1]![1], lat[0]![1], t)
+    return [us[0]! * L - 20 * Math.sin(Math.PI * t) ** 0.7, y] as [number, number]
+  })
+  const pts = [...lat, ...front, ...med, ...heel].map(([X, Y]) => [px(X, Y), py(Y, 0)] as [number, number])
+  return poly(pts, true)
+})
 const TOES = [
-  { dx: 18, y: 30, rx: 25, ry: 21 },
-  { dx: 26, y: -6, rx: 16, ry: 14 },
-  { dx: 22, y: -30, rx: 14, ry: 12.5 },
-  { dx: 14, y: -50, rx: 12.5, ry: 11.5 },
-  { dx: 2, y: -66, rx: 11.5, ry: 10.5 },
+  { x: 490, y: 40, rx: 27, ry: 24 },
+  { x: 496, y: 2, rx: 17, ry: 15 },
+  { x: 489, y: -26, rx: 15, ry: 13.5 },
+  { x: 474, y: -50, rx: 13, ry: 12 },
+  { x: 454, y: -68, rx: 11.5, ry: 11 },
 ]
 const toeAt = (t: (typeof TOES)[number]) => ({
-  cx: px(L + t.dx, t.y),
+  cx: px(t.x, t.y),
   cy: py(t.y, 0),
   rx: t.rx,
   ry: t.ry * cam.value.sp,
 })
 const BLOBS = [
-  { u: 0.1, t: 0.5, rx: 62, ry: 56, grad: 'hot' },
-  { u: 0.76, t: 0.64, rx: 52, ry: 56, grad: 'warm' },
-  { u: 0.7, t: 0.16, rx: 40, ry: 46, grad: 'cool' },
-  { u: 0.4, t: 0.18, rx: 46, ry: 22, grad: 'cool' },
-  { u: 0.4, t: 0.92, rx: 30, ry: 14, grad: 'low' },
+  { x: 52, y: 0, rx: 66, ry: 58, grad: 'hot' },
+  { x: 402, y: 48, rx: 52, ry: 52, grad: 'warm' },
+  { x: 392, y: -48, rx: 40, ry: 42, grad: 'cool' },
+  { x: 205, y: -34, rx: 54, ry: 18, grad: 'cool' },
+  { x: 300, y: 24, rx: 30, ry: 12, grad: 'low' },
+  { x: 490, y: 40, rx: 34, ry: 30, grad: 'warm' },
+  { x: 496, y: 2, rx: 20, ry: 18, grad: 'cool' },
 ] as const
 const blobAt = (b: (typeof BLOBS)[number]) => ({
-  cx: px(b.u * L, yAt(b.u, b.t)),
-  cy: py(yAt(b.u, b.t), 0),
+  cx: px(b.x, b.y),
+  cy: py(b.y, 0),
   rx: b.rx,
   ry: b.ry * cam.value.sp,
+})
+/** Notas del paso 01: flecha a los puntos de mayor y menor carga. */
+const loadNotes = computed(() => {
+  const a = { x: px(-6, -122), y: py(-122, 0) }
+  const b = { x: px(210, 122), y: py(122, 0) }
+  return {
+    hi: {
+      tx: a.x,
+      ty: a.y,
+      d: `M${f1(a.x + 34)} ${f1(a.y + 8)}Q${f1(a.x + 52)} ${f1(py(-60, 0) - 6)} ${f1(px(48, -30))} ${f1(py(-30, 0))}`,
+    },
+    lo: {
+      tx: b.x,
+      ty: b.y,
+      d: `M${f1(b.x + 40)} ${f1(b.y - 18)}Q${f1(px(280, 90))} ${f1(py(70, 0))} ${f1(px(296, 30))} ${f1(py(30, 0))}`,
+    },
+  }
 })
 
 /** Etiquetas de zona del análisis: sobre el borde lateral de cada zona. */
@@ -303,10 +347,12 @@ const sliders = computed(() => [
 ])
 
 const v = computed(() => ({
-  outline: seg(0.05, 0.6),
+  sole: seg(0.05, 0.6),
+  soleFade: lerp(1, 0.3, seg(1.0, 1.4)) * (1 - seg(2.1, 2.4)),
+  outline: seg(1.05, 1.5),
   toes: seg(0.2, 0.7) * lerp(1, 0.35, seg(1.0, 1.3)) * (1 - seg(2.1, 2.4)),
   blobs: seg(0.4, 0.95) * lerp(1, 0.25, seg(1.2, 1.5)) * (1 - seg(2.1, 2.4)),
-  legend: seg(0.6, 0.95) * (1 - seg(1.1, 1.3)),
+  load: seg(0.65, 0.95) * (1 - seg(1.1, 1.3)),
   measure: seg(1.3, 1.8) * (1 - seg(2.0, 2.3)),
   zones: seg(1.5, 1.85) * (1 - seg(2.2, 2.5)),
   notes: [seg(2.6, 2.78), seg(2.66, 2.84), seg(2.72, 2.9), seg(2.78, 2.96)] as const,
@@ -436,22 +482,32 @@ useGsapContext(root, (c) => {
                 <stop offset="0" stop-color="#1a33d9" stop-opacity="0.8" />
                 <stop offset="1" stop-color="#1a33d9" stop-opacity="0" />
               </radialGradient>
-              <linearGradient id="craft-scale" x1="0" x2="1">
-                <stop offset="0" stop-color="#1a33d9" />
-                <stop offset="0.22" stop-color="#00bff2" />
-                <stop offset="0.44" stop-color="#33d940" />
-                <stop offset="0.66" stop-color="#ffe61a" />
-                <stop offset="0.84" stop-color="#ff8010" />
-                <stop offset="1" stop-color="#e61a1a" />
-              </linearGradient>
             </defs>
 
-            <!-- 01 · Huella: dedos y mapa de presión sobre el plano -->
-            <g class="k-toes" :style="{ opacity: v.toes }">
-              <ellipse v-for="(t, i) in TOES" :key="i" v-bind="toeAt(t)" />
+            <!-- 01 · Huella: planta, dedos y mapa de presión -->
+            <g :style="{ opacity: v.soleFade }">
+              <path
+                class="k-sole"
+                :d="soleD"
+                pathLength="1"
+                :style="{ strokeDashoffset: 1 - v.sole, fillOpacity: v.sole * 0.07 }"
+              />
+              <g class="k-toes" :style="{ opacity: v.toes }">
+                <ellipse v-for="(t, i) in TOES" :key="i" v-bind="toeAt(t)" />
+              </g>
             </g>
-            <g :style="{ opacity: v.blobs }">
+            <clipPath id="craft-sole-clip">
+              <path :d="soleD" />
+              <ellipse v-for="(t, i) in TOES" :key="i" v-bind="toeAt(t)" />
+            </clipPath>
+            <g clip-path="url(#craft-sole-clip)" :style="{ opacity: v.blobs }">
               <ellipse v-for="(b, i) in BLOBS" :key="i" v-bind="blobAt(b)" :fill="`url(#craft-${b.grad})`" />
+            </g>
+            <g class="k-notes" :style="{ opacity: v.load }">
+              <path :d="loadNotes.hi.d" />
+              <text class="k-note" :x="loadNotes.hi.tx" :y="loadNotes.hi.ty">mayor carga</text>
+              <path :d="loadNotes.lo.d" />
+              <text class="k-note" :x="loadNotes.lo.tx" :y="loadNotes.lo.ty + 4">menor carga</text>
             </g>
             <path
               class="k-line k-line--plan"
@@ -459,12 +515,6 @@ useGsapContext(root, (c) => {
               pathLength="1"
               :style="{ strokeDashoffset: 1 - v.outline, opacity: 1 - seg(2.0, 2.4) * 0.7 }"
             />
-            <g :style="{ opacity: v.legend }">
-              <text class="k-note" x="70" y="104">tu huella</text>
-              <rect x="70" y="114" width="220" height="7" rx="3.5" fill="url(#craft-scale)" />
-              <text class="k-note k-note--small" x="70" y="140">menos carga</text>
-              <text class="k-note k-note--small" x="290" y="140" text-anchor="end">más carga</text>
-            </g>
 
             <!-- 02 · Medidas y zonas, sobre la misma huella -->
             <g class="k-measure" :style="{ opacity: v.measure }">
@@ -724,6 +774,15 @@ useGsapContext(root, (c) => {
 }
 .k-updown {
   stroke-width: 1.4;
+}
+.k-sole {
+  fill: rgb(241 239 233 / 1);
+  fill-opacity: 0.05;
+  stroke: var(--color-bone);
+  stroke-opacity: 0.85;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
 }
 .k-toes ellipse {
   fill: rgb(241 239 233 / 0.05);
