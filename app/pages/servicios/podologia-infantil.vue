@@ -192,12 +192,15 @@ const [gait, arch, toes, shoe] = kids.assessments
   }
 }
 
-/* ---------- Banda de motivos de consulta: cards salteadas ----------
-   Sobre el cyan de marca, una card independiente por motivo, cada una con su huella: pie izquierdo en las de
-   la columna izquierda, pie derecho en las de la derecha. Las columnas se escalonan media fila (nunca quedan
-   alineadas) y los bordes exteriores coinciden con los del contenedor. En móvil, una columna con sangría alterna. */
+/* ---------- Banda de motivos de consulta: cada card es un paso ----------
+   Sobre el cyan de marca, una card independiente por motivo. La huella va en el lado INTERIOR de cada card, a
+   caballo sobre su borde (como una muesca): pie izquierdo en el lado derecho de las cards de la columna izquierda,
+   pie derecho en el lado izquierdo de las de la columna derecha. Así los pies de las dos columnas quedan casi
+   juntos en el centro y, como las columnas se escalonan media fila, se leen como pasos alternos. Los bordes
+   exteriores coinciden con los del contenedor. En móvil, una columna con sangría alterna y el pie dentro de la card. */
 .consult {
   padding-block: clamp(3.5rem, 7vw, 6rem);
+  --mark: 4.5rem;
 }
 .consult__title {
   max-width: 14ch;
@@ -216,6 +219,7 @@ const [gait, arch, toes, shoe] = kids.assessments
   margin-left: 1.5rem;
 }
 .step__card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 1.125rem;
@@ -224,6 +228,11 @@ const [gait, arch, toes, shoe] = kids.assessments
   border-radius: var(--radius-l);
   background: var(--color-white);
   transition: translate var(--dur-base) var(--ease-out-soft);
+}
+/* En móvil el pie del lado interior queda dentro de la card: a la derecha en las de la izquierda */
+.step--left .step__card {
+  flex-direction: row-reverse;
+  justify-content: space-between;
 }
 .step__mark {
   flex: none;
@@ -257,7 +266,7 @@ const [gait, arch, toes, shoe] = kids.assessments
 @media (min-width: 1024px) {
   .path {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 1.5rem;
+    column-gap: 2rem;
     row-gap: 0.875rem;
     grid-auto-rows: minmax(4.5rem, auto);
   }
@@ -272,15 +281,33 @@ const [gait, arch, toes, shoe] = kids.assessments
     grid-column: 2;
   }
   .step__card {
-    padding: 1.5rem 1.75rem;
-    gap: 1.375rem;
+    display: block;
+    padding: 1.75rem 2rem;
   }
+  .step--left .step__card {
+    padding-right: calc(var(--mark) / 2 + 2rem);
+  }
+  .step--right .step__card {
+    padding-left: calc(var(--mark) / 2 + 2rem);
+  }
+  /* La huella a caballo sobre el borde interior, con un anillo del color del fondo que la recorta de la card */
   .step__mark {
-    width: 4rem;
-    height: 4rem;
+    position: absolute;
+    top: 50%;
+    width: var(--mark);
+    height: var(--mark);
+    box-shadow: 0 0 0 6px var(--color-primary);
+  }
+  .step--left .step__mark {
+    right: 0;
+    translate: 50% -50%;
+  }
+  .step--right .step__mark {
+    left: 0;
+    translate: -50% -50%;
   }
   .step__foot {
-    width: 1.3rem;
+    width: 1.4rem;
   }
 }
 
