@@ -166,6 +166,11 @@ useGsapContext(root, (c) => {
               </g>
             </svg>
           </div>
+          <div class="walk__scale">
+            <span>Menos carga</span>
+            <span class="walk__scale-bar" />
+            <span>Más carga</span>
+          </div>
         </figure>
       </div>
     </div>
@@ -290,14 +295,32 @@ useGsapContext(root, (c) => {
   line-height: 1.5;
 }
 
+.walk__scale {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+.walk__scale-bar {
+  width: 7rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #1a33d9, #00bff2 22%, #33d940 44%, #ffe61a 66%, #ff8010 84%, #e61a1a);
+}
 .walk__visual {
   position: relative;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
   height: 100%;
   margin: 0;
 }
 .walk__mask {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 82%, transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 82%, transparent 100%);
 }
