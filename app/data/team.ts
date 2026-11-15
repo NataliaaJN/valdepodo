@@ -19,14 +19,13 @@ export interface TeamMember {
 }
 
 const ROLE = 'Copropietaria y Podóloga'
-const BIO = 'Presentación breve de la persona (2 líneas): la redacta la clínica'
 
 export const team: readonly TeamMember[] = [
   {
     id: 'paula-vigara',
     name: 'Paula Vigara Aranda',
     role: ROLE,
-    bio: pending('Presentación breve pendiente.', BIO),
+    bio: null,
     specialties: [],
     license: null,
     linkedin: 'https://es.linkedin.com/in/paula-vigara-aranda-569223253',
@@ -39,7 +38,7 @@ export const team: readonly TeamMember[] = [
     id: 'valerie-savignano',
     name: 'Valerie Savignano Gutiérrez',
     role: ROLE,
-    bio: pending('Presentación breve pendiente.', BIO),
+    bio: null,
     specialties: [],
     license: null,
     linkedin: 'https://es.linkedin.com/in/valerie-savignano-guti%C3%A9rrez-8552b3249',
@@ -52,7 +51,7 @@ export const team: readonly TeamMember[] = [
     id: 'recepcion',
     name: pending('Nombre pendiente', 'Nombre de la recepcionista: validar con la clínica'),
     role: pending('Recepcionista', 'Cargo de la recepcionista: validar con la clínica'),
-    bio: pending('Presentación breve pendiente.', BIO),
+    bio: null,
     specialties: [],
     license: null,
     linkedin: null,
