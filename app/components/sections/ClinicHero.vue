@@ -46,7 +46,7 @@ defineSlots<{ default?: () => unknown }>()
         preload="auto"
         aria-hidden="true"
       />
-      <PhotoPlaceholder v-if="!photo.src && !video"label="Fotografía del equipo pendiente" ratio="16 / 9" class="hero__img" />
+      <PhotoPlaceholder v-if="!photo.src && !video" label="Fotografía del equipo pendiente" ratio="16 / 9" class="hero__img" />
     </div>
     <div class="hero__scrim" aria-hidden="true" />
 

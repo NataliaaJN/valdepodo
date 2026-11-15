@@ -1,18 +1,18 @@
 <script setup lang="ts">
 /**
- * Composición editorial del espacio de la clínica (spec 05 §3): cuatro imágenes de tamaños distintos y
- * desalineadas (una principal ancha, un retrato, un detalle cuadrado y una vista media), no una galería.
- * Móvil: principal a ancho completo, retrato y detalle en dos columnas y la vista media al final.
+ * Composición editorial del espacio de la clínica (spec 05 §3), pensada para 1 a 6 fotografías: se pintan solo
+ * las que ya existen (nunca marcos vacíos) y la rejilla se recompone según cuántas hay (`mosaic--n{N}`):
+ * una principal grande y las demás repartidas a su lado y debajo. Sin pies de foto.
+ * Móvil: principal a ancho completo y el resto de dos en dos.
  * Lightbox accesible con <dialog> nativo: flechas y teclado, Esc, foco atrapado (lo hace el navegador con
- * showModal), contador "2 / 4" y deslizar en táctil. Las fotos pendientes no abren lightbox.
+ * showModal), contador "2 / 4" y deslizar en táctil.
  */
 import { resolveValue } from '#shared/utils/pending'
 import type { ClinicPhoto } from '~/data/clinic'
 
 const props = defineProps<{ photos: readonly ClinicPhoto[] }>()
 
-const slots = computed(() => props.photos.slice(0, 4))
-const viewable = computed(() => props.photos.filter((p) => p.src))
+const viewable = computed(() => props.photos.filter((p) => p.src).slice(0, 6))
 
 const dialog = ref<HTMLDialogElement | null>(null)
 const current = ref(0)
@@ -46,26 +46,22 @@ const onClose = () => opener?.focus()
 </script>
 
 <template>
-  <div class="mosaic">
-    <figure v-for="(photo, i) in slots" :key="i" v-reveal="i" class="m-item" :class="`m-${i}`">
-      <component
-        :is="photo.src ? 'button' : 'div'"
-        :type="photo.src ? 'button' : undefined"
+  <div v-if="viewable.length" class="mosaic" :class="`mosaic--n${viewable.length}`">
+    <div v-for="(photo, i) in viewable" :key="photo.src!" v-reveal="i" class="m-item" :class="`m-${i}`">
+      <button
+        type="button"
         class="m-frame"
-        :aria-label="photo.src ? `Ampliar: ${resolveValue(photo.alt)}` : undefined"
+        :aria-label="`Ampliar: ${resolveValue(photo.alt)}`"
         @click="openAt(photo, $event)"
       >
         <img
-          v-if="photo.src"
-          :src="photo.src"
+          :src="photo.src!"
           :alt="resolveValue(photo.alt)"
           :loading="i === 0 ? undefined : 'lazy'"
           class="m-img"
         />
-        <PhotoPlaceholder v-else ratio="1 / 1" class="m-img" />
-      </component>
-      <figcaption class="m-caption"><ContentValue :value="photo.caption" /></figcaption>
-    </figure>
+      </button>
+    </div>
 
     <dialog
       ref="dialog"
@@ -98,90 +94,121 @@ const onClose = () => opener?.focus()
 
 <style scoped>
 .mosaic {
+  --row: clamp(11rem, 18vw, 17rem);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem 1rem;
-  align-items: start;
+  grid-auto-rows: var(--row);
+  gap: 0.75rem;
+}
+.m-item {
+  min-width: 0;
+  min-height: 0;
 }
 .m-frame {
   position: relative;
   display: block;
   width: 100%;
+  height: 100%;
   overflow: hidden;
-  border-radius: var(--radius-l);
+  border-radius: var(--radius-m);
   background: var(--color-ink);
-}
-button.m-frame {
   cursor: zoom-in;
+  transform: translateZ(0);
 }
 .m-frame .m-img {
   position: absolute;
   inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 900ms var(--ease-out-soft);
-}
-img.m-img {
-  display: block;
+  transition: scale var(--dur-image) var(--ease-out-soft);
 }
 @media (hover: hover) and (pointer: fine) {
-  button.m-frame:hover .m-img {
-    transform: scale(1.04);
+  .m-frame:hover .m-img {
+    scale: 1.03;
   }
 }
-.m-caption {
-  margin-top: 0.6rem;
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
+@media (prefers-reduced-motion: reduce) {
+  .m-frame:hover .m-img {
+    scale: 1;
+  }
 }
 
-/* Proporciones y posiciones: móvil en 2 columnas */
+/* Móvil: la principal a todo el ancho y doble de alta; el resto de dos en dos */
 .m-0 {
   grid-column: 1 / -1;
+  grid-row: span 2;
 }
-.m-0 .m-frame {
-  aspect-ratio: 3 / 2;
-}
-.m-1 .m-frame {
-  aspect-ratio: 4 / 5;
-}
-.m-2 .m-frame {
-  aspect-ratio: 4 / 5;
-}
-.m-3 {
+/* Con un número impar de fotos pequeñas, la última va a ancho completo */
+.mosaic--n2 .m-1,
+.mosaic--n4 .m-3,
+.mosaic--n6 .m-5 {
   grid-column: 1 / -1;
-}
-.m-3 .m-frame {
-  aspect-ratio: 16 / 9;
 }
 
 @media (min-width: 768px) {
   .mosaic {
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
   }
-  .m-0 {
-    grid-column: 1 / span 7;
-    grid-row: 1;
+  .mosaic .m-item {
+    grid-column: span 3;
+    grid-row: span 1;
   }
-  .m-1 {
-    grid-column: 9 / span 3;
-    grid-row: 1;
-    margin-top: clamp(2rem, 5vw, 5rem);
+  /* 1 foto: panorámica */
+  .mosaic--n1 .m-0 {
+    grid-column: 1 / -1;
+    grid-row: span 2;
   }
-  .m-2 {
-    grid-column: 2 / span 3;
-    grid-row: 2;
-    margin-top: clamp(0rem, 1vw, 1rem);
+  /* 2 fotos: 7 + 5 */
+  .mosaic--n2 .m-0 {
+    grid-column: span 7;
+    grid-row: span 2;
   }
-  .m-2 .m-frame {
-    aspect-ratio: 1 / 1;
+  .mosaic--n2 .m-1 {
+    grid-column: span 5;
+    grid-row: span 2;
   }
-  .m-3 {
-    grid-column: 6 / span 6;
-    grid-row: 2;
-    margin-top: clamp(1rem, 3vw, 3rem);
+  /* 3 fotos: grande a la izquierda y dos apiladas */
+  .mosaic--n3 .m-0 {
+    grid-column: span 7;
+    grid-row: span 2;
+  }
+  .mosaic--n3 .m-1,
+  .mosaic--n3 .m-2 {
+    grid-column: span 5;
+  }
+  /* 4 fotos: grande, una ancha arriba y dos pequeñas debajo */
+  .mosaic--n4 .m-0 {
+    grid-column: span 6;
+    grid-row: span 2;
+  }
+  .mosaic--n4 .m-1 {
+    grid-column: span 6;
+  }
+  .mosaic--n4 .m-2,
+  .mosaic--n4 .m-3 {
+    grid-column: span 3;
+  }
+  /* 5 y 6 fotos: grande y cuadrícula de pequeñas; la sexta, panorámica abajo */
+  .mosaic--n5 .m-0,
+  .mosaic--n6 .m-0 {
+    grid-column: span 6;
+    grid-row: span 2;
+  }
+  .mosaic--n5 .m-1,
+  .mosaic--n5 .m-2,
+  .mosaic--n5 .m-3,
+  .mosaic--n5 .m-4,
+  .mosaic--n6 .m-1,
+  .mosaic--n6 .m-2,
+  .mosaic--n6 .m-3,
+  .mosaic--n6 .m-4 {
+    grid-column: span 3;
+  }
+  .mosaic--n6 .m-5 {
+    grid-column: 1 / -1;
   }
 }
 

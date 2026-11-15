@@ -50,7 +50,12 @@ if (confirmedPeople.length) {
     </ClinicHero>
 
     <!-- 1. Personas -->
-    <section id="equipo" class="team py-(--space-section)" aria-labelledby="team-title" data-nav-theme="bone">
+    <section
+      id="equipo"
+      class="team py-[clamp(3.5rem,6vw,5.5rem)]"
+      aria-labelledby="team-title"
+      data-nav-theme="bone"
+    >
       <div class="container-wide team__grid">
         <SectionHeading
           id="team-title"
@@ -66,24 +71,14 @@ if (confirmedPeople.length) {
     <!-- 2. Forma de trabajar -->
     <MethodTimeline />
 
-    <!-- 4. Espacio -->
-    <section class="space py-(--space-section)" aria-labelledby="clinic-title" data-nav-theme="bone">
-      <div class="container-wide space__grid">
-        <SectionHeading
-          id="clinic-title"
-          :title="{ before: 'Un espacio pensado para cuidar de ti' }"
-          :intro="clinic.spaceText"
-        />
-        <div v-reveal="1" class="space__photo">
-          <img
-            :src="clinic.spacePhoto.src"
-            :alt="clinic.spacePhoto.alt"
-            width="1376"
-            height="768"
-            loading="lazy"
-            decoding="async"
-          />
+    <!-- 3. Espacio -->
+    <section class="space py-[clamp(3.5rem,6vw,5.5rem)]" aria-labelledby="clinic-title" data-nav-theme="bone">
+      <div class="container-wide">
+        <div class="space__head">
+          <SectionHeading id="clinic-title" :title="{ before: 'Un espacio pensado para cuidar de ti' }" />
+          <ContentValue v-reveal="1" :value="clinic.spaceText" as="p" class="space__intro text-body-l" />
         </div>
+        <MediaMosaic :photos="clinic.photos" class="mt-8 lg:mt-10" />
       </div>
     </section>
   </div>
@@ -93,53 +88,22 @@ if (confirmedPeople.length) {
 .team__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 3rem;
+  gap: 2rem;
 }
 .team__cards {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
   gap: 1rem;
 }
-@media (min-width: 640px) and (max-width: 1023px) {
-  .team__cards {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-.space__grid {
+.space__head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(1.5rem, 4vw, 3rem);
+  gap: 1.25rem;
 }
-.space__photo {
-  overflow: hidden;
-  aspect-ratio: 16 / 10;
-  border-radius: var(--radius-m);
-  background: var(--color-bone-2);
-}
-.space__photo img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: scale var(--dur-image) var(--ease-out-soft);
-}
-@media (hover: hover) and (pointer: fine) {
-  .space__photo:hover img {
-    scale: 1.03;
-  }
+.space__intro {
+  max-width: 38ch;
+  color: var(--color-text-secondary);
 }
 @media (min-width: 1024px) {
-  .space__grid {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: 1.5rem;
-    align-items: center;
-  }
-  .space__grid > :first-child {
-    grid-column: 1 / span 4;
-  }
-  .space__photo {
-    grid-column: 6 / span 7;
-  }
   .team__grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: 1.5rem;
@@ -150,7 +114,18 @@ if (confirmedPeople.length) {
   }
   .team__cards {
     grid-column: 5 / span 8;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .space__head {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.5rem;
+    align-items: end;
+  }
+  .space__head > :first-child {
+    grid-column: 1 / span 6;
+  }
+  .space__intro {
+    grid-column: 9 / span 4;
+    padding-bottom: 0.25rem;
   }
 }
 </style>

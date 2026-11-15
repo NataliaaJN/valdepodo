@@ -66,8 +66,8 @@ describe('TeamCard (spec 05 §2): tarjeta compacta', () => {
     const wrapper = await mountSuspended(TeamCard, { props: { member: team[0]! } })
     expect(wrapper.find('h3').text()).toContain('Paula Vigara Aranda')
     expect(wrapper.find('.role').text()).toContain('Podóloga')
-    // Sin descripción ni especialidades no hay bloque ampliado
-    expect(wrapper.find('.more').exists()).toBe(false)
+    // El bloque ampliado (descripción, «Pedir cita», LinkedIn) está siempre en el DOM
+    expect(wrapper.find('.more').exists()).toBe(true)
     const detailed = await mountSuspended(TeamCard, {
       props: { member: { ...team[0]!, bio: 'Breve descripción', specialties: ['Biomecánica'] } },
     })
