@@ -59,17 +59,12 @@ if (confirmedPeople.length) {
       <div class="container-wide team__grid">
         <SectionHeading
           id="team-title"
-          class="team__head"
           :title="{ before: 'Equipo' }"
           intro="Profesionales que te escuchan y te explican cada paso."
         />
-        <TeamCard
-          v-for="(member, i) in team"
-          :key="member.id"
-          v-reveal="i"
-          :member="member"
-          :class="`team__p team__p--${i + 1}`"
-        />
+        <div class="team__cards">
+          <TeamCard v-for="(member, i) in team" :key="member.id" v-reveal="i" :member="member" />
+        </div>
       </div>
     </section>
 
@@ -90,23 +85,15 @@ if (confirmedPeople.length) {
 </template>
 
 <style scoped>
-/* Composición editorial de tres: dos retratos grandes y escalonados y, a su lado, el título y la tercera persona */
 .team__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 2.5rem;
+  gap: 2rem;
 }
-@media (min-width: 640px) {
-  .team__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 1.5rem;
-  }
-  .team__head {
-    grid-column: 1 / -1;
-  }
-  .team__p--2 {
-    margin-top: 3rem;
-  }
+.team__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
 }
 .space__head {
   display: grid;
@@ -119,25 +106,15 @@ if (confirmedPeople.length) {
 @media (min-width: 1024px) {
   .team__grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.5rem;
     align-items: start;
   }
-  .team__head {
-    grid-column: 9 / span 4;
-    grid-row: 1;
-  }
-  .team__p--1 {
+  .team__grid > :first-child {
     grid-column: 1 / span 4;
-    grid-row: 1 / span 2;
   }
-  .team__p--2 {
-    grid-column: 5 / span 4;
-    grid-row: 1 / span 2;
-    margin-top: clamp(3rem, 6vw, 5.5rem);
-  }
-  .team__p--3 {
-    grid-column: 9 / span 3;
-    grid-row: 2;
-    align-self: end;
+  .team__cards {
+    grid-column: 5 / span 8;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .space__head {
     grid-template-columns: repeat(12, minmax(0, 1fr));

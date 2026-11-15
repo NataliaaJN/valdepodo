@@ -18,7 +18,7 @@ export interface TeamMember {
   photo: { src: string; alt: string } | null
 }
 
-const ROLE = 'Copropietaria y Podóloga'
+const ROLE = 'Copropietaria | Podóloga'
 
 export const team: readonly TeamMember[] = [
   {

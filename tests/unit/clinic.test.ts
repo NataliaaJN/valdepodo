@@ -97,7 +97,7 @@ describe('contenido (spec 09)', () => {
     // La recepcionista es un marcador a la espera de datos de la clínica
     expect(isPending(team[2]!.name)).toBe(true)
     for (const member of team.slice(0, 2)) {
-      expect(resolveValue(member.role)).toBe('Copropietaria y Podóloga')
+      expect(resolveValue(member.role)).toBe('Copropietaria | Podóloga')
       expect(member.photo).not.toBeNull()
       expect(member.linkedin).toMatch(/^https:\/\/es\.linkedin\.com\/in\//)
     }

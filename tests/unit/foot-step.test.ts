@@ -1,10 +1,22 @@
 import { describe, expect, it } from 'vitest'
-import { buildStepTable, pitchAt, sampleStep, soleProfile, STEP_CONTACT, type SolePoint } from '~/utils/foot-step'
+import {
+  buildStepTable,
+  pitchAt,
+  sampleStep,
+  soleProfile,
+  STEP_CONTACT,
+  type SolePoint,
+} from '~/utils/foot-step'
 
 // Suela sintética parecida a la del GLB: talón (z −0.09) a 2 mm, antepié (z 0.03) a 0, dedos hasta 0.10
 const sole: SolePoint[] = Array.from({ length: 21 }, (_, i) => {
   const z = -0.12 + (0.224 * i) / 20
-  const y = z < -0.05 ? 0.002 + Math.abs(z + 0.09) * 0.1 : z < 0.04 ? Math.max(0, (-0.01 - z) * 0.05) : 0.002 + (z - 0.04) * 0.06
+  const y =
+    z < -0.05
+      ? 0.002 + Math.abs(z + 0.09) * 0.1
+      : z < 0.04
+        ? Math.max(0, (-0.01 - z) * 0.05)
+        : 0.002 + (z - 0.04) * 0.06
   return { x: 0, y, z }
 })
 const table = buildStepTable(sole)
@@ -23,8 +35,10 @@ describe('paso del pie (scroll → progress)', () => {
     expect(pitchAt(STEP_CONTACT)).toBeLessThan(0)
     expect(pitchAt(1)).toBeGreaterThan(0.2)
     // El mínimo es el contacto y desde ahí solo crece
-    for (let p = STEP_CONTACT; p < 1; p += 0.005) expect(pitchAt(p + 0.005)).toBeGreaterThanOrEqual(pitchAt(p) - 1e-9)
-    for (let p = 0; p < STEP_CONTACT; p += 0.005) expect(pitchAt(p + 0.005)).toBeLessThanOrEqual(pitchAt(p) + 1e-9)
+    for (let p = STEP_CONTACT; p < 1; p += 0.005)
+      expect(pitchAt(p + 0.005)).toBeGreaterThanOrEqual(pitchAt(p) - 1e-9)
+    for (let p = 0; p < STEP_CONTACT; p += 0.005)
+      expect(pitchAt(p + 0.005)).toBeLessThanOrEqual(pitchAt(p) + 1e-9)
   })
 
   it('el talón es el primer punto de apoyo y la suela nunca atraviesa el suelo', () => {

@@ -62,7 +62,7 @@ describe('BookingWizard (spec 06)', () => {
 })
 
 describe('TeamCard (spec 05 §2): pieza editorial', () => {
-  it('muestra solo nombre y cargo (sin biografía) y el retrato a la vista', async () => {
+  it('muestra nombre, cargo y retrato desde el principio (sin biografía inventada)', async () => {
     const wrapper = await mountSuspended(TeamCard, { props: { member: team[0]! } })
     expect(wrapper.find('h3').text()).toContain('Paula Vigara Aranda')
     expect(wrapper.find('.role').text()).toContain('Podóloga')
