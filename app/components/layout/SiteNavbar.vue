@@ -52,20 +52,27 @@ function onFocusOut(e: FocusEvent) {
 const detected = ref<NavTheme>('bone')
 const theme = computed<NavTheme>(() => (open.value ? 'ink' : detected.value))
 
+/**
+ * Tema según el capítulo que hay bajo la navbar. Se calcula con la GEOMETRÍA de los `[data-nav-theme]` (el
+ * que cruza la línea y = 40 px; si hay varios anidados, el más pequeño), no con `elementsFromPoint`: esa
+ * consulta de hit-testing devuelve una lista vacía mientras la página recién cargada no está pintada y
+ * dejaba el tema en «hueso» (letras oscuras sobre el hero oscuro) hasta que se hacía scroll.
+ */
 function detectTheme() {
   if (!header.value) return
-  const x = window.innerWidth / 2
   const y = Math.min(40, window.innerHeight / 2)
-  for (const el of document.elementsFromPoint(x, y)) {
+  let best: HTMLElement | null = null
+  let bestHeight = Number.POSITIVE_INFINITY
+  for (const el of document.querySelectorAll<HTMLElement>('[data-nav-theme]')) {
     // Ni la propia navbar ni el loading de marca (cubre la página en la primera visita)
     if (header.value.contains(el) || el.closest('.brand-intro')) continue
-    const host = el.closest<HTMLElement>('[data-nav-theme]')
-    if (host) {
-      detected.value = host.dataset.navTheme as NavTheme
-      return
+    const r = el.getBoundingClientRect()
+    if (r.top <= y && r.bottom > y && r.height < bestHeight) {
+      best = el
+      bestHeight = r.height
     }
   }
-  detected.value = 'bone'
+  detected.value = (best?.dataset.navTheme as NavTheme | undefined) ?? 'bone'
 }
 
 let frame = 0
@@ -155,16 +162,36 @@ function onDocKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape' && megaOpen.value) megaOpen.value = false
 }
 
+let settleTimer: ReturnType<typeof setInterval> | undefined
+let settle: ResizeObserver | undefined
+
 onMounted(() => {
   document.addEventListener('pointerdown', onDocPointerDown)
   document.addEventListener('keydown', onDocKeydown)
   onScroll()
   detectTheme()
+  // La página recién cargada aún se está asentando (fuentes, imágenes, hidratación): se recalcula
+  window.addEventListener('load', detectTheme)
+  document.fonts?.ready.then(detectTheme)
+  // Durante los primeros segundos (CSS y fuentes llegando, transición de página) el hero aún puede moverse:
+  // se comprueba cada 200 ms y se para solo.
+  let ticks = 0
+  settleTimer = setInterval(() => {
+    detectTheme()
+    if (++ticks >= 40) clearInterval(settleTimer)
+  }, 200)
+  if ('ResizeObserver' in window) {
+    settle = new ResizeObserver(onScroll)
+    settle.observe(document.body)
+  }
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('resize', onScroll, { passive: true })
   mq?.addEventListener('change', onBreakpoint)
 })
 onBeforeUnmount(() => {
+  window.removeEventListener('load', detectTheme)
+  clearInterval(settleTimer)
+  settle?.disconnect()
   document.removeEventListener('pointerdown', onDocPointerDown)
   document.removeEventListener('keydown', onDocKeydown)
   cancelAnimationFrame(frame)

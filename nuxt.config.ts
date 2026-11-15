@@ -32,6 +32,17 @@ export default defineNuxtConfig({
       viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
       meta: [{ name: 'theme-color', content: '#F1EFE9' }],
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      // Orden de las capas de Tailwind fijado ANTES que cualquier hoja de estilos. BaseIcon y FormField abren
+      // `@layer components`; si su CSS llegaba antes que main.css, `components` quedaba por debajo de `base` y
+      // el reset (`* { margin: 0; padding: 0 }`) anulaba `.under-navbar` y `.container-wide`: el hero dejaba de
+      // ir bajo la navbar (franja de hueso, letras oscuras sin contraste) y las páginas perdían sus márgenes.
+      style: [
+        {
+          key: 'layer-order',
+          innerHTML: '@layer theme, base, components, utilities;',
+          tagPriority: 'critical',
+        },
+      ],
     },
     pageTransition: { name: 'page', mode: 'out-in' },
   },

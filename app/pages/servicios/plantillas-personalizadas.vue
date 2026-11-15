@@ -7,7 +7,6 @@
  */
 import { pending, resolveValue } from '#shared/utils/pending'
 import { CONCEPTUAL_LABEL, insoleProcess } from '~/data/insole'
-import { bookingPath } from '~/data/services'
 
 const service = useServicePage('plantillas-personalizadas')
 
@@ -15,12 +14,11 @@ const description = pending(
   'No existen dos pies iguales. Tus plantillas tampoco deberían serlo.',
   'Descripción del servicio (concepto de la spec 04 §2): validar con la clínica',
 )
-const cta = { label: 'Pedir cita', to: bookingPath(service.slug) }
 </script>
 
 <template>
   <div>
-    <ServiceHero :service="service" :description="service.description" :cta-label="cta.label" />
+    <ServiceHero :service="service" :description="service.description" />
 
     <ServiceOverview :service="service" :title="resolveValue(description)">
       <picture>

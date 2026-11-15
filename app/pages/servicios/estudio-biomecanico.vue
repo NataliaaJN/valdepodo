@@ -17,7 +17,7 @@ const indicators = ['Estático', 'Marcha', 'Carrera']
 
 <template>
   <div>
-    <ServiceHero :service="service" :description="description" cta-label="Solicitar estudio" />
+    <ServiceHero :service="service" :description="description" />
 
     <ServiceOverview :service="service" title="Entender tu pisada" :intro="intro">
       <svg
