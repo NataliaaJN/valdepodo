@@ -1,49 +1,100 @@
 /**
- * Pie diabético (spec 04 §5). Estética sobria. Todo en `pending()`, incluido el aviso de urgencias y el
- * descargo de las recomendaciones (los valida la clínica).
+ * Pie diabético (spec 04 §5). Textos propios, sobrios y sin lenguaje alarmista ni promesas (spec 09 §4).
+ * Referencias de enfoque: páginas de pie diabético de otras clínicas, reescritas con voz propia.
  */
-import { pending, type Maybe } from '#shared/utils/pending'
 
-const NOTE = 'Contenido de pie diabético (spec 04 §5): validar con la clínica'
+export interface DiabeticItem {
+  title: string
+  text: string
+}
+
+export interface DiabeticSign extends DiabeticItem {
+  icon: 'wound' | 'temperature' | 'tingle' | 'swelling'
+}
 
 export const diabetic = {
-  description: pending(
-    'Revisiones y cuidados podológicos para prevenir complicaciones en el pie de las personas con diabetes.',
-    NOTE,
-  ) as Maybe<string>,
-  prevention: pending(
-    'La diabetes puede reducir la sensibilidad y la circulación del pie. Una pequeña lesión que pasa desapercibida puede complicarse, por eso la prevención y las revisiones periódicas son tan importantes.',
-    NOTE,
-  ) as Maybe<string>,
+  description:
+    'Revisiones periódicas y cuidados podológicos para prevenir complicaciones en el pie de las personas con diabetes.',
+  intro:
+    'La diabetes puede reducir la sensibilidad y la circulación del pie, así que una herida pequeña puede pasar desapercibida y complicarse. Revisar los pies con regularidad es la mejor forma de adelantarse.',
+  /** Qué incluye cada revisión. */
+  reviewTitle: 'Qué incluye la revisión',
+  review: [
+    {
+      title: 'Historia y hábitos',
+      text: 'Empezamos hablando contigo: cómo llevas la diabetes, qué medicación tomas y si notas dolor, hormigueo o calambres.',
+    },
+    {
+      title: 'Sensibilidad',
+      text: 'Comprobamos con pruebas sencillas e indoloras si el pie siente bien el tacto, la presión y la vibración.',
+    },
+    {
+      title: 'Circulación',
+      text: 'Valoramos los pulsos y el aspecto de la piel para ver cómo llega la sangre al pie.',
+    },
+    {
+      title: 'Uñas y durezas',
+      text: 'Cortamos las uñas y retiramos las durezas con cuidado, porque son el origen más habitual de heridas.',
+    },
+    {
+      title: 'Calzado y apoyo',
+      text: 'Revisamos tu calzado y cómo pisas, y valoramos si necesitas plantillas para repartir mejor la presión.',
+    },
+    {
+      title: 'Seguimiento',
+      text: 'Según tu nivel de riesgo, te proponemos cada cuánto volver. Cuanto mayor el riesgo, más cercanas las revisiones.',
+    },
+  ] as readonly DiabeticItem[],
+  /** Señales que piden consultar cuanto antes. */
+  signsTitle: 'Señales que requieren valoración',
+  signs: [
+    {
+      title: 'Heridas que no mejoran',
+      icon: 'wound',
+      text: 'Una herida, ampolla o grieta que no cicatriza en unos días.',
+    },
+    {
+      title: 'Cambios de color o temperatura',
+      icon: 'temperature',
+      text: 'Una zona del pie más roja, más pálida, más oscura o más fría o caliente que el resto.',
+    },
+    {
+      title: 'Hormigueo o pérdida de sensibilidad',
+      icon: 'tingle',
+      text: 'Adormecimiento, pinchazos o la sensación de llevar un calcetín puesto sin llevarlo.',
+    },
+    {
+      title: 'Hinchazón o dolor sin causa',
+      icon: 'swelling',
+      text: 'Un pie hinchado o dolorido sin golpe ni esfuerzo que lo explique.',
+    },
+  ] as readonly DiabeticSign[],
+  urgentNotice:
+    'Ante una herida que no cicatriza, enrojecimiento que se extiende, supuración o fiebre, acude a tu médico o a urgencias sin esperar a la cita.',
+  /** Cuidados diarios en casa. */
+  careTitle: 'Cuidados de cada día',
   care: [
     {
-      title: 'Revisión del pie',
-      text: pending('Exploramos la piel, las uñas, la sensibilidad y la circulación.', NOTE),
+      title: 'Míralos a diario',
+      text: 'Revisa la planta, los talones y entre los dedos. Si no llegas, ayúdate de un espejo o pide ayuda.',
     },
-    { title: 'Cuidado de uñas y piel', text: pending('Tratamos uñas y durezas con especial cuidado.', NOTE) },
     {
-      title: 'Consejo de calzado',
-      text: pending('Te orientamos sobre el calzado y los cuidados en casa.', NOTE),
+      title: 'Lávalos y sécalos',
+      text: 'Agua templada, jabón suave y secado cuidadoso, sobre todo entre los dedos.',
     },
-  ] as readonly { title: string; text: Maybe<string> }[],
-  signs: [
-    pending('Una herida, ampolla o grieta que no mejora.', NOTE),
-    pending('Cambios de color o de temperatura en el pie.', NOTE),
-    pending('Hormigueo, adormecimiento o pérdida de sensibilidad.', NOTE),
-    pending('Hinchazón o dolor sin causa aparente.', NOTE),
-  ] as readonly Maybe<string>[],
-  urgentNotice: pending(
-    'Ante una herida que no cicatriza o signos de infección, acude a tu médico o servicio de urgencias.',
-    'Aviso destacado de la spec 04 §5: texto a validar por la clínica',
-  ) as Maybe<string>,
-  recommendations: [
-    pending('Revisa tus pies a diario, también entre los dedos.', NOTE),
-    pending('Lávalos con agua templada y sécalos bien.', NOTE),
-    pending('Hidrata la piel, pero no entre los dedos.', NOTE),
-    pending('No camines descalzo y revisa el interior del calzado.', NOTE),
-  ] as readonly Maybe<string>[],
-  disclaimer: pending(
-    'Estas recomendaciones son generales y no sustituyen una valoración profesional individual.',
-    'Descargo de la spec 04 §5: validar con la clínica',
-  ) as Maybe<string>,
+    {
+      title: 'Hidrata la piel',
+      text: 'Una crema hidratante en planta y talones, sin aplicarla entre los dedos.',
+    },
+    { title: 'Nunca descalzo', text: 'Tampoco en casa ni en la playa: un pequeño corte puede no notarse.' },
+    {
+      title: 'Calzado y calcetines',
+      text: 'Calzado cómodo y que no apriete, y calcetines sin costuras gruesas. Mira dentro del zapato antes de ponértelo.',
+    },
+    {
+      title: 'Uñas con cuidado',
+      text: 'Córtalas rectas y sin rematar las esquinas. Si ves poco o sientes poco, déjalo en manos del podólogo.',
+    },
+  ] as readonly DiabeticItem[],
+  disclaimer: 'Estas recomendaciones son generales y no sustituyen una valoración profesional individual.',
 }
