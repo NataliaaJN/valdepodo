@@ -29,9 +29,13 @@ export const clinic = {
     'Un lugar cálido, limpio y tranquilo, cuidado en cada detalle, para atenderte sin prisas.',
     'Texto de Conócenos (spec 05): validar con la clínica',
   ) as Maybe<string>,
-  /** Composición editorial: la primera es la principal (4 imágenes, no una galería). */
+  /** Mosaico del espacio (hasta 6): la primera es la principal. Solo se pintan las que tienen `src`; al llegar las fotos reales basta con rellenarlo. */
   photos: [
-    { src: null, alt: pending('Recepción de la clínica', PHOTO), caption: pending('Recepción', PHOTO) },
+    {
+      src: '/images/clinic/contacto.jpg',
+      alt: 'Recepción y sala de espera de la clínica, luminosa y en tonos azules',
+      caption: 'Recepción',
+    },
     { src: null, alt: pending('Sala de consulta', PHOTO), caption: pending('Consulta', PHOTO) },
     {
       src: null,

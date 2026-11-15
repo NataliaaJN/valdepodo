@@ -2,7 +2,7 @@
  * Equipo (spec 05 §2): datos confirmados por la clínica. **No se deduce el equipo de las reseñas** (research §3.2).
  * Fotos reales; LinkedIn autorizado por cada profesional.
  */
-import type { Maybe } from '#shared/utils/pending'
+import { pending, type Maybe } from '#shared/utils/pending'
 
 export interface TeamMember {
   id: string
@@ -18,7 +18,7 @@ export interface TeamMember {
   photo: { src: string; alt: string } | null
 }
 
-const ROLE = 'Copropietaria y Podóloga'
+const ROLE = 'Copropietaria | Podóloga'
 
 export const team: readonly TeamMember[] = [
   {
@@ -29,7 +29,10 @@ export const team: readonly TeamMember[] = [
     specialties: [],
     license: null,
     linkedin: 'https://es.linkedin.com/in/paula-vigara-aranda-569223253',
-    photo: { src: '/images/team/valerie-savignano.jpg', alt: 'Paula Vigara Aranda, copropietaria y podóloga' },
+    photo: {
+      src: '/images/team/valerie-savignano.jpg',
+      alt: 'Paula Vigara Aranda, copropietaria y podóloga',
+    },
   },
   {
     id: 'valerie-savignano',
@@ -43,5 +46,15 @@ export const team: readonly TeamMember[] = [
       src: '/images/team/paula-vigara.jpg',
       alt: 'Valerie Savignano Gutiérrez, copropietaria y podóloga',
     },
+  },
+  {
+    id: 'recepcion',
+    name: pending('Nombre pendiente', 'Nombre de la recepcionista: validar con la clínica'),
+    role: pending('Recepcionista', 'Cargo de la recepcionista: validar con la clínica'),
+    bio: null,
+    specialties: [],
+    license: null,
+    linkedin: null,
+    photo: null,
   },
 ]

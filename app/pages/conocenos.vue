@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
- * La clínica (spec 05): una sola página que cuenta la historia Personas → Forma de trabajar → Experiencia →
- * Espacio. Hero con la foto del equipo, equipo (#equipo), método en línea de tiempo, los años de experiencia
- * como pausa y el espacio de la clínica. El CTA de cierre lo pone el layout.
+ * La clínica (spec 05): una sola página que cuenta la historia Personas → Forma de trabajar →
+ * Espacio. Hero con la foto del equipo (y los años de experiencia en su frase), equipo (#equipo), método en
+ * línea de tiempo y el espacio de la clínica. El CTA de cierre lo pone el layout.
  * Sin fotos reales todavía: placeholders ilustrados marcados ("Fotografía pendiente"), nunca stock.
  * Schema `Person`: solo con datos confirmados (ahora ninguno).
  */
@@ -42,10 +42,15 @@ if (confirmedPeople.length) {
 <template>
   <div>
     <!-- Hero a pantalla completa: foto del equipo -->
-    <ClinicHero id="about-title" title="La clínica" :photo="clinic.teamPhoto" />
+    <ClinicHero id="about-title" title="Clínica de podología Valdepodo" :photo="clinic.teamPhoto" />
 
     <!-- 1. Personas -->
-    <section id="equipo" class="team py-(--space-section)" aria-labelledby="team-title" data-nav-theme="bone">
+    <section
+      id="equipo"
+      class="team py-[clamp(3.5rem,6vw,5.5rem)]"
+      aria-labelledby="team-title"
+      data-nav-theme="bone"
+    >
       <div class="container-wide team__grid">
         <SectionHeading
           id="team-title"
@@ -61,18 +66,14 @@ if (confirmedPeople.length) {
     <!-- 2. Forma de trabajar -->
     <MethodTimeline />
 
-    <!-- 3. Experiencia -->
-    <ExperienceSection />
-
-    <!-- 4. Espacio -->
-    <section class="py-(--space-section)" aria-labelledby="clinic-title" data-nav-theme="bone">
+    <!-- 3. Espacio -->
+    <section class="space py-[clamp(3.5rem,6vw,5.5rem)]" aria-labelledby="clinic-title" data-nav-theme="bone">
       <div class="container-wide">
-        <SectionHeading
-          id="clinic-title"
-          :title="{ before: 'Un espacio pensado para cuidar de ti' }"
-          :intro="clinic.spaceText"
-        />
-        <MediaMosaic :photos="clinic.photos" class="mt-12" />
+        <div class="space__head">
+          <SectionHeading id="clinic-title" :title="{ before: 'Un espacio pensado para cuidar de ti' }" />
+          <ContentValue v-reveal="1" :value="clinic.spaceText" as="p" class="space__intro text-body-l" />
+        </div>
+        <MediaMosaic :photos="clinic.photos" class="mt-10 lg:mt-12" />
       </div>
     </section>
   </div>
@@ -82,12 +83,20 @@ if (confirmedPeople.length) {
 .team__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 3rem;
+  gap: 2rem;
 }
 .team__cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
   gap: 1rem;
+}
+.space__head {
+  display: grid;
+  gap: 1.25rem;
+}
+.space__intro {
+  max-width: 38ch;
+  color: var(--color-text-secondary);
 }
 @media (min-width: 1024px) {
   .team__grid {
@@ -100,7 +109,19 @@ if (confirmedPeople.length) {
   }
   .team__cards {
     grid-column: 5 / span 8;
-    grid-template-columns: repeat(auto-fill, minmax(18rem, 23rem));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .space__head {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.5rem;
+    align-items: end;
+  }
+  .space__head > :first-child {
+    grid-column: 1 / span 6;
+  }
+  .space__intro {
+    grid-column: 9 / span 4;
+    padding-bottom: 0.25rem;
   }
 }
 </style>

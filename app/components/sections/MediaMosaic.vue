@@ -1,7 +1,9 @@
 <script setup lang="ts">
 /**
- * Composición editorial del espacio de la clínica (spec 05 §3): cuatro imágenes de tamaños distintos y
+ * Composición editorial del espacio de la clínica (spec 05 §3): imágenes de tamaños distintos y
  * desalineadas (una principal ancha, un retrato, un detalle cuadrado y una vista media), no una galería.
+ * Las cuatro primeras componen la fila doble original; la quinta y la sexta (cuando lleguen más fotos)
+ * continúan el mismo patrón en una tercera fila.
  * Móvil: principal a ancho completo, retrato y detalle en dos columnas y la vista media al final.
  * Lightbox accesible con <dialog> nativo: flechas y teclado, Esc, foco atrapado (lo hace el navegador con
  * showModal), contador "2 / 4" y deslizar en táctil. Las fotos pendientes no abren lightbox.
@@ -11,7 +13,7 @@ import type { ClinicPhoto } from '~/data/clinic'
 
 const props = defineProps<{ photos: readonly ClinicPhoto[] }>()
 
-const slots = computed(() => props.photos.slice(0, 4))
+const slots = computed(() => props.photos.slice(0, 6))
 const viewable = computed(() => props.photos.filter((p) => p.src))
 
 const dialog = ref<HTMLDialogElement | null>(null)
@@ -155,6 +157,12 @@ img.m-img {
 .m-3 .m-frame {
   aspect-ratio: 16 / 9;
 }
+.m-4 .m-frame {
+  aspect-ratio: 4 / 5;
+}
+.m-5 .m-frame {
+  aspect-ratio: 4 / 5;
+}
 
 @media (min-width: 768px) {
   .mosaic {
@@ -182,6 +190,19 @@ img.m-img {
     grid-column: 6 / span 6;
     grid-row: 2;
     margin-top: clamp(1rem, 3vw, 3rem);
+  }
+  .m-4 {
+    grid-column: 1 / span 4;
+    grid-row: 3;
+    margin-top: clamp(1rem, 2vw, 2rem);
+  }
+  .m-4 .m-frame {
+    aspect-ratio: 4 / 3;
+  }
+  .m-5 {
+    grid-column: 6 / span 3;
+    grid-row: 3;
+    margin-top: clamp(2rem, 5vw, 5rem);
   }
 }
 

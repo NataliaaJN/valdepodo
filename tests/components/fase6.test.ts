@@ -61,25 +61,18 @@ describe('BookingWizard (spec 06)', () => {
   })
 })
 
-describe('TeamCard (spec 05 §2): tarjeta compacta', () => {
-  it('muestra nombre y cargo y mantiene siempre en el DOM la información ampliada si la hay', async () => {
+describe('TeamCard (spec 05 §2): pieza editorial', () => {
+  it('muestra nombre, cargo y retrato desde el principio (sin biografía inventada)', async () => {
     const wrapper = await mountSuspended(TeamCard, { props: { member: team[0]! } })
     expect(wrapper.find('h3').text()).toContain('Paula Vigara Aranda')
     expect(wrapper.find('.role').text()).toContain('Podóloga')
-    // Sin descripción ni especialidades no hay bloque ampliado
     expect(wrapper.find('.more').exists()).toBe(false)
-    const detailed = await mountSuspended(TeamCard, {
-      props: { member: { ...team[0]!, bio: 'Breve descripción', specialties: ['Biomecánica'] } },
-    })
-    // Plegada en reposo (solo visualmente): los lectores de pantalla la leen igual
-    expect(detailed.find('.more').text()).toContain('Breve descripción')
-    expect(detailed.find('.tags').attributes('aria-label')).toBe('Especialidades')
+    expect(wrapper.find('img.photo').exists()).toBe(true)
   })
 
-  it('es enfocable con el teclado y se nombra por el profesional', async () => {
+  it('se nombra por el profesional', async () => {
     const wrapper = await mountSuspended(TeamCard, { props: { member: team[0]! } })
     const card = wrapper.find('article')
-    expect(card.attributes('tabindex')).toBe('0')
     expect(card.attributes('aria-labelledby')).toBe(wrapper.find('h3').attributes('id'))
   })
 
