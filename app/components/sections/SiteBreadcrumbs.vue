@@ -1,10 +1,10 @@
 <script setup lang="ts">
 /** Migas de pan visibles (spec 10 §3: breadcrumbs en servicios). El schema lo pone `useServicePage`. */
-defineProps<{ items: readonly { name: string; to?: string }[] }>()
+defineProps<{ items: readonly { name: string; to?: string }[]; light?: boolean }>()
 </script>
 
 <template>
-  <nav aria-label="Migas de pan" class="crumbs">
+  <nav aria-label="Migas de pan" class="crumbs" :class="{ 'crumbs--light': light }">
     <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
       <li v-for="(item, i) in items" :key="item.name" class="flex items-center gap-2">
         <NuxtLink v-if="item.to && i < items.length - 1" :to="item.to" class="crumb-link">{{
@@ -21,6 +21,13 @@ defineProps<{ items: readonly { name: string; to?: string }[] }>()
 .crumbs {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
+}
+.crumbs--light {
+  color: var(--color-bone);
+  font-weight: 500;
+  text-shadow:
+    0 1px 2px rgb(6 26 44 / 0.45),
+    0 0 18px rgb(6 26 44 / 0.5);
 }
 .crumb-link {
   text-decoration: underline;

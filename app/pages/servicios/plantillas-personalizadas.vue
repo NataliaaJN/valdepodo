@@ -5,9 +5,8 @@
  * Un único lienzo WebGL por página (spec 08 §1.2): el hero usa el póster de Blender de la plantilla completa
  * y la escena 3D vive en la experiencia de capas y fibras.
  */
-import { pending } from '#shared/utils/pending'
+import { pending, resolveValue } from '#shared/utils/pending'
 import { CONCEPTUAL_LABEL, insoleProcess } from '~/data/insole'
-import { bookingPath } from '~/data/services'
 
 const service = useServicePage('plantillas-personalizadas')
 
@@ -15,18 +14,13 @@ const description = pending(
   'No existen dos pies iguales. Tus plantillas tampoco deberían serlo.',
   'Descripción del servicio (concepto de la spec 04 §2): validar con la clínica',
 )
-const cta = { label: 'Pedir cita', to: bookingPath(service.slug) }
 </script>
 
 <template>
   <div>
-    <!-- Hero -->
-    <ServiceHero
-      :service="service"
-      :statement="description"
-      :description="service.description"
-      :cta-label="cta.label"
-    >
+    <ServiceHero :service="service" :description="service.description" />
+
+    <ServiceOverview :service="service" :title="resolveValue(description)">
       <picture>
         <source
           srcset="
@@ -51,7 +45,7 @@ const cta = { label: 'Pedir cita', to: bookingPath(service.slug) }
         />
       </picture>
       <template #caption>{{ CONCEPTUAL_LABEL }}</template>
-    </ServiceHero>
+    </ServiceOverview>
 
     <!-- Plantilla descompuesta + fibras (experiencia nº 3) -->
     <InsoleStory class="pt-(--space-section)" />
@@ -66,7 +60,7 @@ const cta = { label: 'Pedir cita', to: bookingPath(service.slug) }
       <StepList :steps="insoleProcess" horizontal class="mt-12" />
     </section>
 
-    <RelatedServices :slugs="service.related" />
+    <RelatedServices :current="service.slug" />
   </div>
 </template>
 

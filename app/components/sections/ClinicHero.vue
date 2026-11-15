@@ -16,7 +16,7 @@ defineProps<{
   focus?: string
   id?: string
 }>()
-defineSlots<{ default?: () => unknown }>()
+defineSlots<{ default?: () => unknown; crumbs?: () => unknown }>()
 </script>
 
 <template>
@@ -46,9 +46,19 @@ defineSlots<{ default?: () => unknown }>()
         preload="auto"
         aria-hidden="true"
       />
-      <PhotoPlaceholder v-if="!photo.src && !video" label="Fotografía del equipo pendiente" ratio="16 / 9" class="hero__img" />
+      <PhotoPlaceholder
+        v-if="!photo.src && !video"
+        label="Fotografía del equipo pendiente"
+        ratio="16 / 9"
+        class="hero__img"
+      />
     </div>
     <div class="hero__scrim" aria-hidden="true" />
+
+    <!-- Migas de pan (páginas de servicio): arriba, bajo la navbar -->
+    <div v-if="$slots.crumbs" class="container-wide hero__crumbs">
+      <slot name="crumbs" />
+    </div>
 
     <div class="container-wide hero__inner">
       <p v-if="eyebrow" v-reveal class="eyebrow hero__eyebrow">{{ eyebrow }}</p>
@@ -102,6 +112,14 @@ video.hero__img {
     linear-gradient(to top, rgb(6 26 44 / 0.88) 0%, rgb(6 26 44 / 0.5) 42%, rgb(6 26 44 / 0.12) 78%);
 }
 
+.hero__crumbs {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(var(--nav-h) + 1rem);
+  margin-inline: auto;
+  color: var(--color-bone);
+  text-shadow: 0 1px 14px rgb(6 26 44 / 0.55);
+}
 .hero__inner {
   display: grid;
   gap: 1.25rem;
