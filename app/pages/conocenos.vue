@@ -17,8 +17,6 @@ usePageSeo({
   path: '/conocenos',
 })
 
-const { years } = useClinic()
-
 const confirmedPeople = team.filter((m) => !isPending(m.name) && !isPending(m.role))
 if (confirmedPeople.length) {
   useHead({
@@ -44,10 +42,7 @@ if (confirmedPeople.length) {
 <template>
   <div>
     <!-- Hero a pantalla completa: foto del equipo -->
-    <ClinicHero id="about-title" title="Clínica de podología Valdepodo" :photo="clinic.teamPhoto">
-      <p>Paula y Valerie, podólogas y copropietarias, con {{ years }} años cuidando de tus pies.</p>
-      <BaseButton to="/contacto#cita" variant="on-blue" arrow class="mt-6">Pedir cita</BaseButton>
-    </ClinicHero>
+    <ClinicHero id="about-title" title="Clínica de podología Valdepodo" :photo="clinic.teamPhoto" />
 
     <!-- 1. Personas -->
     <section
@@ -78,7 +73,7 @@ if (confirmedPeople.length) {
           <SectionHeading id="clinic-title" :title="{ before: 'Un espacio pensado para cuidar de ti' }" />
           <ContentValue v-reveal="1" :value="clinic.spaceText" as="p" class="space__intro text-body-l" />
         </div>
-        <MediaMosaic :photos="clinic.photos" class="mt-8 lg:mt-10" />
+        <MediaMosaic :photos="clinic.photos" class="mt-10 lg:mt-12" />
       </div>
     </section>
   </div>
