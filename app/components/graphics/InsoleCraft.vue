@@ -54,7 +54,7 @@ const KNOTS: readonly (readonly [number, number])[] = [
   [0.995, 48],
   [1, 0],
 ]
-function halfWidth(u: number) {
+function baseWidth(u: number) {
   for (let i = 1; i < KNOTS.length; i++) {
     const [u1, w1] = KNOTS[i]!
     if (u <= u1) {
@@ -64,6 +64,13 @@ function halfWidth(u: number) {
     }
   }
   return 0
+}
+/** Talón y puntera se cierran en elipse (tangente vertical), no en pico. */
+const END = 0.07
+function halfWidth(u: number) {
+  if (u < END) return baseWidth(END) * Math.sqrt(Math.max(0, 1 - ((END - u) / END) ** 2))
+  if (u > 1 - END) return baseWidth(1 - END) * Math.sqrt(Math.max(0, 1 - ((u - (1 - END)) / END) ** 2))
+  return baseWidth(u)
 }
 /** t = 0 borde lateral · t = 1 borde medial (el que mira al espectador, con el arco). */
 const yAt = (u: number, t: number) => {
@@ -123,10 +130,26 @@ const params = computed<Params>(() => {
 })
 const FLAT: Params = { lift: 0, arch: 0, heel: 0, cup: 0 }
 
-const NU = 44
-const US = Array.from({ length: NU + 1 }, (_, i) => i / NU)
+const NU = 64
+const cosU = (i: number, n: number) => (1 - Math.cos((Math.PI * i) / n)) / 2
+const US = Array.from({ length: NU + 1 }, (_, i) => cosU(i, NU))
 const poly = (pts: [number, number][], close = false) =>
   pts.map(([x, y], i) => `${i ? 'L' : 'M'}${f1(x)} ${f1(y)}`).join('') + (close ? 'Z' : '')
+
+/** Curva suave por los puntos (Catmull-Rom convertido a Bézier). `lead` = 'L' continúa un trazo previo. */
+function smooth(pts: [number, number][], close = false, lead: 'M' | 'L' = 'M') {
+  const n = pts.length
+  const at = (i: number) => (close ? pts[(i + n) % n]! : pts[Math.min(n - 1, Math.max(0, i))]!)
+  let d = `${lead}${f1(pts[0]![0])} ${f1(pts[0]![1])}`
+  for (let i = 0; i < (close ? n : n - 1); i++) {
+    const p0 = at(i - 1)
+    const p1 = at(i)
+    const p2 = at(i + 1)
+    const p3 = at(i + 2)
+    d += `C${f1(p1[0] + (p2[0] - p0[0]) / 6)} ${f1(p1[1] + (p2[1] - p0[1]) / 6)} ${f1(p2[0] - (p3[0] - p1[0]) / 6)} ${f1(p2[1] - (p3[1] - p1[1]) / 6)} ${f1(p2[0])} ${f1(p2[1])}`
+  }
+  return close ? d + 'Z' : d
+}
 
 /** Puntos de la cara superior / inferior proyectados. */
 const top = (u: number, t: number, q: Params): [number, number] => [
@@ -141,16 +164,19 @@ const low = (u: number, t: number, q: Params): [number, number] => [
 /** Contorno: lateral de ida y medial de vuelta. */
 const outlinePts = (f: (u: number, t: number) => [number, number]) => [
   ...US.map((u) => f(u, 0)),
-  ...[...US].reverse().map((u) => f(u, 1)),
+  ...[...US]
+    .reverse()
+    .slice(1, -1)
+    .map((u) => f(u, 1)),
 ]
 const footprintD = computed(() =>
-  poly(
+  smooth(
     outlinePts((u, t) => top(u, t, FLAT)),
     true,
   ),
 )
 const rimD = computed(() =>
-  poly(
+  smooth(
     outlinePts((u, t) => top(u, t, params.value)),
     true,
   ),
@@ -167,10 +193,10 @@ const lowRimPts = computed(() => {
     return [x, lerp(y, yl, w)] as [number, number]
   })
 })
-const lowRimD = computed(() => poly(lowRimPts.value))
+const lowRimD = computed(() => smooth(lowRimPts.value))
 const wallD = computed(() => {
   const q = params.value
-  return poly([...US.map((u) => top(u, 1, q)), ...[...lowRimPts.value].reverse()], true)
+  return `${smooth(US.map((u) => top(u, 1, q)))}${smooth([...lowRimPts.value].reverse(), false, 'L')}Z`
 })
 
 /** Secciones transversales: planas en el análisis (paso 02), se levantan en el diseño. */
@@ -178,7 +204,7 @@ const SECTIONS = Array.from({ length: 15 }, (_, i) => 0.07 + i * 0.062)
 const sections = computed(() =>
   SECTIONS.map((u, i) => {
     const pts = Array.from({ length: 17 }, (_, j) => top(u, j / 16, params.value))
-    return { d: poly(pts), k: i }
+    return { d: smooth(pts), k: i }
   }),
 )
 const sectionDraw = (k: number) => seg(1.1 + k * 0.035, 1.5 + k * 0.035)
@@ -210,8 +236,8 @@ const shaded = computed(() => {
   const tiles: { d: string; fill: string; depth: number }[] = []
   for (let i = 0; i < NX; i++) {
     for (let j = 0; j < NT; j++) {
-      const u0 = i / NX
-      const u1 = (i + 1) / NX
+      const u0 = cosU(i, NX)
+      const u1 = cosU(i + 1, NX)
       const t0 = j / NT
       const t1 = (j + 1) / NT
       const um = (u0 + u1) / 2
@@ -270,7 +296,7 @@ const soleD = computed(() => {
     return [us[0]! * L - 6 * Math.sin(Math.PI * t) ** 0.7, y] as [number, number]
   })
   const pts = [...lat, ...front, ...med, ...heel].map(([X, Y]) => [px(X, Y), py(Y, 0)] as [number, number])
-  return poly(pts, true)
+  return smooth(pts, true)
 })
 const TOES = [
   { x: 466, y: 38, rx: 21, ry: 19 },
