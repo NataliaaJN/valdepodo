@@ -51,21 +51,30 @@ const [gait, arch, toes, shoe] = kids.assessments
     </ServiceSection>
 
     <section class="consult chapter-blue section-clip" aria-labelledby="kids-consult-title" data-nav-theme="bone">
-      <div class="container-wide consult__grid">
+      <div class="container-wide">
         <h2 id="kids-consult-title" v-reveal class="consult__title">{{ kids.consultTitle }}</h2>
-        <ul class="consult__list" role="list">
-          <li v-for="(c, i) in kids.consult" :key="c.title" v-reveal="i % 3" class="consult__item">
-            <span class="consult__mark" aria-hidden="true">
-              <svg viewBox="0 0 112 256" class="consult__foot" :class="{ 'consult__foot--left': i % 2 }">
+        <ol class="path" role="list">
+          <li
+            v-for="(c, i) in kids.consult"
+            :key="c.title"
+            v-reveal
+            class="step"
+            :class="i % 2 ? 'step--right' : 'step--left'"
+            :style="{ '--i': i }"
+          >
+            <span class="step__mark" aria-hidden="true">
+              <svg viewBox="0 0 112 256" class="step__foot">
                 <g style="--fp-fill: var(--color-primary); --fp-stroke: var(--color-ink)">
-                  <Footprint :side="i % 2 ? 'left' : 'right'" variant="both" :stroke-width="9" />
+                  <Footprint :side="i % 2 ? 'right' : 'left'" variant="both" :stroke-width="9" />
                 </g>
               </svg>
             </span>
-            <h3 class="consult__name">{{ c.title }}</h3>
-            <p class="consult__text">{{ c.text }}</p>
+            <div class="step__card">
+              <h3 class="step__name">{{ c.title }}</h3>
+              <p class="step__text">{{ c.text }}</p>
+            </div>
           </li>
-        </ul>
+        </ol>
       </div>
     </section>
 
@@ -181,86 +190,133 @@ const [gait, arch, toes, shoe] = kids.assessments
   }
 }
 
-/* ---------- Banda de motivos de consulta ----------
-   Fondo cyan de marca; el contenido va en filas blancas (tinta sobre blanco: contraste alto), con el título
-   en una columna a la izquierda. Las huellas alternan pie derecho e izquierdo, como pasos. */
+/* ---------- Banda de motivos de consulta: camino de pasos ----------
+   Sobre el cyan de marca, una línea de puntos central con una huella por motivo: pie izquierdo → tarjeta a la
+   izquierda, pie derecho → tarjeta a la derecha, cada una media fila más abajo que la anterior (como al caminar).
+   Los bordes exteriores de las dos columnas coinciden con los del contenedor. En móvil, el camino pasa a la izquierda. */
 .consult {
   padding-block: clamp(3.5rem, 7vw, 6rem);
-}
-.consult__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(1.75rem, 4vw, 3rem);
+  --mark: 3rem;
 }
 .consult__title {
   max-width: 14ch;
   font-size: var(--text-display-m);
   line-height: var(--text-display-m--line-height);
 }
-.consult__list {
+.path {
+  position: relative;
   display: grid;
-  gap: 0.75rem;
+  gap: 0.875rem;
+  margin-top: clamp(2rem, 5vw, 3.5rem);
+  padding-left: calc(var(--mark) + 1rem);
 }
-.consult__item {
+.path::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--mark) / 2);
+  border-left: 3px dotted rgb(6 26 44 / 0.4);
+}
+.step {
+  position: relative;
+}
+.step__mark {
+  position: absolute;
+  top: 50%;
+  left: calc(-1 * (var(--mark) + 1rem));
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: 1rem;
-  align-items: center;
-  padding: 1rem 1.25rem 1rem 1rem;
+  place-items: center;
+  width: var(--mark);
+  height: var(--mark);
+  translate: 0 -50%;
+  border-radius: 50%;
+  background: var(--color-white);
+  box-shadow: 0 0 0 6px var(--color-primary);
+}
+.step__foot {
+  width: 0.95rem;
+}
+.step--left .step__foot {
+  rotate: -10deg;
+}
+.step--right .step__foot {
+  rotate: 10deg;
+}
+.step__card {
+  padding: 1.125rem 1.25rem 1.25rem;
   border-radius: var(--radius-l);
   background: var(--color-white);
   transition: translate var(--dur-base) var(--ease-out-soft);
 }
-.consult__mark {
-  grid-row: span 2;
-  display: grid;
-  place-items: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  background: var(--color-cyan-light);
-}
-.consult__foot {
-  width: 0.95rem;
-  rotate: 12deg;
-}
-.consult__foot--left {
-  rotate: -12deg;
-}
-.consult__name {
+.step__name {
   font-size: var(--text-body-l);
   font-weight: 600;
   line-height: 1.25;
   color: var(--color-ink);
 }
-.consult__text {
-  margin-top: 0.25rem;
+.step__text {
+  margin-top: 0.375rem;
   color: var(--color-text-secondary);
 }
+
 @media (min-width: 1024px) {
-  .consult__grid {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: 1.5rem;
-    align-items: start;
+  .consult {
+    --mark: 3.75rem;
+    --path-gap: clamp(5rem, 9vw, 8rem);
   }
-  .consult__title {
-    grid-column: 1 / span 4;
+  .path {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--path-gap);
+    row-gap: 0.875rem;
+    grid-auto-rows: minmax(3.75rem, auto);
+    padding-left: 0;
   }
-  .consult__list {
-    grid-column: 5 / span 8;
+  .path::before {
+    left: 50%;
+    translate: -1.5px 0;
   }
-  .consult__item {
-    padding: 1.125rem 1.75rem 1.125rem 1.125rem;
-    column-gap: 1.5rem;
+  .step {
+    grid-row: calc(var(--i) + 1) / span 2;
   }
-  .consult__mark {
-    width: 3.5rem;
-    height: 3.5rem;
+  .step--left {
+    grid-column: 1;
+  }
+  .step--right {
+    grid-column: 2;
+  }
+  .step__card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.25rem 1.75rem;
+  }
+  /* Huella sobre la línea central, con un hilo de puntos hasta la tarjeta */
+  .step--left .step__mark {
+    left: auto;
+    right: calc(-1 * (var(--path-gap) / 2 + var(--mark) / 2));
+  }
+  .step--right .step__mark {
+    left: calc(-1 * (var(--path-gap) / 2 + var(--mark) / 2));
+  }
+  .step__card::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(var(--path-gap) / 2 - var(--mark) / 2);
+    border-top: 3px dotted rgb(6 26 44 / 0.4);
+  }
+  .step--left .step__card::after {
+    left: 100%;
+  }
+  .step--right .step__card::after {
+    right: 100%;
   }
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .consult__item:hover {
+  .step:hover .step__card {
     translate: 0 -2px;
   }
   .tile:hover {
@@ -269,7 +325,7 @@ const [gait, arch, toes, shoe] = kids.assessments
 }
 @media (prefers-reduced-motion: reduce) {
   .tile,
-  .consult__item {
+  .step__card {
     transition: none;
   }
 }
