@@ -251,8 +251,8 @@ const marks = computed(() => {
  * Huella (paso 01): planta del pie (la plantilla menos un margen, con el antepié cerrado en curva), dedos como
  * almohadillas y mapa de presión desigual. Coordenadas del plano (X a lo largo, Y a lo ancho; + = lado medial).
  */
-const SOLE_END = 0.85
-const SOLE_MARGIN = 7
+const SOLE_END = 0.82
+const SOLE_MARGIN = 9
 const soleD = computed(() => {
   const us = US.filter((u) => u >= 0.02 && u <= SOLE_END)
   const lat = us.map((u) => [u * L, yAt(u, 0) + SOLE_MARGIN] as [number, number])
@@ -267,17 +267,17 @@ const soleD = computed(() => {
   const heel = Array.from({ length: 9 }, (_, i) => {
     const t = (i + 1) / 10
     const y = lerp(med[med.length - 1]![1], lat[0]![1], t)
-    return [us[0]! * L - 20 * Math.sin(Math.PI * t) ** 0.7, y] as [number, number]
+    return [us[0]! * L - 6 * Math.sin(Math.PI * t) ** 0.7, y] as [number, number]
   })
   const pts = [...lat, ...front, ...med, ...heel].map(([X, Y]) => [px(X, Y), py(Y, 0)] as [number, number])
   return poly(pts, true)
 })
 const TOES = [
-  { x: 490, y: 40, rx: 27, ry: 24 },
-  { x: 496, y: 2, rx: 17, ry: 15 },
-  { x: 489, y: -26, rx: 15, ry: 13.5 },
-  { x: 474, y: -50, rx: 13, ry: 12 },
-  { x: 454, y: -68, rx: 11.5, ry: 11 },
+  { x: 466, y: 38, rx: 21, ry: 19 },
+  { x: 474, y: 4, rx: 13.5, ry: 12.5 },
+  { x: 468, y: -20, rx: 12, ry: 11 },
+  { x: 455, y: -40, rx: 10.5, ry: 10 },
+  { x: 440, y: -56, rx: 9.5, ry: 9 },
 ]
 const toeAt = (t: (typeof TOES)[number]) => ({
   cx: px(t.x, t.y),
@@ -286,13 +286,13 @@ const toeAt = (t: (typeof TOES)[number]) => ({
   ry: t.ry * cam.value.sp,
 })
 const BLOBS = [
-  { x: 52, y: 0, rx: 66, ry: 58, grad: 'hot' },
-  { x: 402, y: 48, rx: 52, ry: 52, grad: 'warm' },
-  { x: 392, y: -48, rx: 40, ry: 42, grad: 'cool' },
+  { x: 56, y: 0, rx: 64, ry: 56, grad: 'hot' },
+  { x: 380, y: 48, rx: 50, ry: 50, grad: 'warm' },
+  { x: 372, y: -48, rx: 38, ry: 40, grad: 'cool' },
   { x: 205, y: -34, rx: 54, ry: 18, grad: 'cool' },
   { x: 300, y: 24, rx: 30, ry: 12, grad: 'low' },
-  { x: 490, y: 40, rx: 34, ry: 30, grad: 'warm' },
-  { x: 496, y: 2, rx: 20, ry: 18, grad: 'cool' },
+  { x: 466, y: 38, rx: 28, ry: 25, grad: 'warm' },
+  { x: 474, y: 4, rx: 17, ry: 15, grad: 'cool' },
 ] as const
 const blobAt = (b: (typeof BLOBS)[number]) => ({
   cx: px(b.x, b.y),
