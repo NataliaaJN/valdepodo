@@ -30,20 +30,21 @@ const footTransform = (f: { dx: number; rot: number }) =>
   `translate(${AXIS + f.dx} ${props.cy}) rotate(${f.rot}) scale(${WALK_SCALE}) translate(${-FOOT_W / 2} ${-FOOT_H / 2})`
 
 const stateFor = (i: number) => (active.value ? walkHeat(props.phase, props.sub, i) : pressureStates.standing)
+/** Zona de apoyo del arco interno de la plantilla (huella derecha). */
+const ARCH_PATH = 'M40 132C52 126 70 140 72 162C73 178 66 192 56 194C46 182 40 152 40 132Z'
+const insoleOn = computed(() => active.value && props.sub >= 1)
 const labelY = computed(() => props.cy + (FOOT_H * WALK_SCALE) / 2 + 26)
 </script>
 
 <template>
   <g class="ws" :class="`ws--${role}`">
     <g v-for="(f, i) in feet" :key="f.side" :transform="footTransform(f)">
-      <path
-        v-if="phase === 5"
-        :d="INSOLE_PATH"
-        pathLength="1"
-        class="ws-insole"
-        :class="{ 'is-on': active }"
-        :transform="f.side === 'left' ? `translate(${FOOT_W} 0) scale(-1 1)` : undefined"
-      />
+      <!-- Propuesta de tratamiento: el pie derecho se apoya en una plantilla (arco y apoyo metatarsal) -->
+      <g v-if="phase === 5 && i === 1" class="ws-insole-set" :class="{ 'is-on': insoleOn }">
+        <path :d="INSOLE_PATH" pathLength="1" class="ws-insole" />
+        <path :d="ARCH_PATH" class="ws-support" />
+        <ellipse cx="57" cy="106" rx="15" ry="6" class="ws-support" />
+      </g>
       <PressureMap
         :state="stateFor(i)"
         :side="f.side"
@@ -56,9 +57,9 @@ const labelY = computed(() => props.cy + (FOOT_H * WALK_SCALE) / 2 + 26)
       <SupportPoints v-else-if="phase === 1" :side="f.side" :active="active" />
     </g>
 
-    <g v-if="phase === 4" class="ws-labels" :class="{ 'is-on': active }">
-      <text :x="AXIS - 66" :y="labelY" text-anchor="middle">Izq.</text>
-      <text :x="AXIS + 66" :y="labelY" text-anchor="middle">Dcha.</text>
+    <g v-if="phase === 4 || phase === 5" class="ws-labels" :class="{ 'is-on': active }">
+      <text :x="AXIS - 66" :y="labelY" text-anchor="middle">{{ phase === 4 ? 'Izq.' : 'Sin plantilla' }}</text>
+      <text :x="AXIS + 66" :y="labelY" text-anchor="middle">{{ phase === 4 ? 'Dcha.' : 'Con plantilla' }}</text>
     </g>
   </g>
 </template>
@@ -86,9 +87,20 @@ const labelY = computed(() => props.cy + (FOOT_H * WALK_SCALE) / 2 + 26)
     stroke-dashoffset 1100ms var(--ease-out-soft),
     fill 700ms ease 400ms;
 }
-.ws-insole.is-on {
+.ws-insole-set.is-on .ws-insole {
   stroke-dashoffset: 0;
   fill: rgb(200 241 250 / 0.1);
+}
+.ws-support {
+  fill: rgb(20 184 212 / 0.28);
+  stroke: var(--color-cyan);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+  opacity: 0;
+  transition: opacity 600ms ease 500ms;
+}
+.ws-insole-set.is-on .ws-support {
+  opacity: 1;
 }
 
 .ws-labels text {
@@ -107,6 +119,7 @@ const labelY = computed(() => props.cy + (FOOT_H * WALK_SCALE) / 2 + 26)
 
 @media (prefers-reduced-motion: reduce) {
   .ws-insole,
+  .ws-support,
   .ws-labels text {
     transition: none;
   }

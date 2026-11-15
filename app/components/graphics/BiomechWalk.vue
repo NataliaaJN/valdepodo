@@ -13,7 +13,7 @@
  * - Accesibilidad: las fases son un `<ol>` siempre presente; el lienzo es `aria-hidden`.
  */
 import { gsap } from 'gsap'
-import { biomechPhases, ILLUSTRATIVE_LABEL } from '~/data/biomech'
+import { biomechPhases } from '~/data/biomech'
 import { subStep, walkY } from '~/data/biomech-walk'
 
 const phases = biomechPhases
@@ -70,7 +70,7 @@ useGsapContext(root, (c) => {
   root.value?.classList.add('is-live') // síncrono: ScrollTrigger mide con la maqueta ya en modo fijado
   live.value = true
   // Móvil: el camino se ve en horizontal (la zona libre es ancha y baja), centrado en la estación activa
-  viewBox.value = c.mobile ? '0 175 400 290' : '0 0 400 640'
+  viewBox.value = c.mobile ? '0 180 400 320' : '0 0 400 640'
 
   const proxy = { p: -0.5 }
   update(proxy.p)
@@ -166,7 +166,6 @@ useGsapContext(root, (c) => {
               </g>
             </svg>
           </div>
-          <figcaption class="walk__caption">{{ ILLUSTRATIVE_LABEL }}</figcaption>
         </figure>
       </div>
     </div>
@@ -314,14 +313,6 @@ useGsapContext(root, (c) => {
   stroke-width: 1.5;
   stroke-dasharray: 2 12;
   stroke-linecap: round;
-}
-.walk__caption {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  text-align: center;
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
 }
 
 .walk__rail {

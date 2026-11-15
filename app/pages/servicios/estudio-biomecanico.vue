@@ -4,14 +4,10 @@
  * servicio y, debajo, «El paseo» (BiomechWalk): capítulo fijado en el que el scroll recorre las seis fases a
  * través de huellas con su mapa de presión. Servicios relacionados al cierre. Textos clínicos en `pending`.
  */
-import { pending } from '#shared/utils/pending'
-
 const service = useServicePage('estudio-biomecanico')
 const description = service.description
-const intro = pending(
-  '[Qué es el estudio biomecánico y qué permite analizar: texto pendiente de validar]',
-  'Introducción del servicio (spec 04 §1.2): la redacta o valida la clínica',
-)
+const intro =
+  'El estudio biomecánico analiza cómo son tus pies, cómo reparten el apoyo cuando estás de pie y cómo se mueven las articulaciones al caminar o correr. Con esa información detectamos alteraciones de la pisada y valoramos si te conviene algún tratamiento, como unas plantillas hechas a tu medida. Te lo explicamos con calma y sin tecnicismos.'
 </script>
 
 <template>

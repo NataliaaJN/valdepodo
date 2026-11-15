@@ -59,6 +59,9 @@ export function walkHeat(phase: number, sub: number, footIndex: number): Pressur
       return pressureStates[runCycle[s]!]
     case 4:
       return footIndex === 0 ? pressureStates.standing : pressureStates.standingAlt
+    case 5:
+      // Sin plantilla: reparto desigual. Con plantilla: la carga se reparte al final del paso.
+      return footIndex === 0 || s < 2 ? pressureStates.standingAlt : pressureStates.standing
     default:
       return pressureStates.standing
   }
