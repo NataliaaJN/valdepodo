@@ -4,7 +4,7 @@
  *  - Con recurso visual (mapa de presión, plantilla, huellas…): título a la izquierda y, a la derecha, la
  *    descripción y el recurso debajo, con su rótulo (disposición estándar de `ServiceSection`).
  *  - Solo texto (título + descripción): composición de declaración propia, para que la sección no parezca una
- *    sección estándar a medio llenar: la frase en grande a todo el ancho, un filete de marca y la descripción
+ *    sección estándar a medio llenar: la frase a todo el ancho (un escalón por debajo del título de la cabecera), un filete de marca y la descripción
  *    en una columna desplazada debajo.
  */
 import type { Maybe } from '#shared/utils/pending'
@@ -72,9 +72,9 @@ defineSlots<{ default?: () => unknown; caption?: () => unknown }>()
   padding-block: clamp(3.5rem, 7vw, 6.5rem);
 }
 .statement__title {
-  max-width: 15ch;
-  font-size: var(--text-display-l);
-  line-height: var(--text-display-l--line-height);
+  max-width: 22ch;
+  font-size: var(--text-display-m);
+  line-height: var(--text-display-m--line-height);
   color: var(--color-ink);
 }
 .statement__row {
