@@ -103,8 +103,7 @@ useGsapContext(root, (c) => {
       <div class="container-wide walk__grid">
         <div class="walk__copy">
           <header class="walk__head">
-            <p class="eyebrow walk__eyebrow">Cómo trabajamos</p>
-            <h2 id="walk-title" class="walk__title">Cada paso cuenta.</h2>
+            <h2 id="walk-title" class="walk__title">Qué incluye el estudio</h2>
           </header>
 
           <ol class="walk__list" role="list">
@@ -187,11 +186,7 @@ useGsapContext(root, (c) => {
   grid-template-columns: minmax(0, 1fr);
   gap: 2.5rem;
 }
-.walk__eyebrow {
-  color: var(--color-cyan);
-}
 .walk__title {
-  margin-top: 0.75rem;
   font-size: var(--text-display-m);
   line-height: var(--text-display-m--line-height);
 }
@@ -263,10 +258,6 @@ useGsapContext(root, (c) => {
 }
 .walk.is-live .walk__rail {
   order: 4;
-}
-.walk.is-live .walk__title {
-  margin-top: 0.25rem;
-  font-size: clamp(1.75rem, 1.2rem + 2vw, 3rem);
 }
 .walk.is-live .walk__list {
   display: grid;
