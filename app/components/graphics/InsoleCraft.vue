@@ -75,7 +75,7 @@ const yAt = (u: number, t: number) => {
 const OX = 62
 const OY = 268
 const K = 0.45
-const SP = 0.5
+const SP = 0.6
 const CP = 0.92
 const px = (X: number, Y: number) => OX + X + K * Y
 const py = (Y: number, Z: number) => OY + SP * Y - CP * Z
@@ -90,14 +90,14 @@ interface Params {
 function zTop(u: number, t: number, q: Params) {
   const med = t ** 1.6
   const edge = (2 * t - 1) ** 2
-  const arch = q.arch * 66 * g(u, 0.4, 0.15) * med
-  const cup = 26 * g(u, 0.1, 0.13) * edge
-  const fore = 7 * g(u, 0.78, 0.18)
-  const raise = q.heel * 24 * (1 - sstep(0.04, 0.5, u))
-  return q.lift * (11 + arch + cup + fore + raise)
+  const arch = q.arch * 86 * g(u, 0.4, 0.15) * med
+  const cup = 34 * g(u, 0.1, 0.13) * edge
+  const fore = 9 * g(u, 0.78, 0.18)
+  const raise = q.heel * 30 * (1 - sstep(0.04, 0.5, u))
+  return q.lift * (13 + arch + cup + fore + raise)
 }
 function zLow(u: number, t: number, q: Params) {
-  return q.lift * q.arch * 40 * g(u, 0.4, 0.14) * t ** 2
+  return q.lift * q.arch * 52 * g(u, 0.4, 0.14) * t ** 2
 }
 
 const params = computed<Params>(() => {
@@ -365,7 +365,7 @@ useGsapContext(root, (c) => {
         </div>
 
         <figure class="craft__visual" aria-hidden="true">
-          <svg viewBox="30 90 600 300" class="craft__svg" focusable="false">
+          <svg viewBox="30 70 600 340" class="craft__svg" focusable="false">
             <defs>
               <linearGradient id="craft-wall" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0" stop-color="#14b8d4" stop-opacity="0.55" />
@@ -636,7 +636,7 @@ useGsapContext(root, (c) => {
 .k-note {
   fill: var(--color-bone);
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 17px;
   font-style: italic;
   letter-spacing: 0.02em;
   opacity: 0.92;
