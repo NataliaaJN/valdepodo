@@ -29,10 +29,10 @@ defineProps<{ treatment: Treatment }>()
   grid-template-columns: minmax(0, 1fr) 7.5rem;
   align-items: center;
   gap: 1.25rem;
-  border-bottom: 1px solid var(--color-border);
   padding: 1.5rem 0;
 }
-.treatment:first-child {
+/* Solo filetes entre filas: ni arriba de la primera ni debajo de la última */
+.treatment + .treatment {
   border-top: 1px solid var(--color-border);
 }
 .treatment__name {
