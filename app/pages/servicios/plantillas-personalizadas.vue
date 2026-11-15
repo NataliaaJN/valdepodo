@@ -6,7 +6,7 @@
  * y la escena 3D vive en la experiencia de capas y fibras.
  */
 import { pending, resolveValue } from '#shared/utils/pending'
-import { CONCEPTUAL_LABEL, insoleProcess } from '~/data/insole'
+import { CONCEPTUAL_LABEL } from '~/data/insole'
 
 const service = useServicePage('plantillas-personalizadas')
 
@@ -47,18 +47,8 @@ const description = pending(
       <template #caption>{{ CONCEPTUAL_LABEL }}</template>
     </ServiceOverview>
 
-    <!-- Plantilla descompuesta + fibras (experiencia nº 3) -->
-    <InsoleStory class="pt-(--space-section)" />
-
-    <!-- Proceso de personalización (spec 04 §2.4) -->
-    <section class="container-site py-(--space-section)" aria-labelledby="ins-process">
-      <SectionHeading
-        id="ins-process"
-        eyebrow="Proceso"
-        :title="{ before: 'Cómo personalizamos ', accent: 'tus plantillas', after: '' }"
-      />
-      <StepList :steps="insoleProcess" horizontal class="mt-12" />
-    </section>
+    <!-- Proceso de personalización (spec 04 §2.4): capítulo fijado, el scroll dibuja la plantilla -->
+    <InsoleCraft />
 
     <RelatedServices :current="service.slug" />
   </div>
