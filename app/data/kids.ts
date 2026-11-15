@@ -39,8 +39,6 @@ export const kids = {
       illustration: 'shoe',
     },
   ] as readonly KidsAssessment[],
-  /** Nota bajo las valoraciones. */
-  assessmentNote: 'Si hace falta, completamos la valoración con un estudio biomecánico de la pisada.',
   /** Motivos habituales de consulta (lista editorial, sin lenguaje alarmista). */
   consultTitle: 'Cuándo conviene consultar',
   consult: [

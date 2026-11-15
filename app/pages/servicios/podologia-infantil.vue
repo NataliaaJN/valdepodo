@@ -47,27 +47,18 @@ const [gait, arch, toes, shoe] = kids.assessments
           <h3 class="tile__name">{{ shoe!.title }}</h3>
           <p class="tile__text">{{ shoe!.text }}</p>
         </article>
-
-        <p v-reveal="4" class="tile tile--note">
-          <svg class="tile__foot" viewBox="0 0 112 256" aria-hidden="true">
-            <g style="--fp-fill: var(--color-primary); --fp-stroke: var(--color-primary)">
-              <Footprint side="right" variant="both" :stroke-width="5" />
-            </g>
-          </svg>
-          {{ kids.assessmentNote }}
-        </p>
       </div>
     </ServiceSection>
 
     <section class="consult chapter-blue section-clip" aria-labelledby="kids-consult-title" data-nav-theme="bone">
-      <div class="container-wide">
+      <div class="container-wide consult__grid">
         <h2 id="kids-consult-title" v-reveal class="consult__title">{{ kids.consultTitle }}</h2>
         <ul class="consult__list" role="list">
           <li v-for="(c, i) in kids.consult" :key="c.title" v-reveal="i % 3" class="consult__item">
             <span class="consult__mark" aria-hidden="true">
-              <svg viewBox="0 0 112 256" class="consult__foot">
-                <g style="--fp-fill: var(--color-ink); --fp-stroke: var(--color-ink)">
-                  <Footprint side="right" variant="both" :stroke-width="6" />
+              <svg viewBox="0 0 112 256" class="consult__foot" :class="{ 'consult__foot--left': i % 2 }">
+                <g style="--fp-fill: var(--color-primary); --fp-stroke: var(--color-ink)">
+                  <Footprint :side="i % 2 ? 'left' : 'right'" variant="both" :stroke-width="9" />
                 </g>
               </svg>
             </span>
@@ -141,31 +132,13 @@ const [gait, arch, toes, shoe] = kids.assessments
   min-height: 0;
   aspect-ratio: 200 / 110;
 }
-/* Pieza de cierre: tinta, a todo el ancho */
-.tile--note {
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  border: 0;
-  background: var(--color-ink);
-  color: var(--color-bone);
-  font-size: var(--text-body-l);
-  line-height: var(--text-body-l--line-height);
-}
-.tile__foot {
-  flex: none;
-  width: 1.25rem;
-  rotate: 12deg;
-}
 
 @media (min-width: 640px) {
   .bento {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .tile--gait,
-  .tile--arch,
-  .tile--note {
+  .tile--arch {
     grid-column: 1 / -1;
   }
   .tile--arch {
@@ -202,77 +175,101 @@ const [gait, arch, toes, shoe] = kids.assessments
     grid-column: 4;
     grid-row: 2;
   }
-  .tile--note {
-    grid-column: 1 / -1;
-    grid-row: 3;
-  }
   .tile--toes .tile__name,
   .tile--shoe .tile__name {
     font-size: 1.375rem;
   }
 }
 
-/* ---------- Banda de motivos de consulta ---------- */
+/* ---------- Banda de motivos de consulta ----------
+   Fondo cyan de marca; el contenido va en filas blancas (tinta sobre blanco: contraste alto), con el título
+   en una columna a la izquierda. Las huellas alternan pie derecho e izquierdo, como pasos. */
 .consult {
   padding-block: clamp(3.5rem, 7vw, 6rem);
 }
+.consult__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.75rem, 4vw, 3rem);
+}
 .consult__title {
-  max-width: 18ch;
+  max-width: 14ch;
   font-size: var(--text-display-m);
   line-height: var(--text-display-m--line-height);
 }
 .consult__list {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0 2rem;
-  margin-top: clamp(2rem, 5vw, 3.5rem);
+  gap: 0.75rem;
 }
 .consult__item {
-  padding: 1.5rem 0 1.75rem;
-  border-top: 1px solid var(--color-border);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 1rem;
+  align-items: center;
+  padding: 1rem 1.25rem 1rem 1rem;
+  border-radius: var(--radius-l);
+  background: var(--color-white);
+  transition: translate var(--dur-base) var(--ease-out-soft);
 }
 .consult__mark {
+  grid-row: span 2;
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
-  background: var(--color-white);
+  background: var(--color-cyan-light);
 }
 .consult__foot {
-  width: 0.9rem;
+  width: 0.95rem;
   rotate: 12deg;
 }
+.consult__foot--left {
+  rotate: -12deg;
+}
 .consult__name {
-  margin-top: 1.25rem;
-  font-size: var(--text-heading-s);
-  line-height: 1.12;
+  font-size: var(--text-body-l);
+  font-weight: 600;
+  line-height: 1.25;
   color: var(--color-ink);
 }
 .consult__text {
-  margin-top: 0.625rem;
-  max-width: 36ch;
+  margin-top: 0.25rem;
   color: var(--color-text-secondary);
 }
-@media (min-width: 640px) {
-  .consult__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
 @media (min-width: 1024px) {
+  .consult__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 1.5rem;
+    align-items: start;
+  }
+  .consult__title {
+    grid-column: 1 / span 4;
+  }
   .consult__list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0 2.5rem;
+    grid-column: 5 / span 8;
+  }
+  .consult__item {
+    padding: 1.125rem 1.75rem 1.125rem 1.125rem;
+    column-gap: 1.5rem;
+  }
+  .consult__mark {
+    width: 3.5rem;
+    height: 3.5rem;
   }
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .tile:not(.tile--note):hover {
+  .consult__item:hover {
+    translate: 0 -2px;
+  }
+  .tile:hover {
     translate: 0 -2px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tile {
+  .tile,
+  .consult__item {
     transition: none;
   }
 }
