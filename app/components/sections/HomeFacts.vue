@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Pausa bajo el hero: un panel de tinta sobre cian muy claro, con curvas de nivel como las de un mapa de
- * presiones plantares, la cifra de años como protagonista y dos valores más (trato, tecnología).
+ * presiones plantares, la cifra de años en cian como protagonista y dos valores más (trato, tecnología).
  * Textos de apoyo provisionales hasta que la clínica los valide.
  */
 import { site } from '~/data/site'
@@ -44,7 +44,7 @@ const clinic = useClinic()
 .facts {
   z-index: 2;
   padding-block: clamp(1.5rem, 4vw, 3rem);
-  background: var(--color-cyan-mist);
+  background: var(--color-surface);
   color: var(--color-white);
 }
 .panel {
@@ -53,10 +53,7 @@ const clinic = useClinic()
   grid-template-columns: minmax(0, 1fr);
   overflow: hidden;
   border-radius: clamp(1.25rem, 2.5vw, 2rem);
-  background:
-    radial-gradient(55% 140% at 6% 0%, rgb(20 184 212 / 0.32), transparent 62%),
-    linear-gradient(135deg, #0a2a44 0%, var(--color-ink) 70%);
-  box-shadow: 0 30px 60px -30px rgb(6 26 44 / 0.55);
+  background: var(--color-ink);
 }
 /* Curvas de nivel: anillos finos que se desvanecen hacia el centro, como un mapa de presiones */
 .panel::before {
@@ -67,7 +64,7 @@ const clinic = useClinic()
   background: repeating-radial-gradient(
     circle at 96% 120%,
     transparent 0 26px,
-    rgb(200 241 250 / 0.13) 26px 27px
+    rgb(20 184 212 / 0.14) 26px 27px
   );
   -webkit-mask-image: radial-gradient(60% 130% at 96% 120%, #000, transparent 72%);
   mask-image: radial-gradient(60% 130% at 96% 120%, #000, transparent 72%);
@@ -80,7 +77,7 @@ const clinic = useClinic()
   padding: 1.5rem 1.5rem;
 }
 .item + .item {
-  border-top: 1px solid rgb(200 241 250 / 0.14);
+  border-top: 1px solid rgb(255 255 255 / 0.1);
 }
 .years {
   font-family: var(--font-display);
@@ -88,10 +85,7 @@ const clinic = useClinic()
   font-size: clamp(4.5rem, 12vw, 7rem);
   line-height: 0.8;
   letter-spacing: -0.06em;
-  background: linear-gradient(170deg, #c8f1fa 10%, var(--color-cyan) 70%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--color-cyan);
 }
 .badge {
   display: grid;
@@ -100,13 +94,12 @@ const clinic = useClinic()
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  background: linear-gradient(160deg, rgb(20 184 212 / 0.28), rgb(20 184 212 / 0.06));
-  box-shadow: inset 0 0 0 1px rgb(200 241 250 / 0.3);
+  box-shadow: inset 0 0 0 1px rgb(20 184 212 / 0.45);
 }
 .badge__icon {
   width: 1.5rem;
   height: 1.5rem;
-  color: var(--color-ice-blue);
+  color: var(--color-cyan);
 }
 .item__text {
   display: flex;
@@ -123,7 +116,7 @@ const clinic = useClinic()
 .item__support {
   font-size: 0.9375rem;
   line-height: 1.35;
-  color: rgb(200 241 250 / 0.72);
+  color: rgb(255 255 255 / 0.66);
 }
 
 @media (min-width: 900px) {
@@ -135,7 +128,7 @@ const clinic = useClinic()
   }
   .item + .item {
     border-top: 0;
-    border-left: 1px solid rgb(200 241 250 / 0.14);
+    border-left: 1px solid rgb(255 255 255 / 0.1);
   }
   .item__title {
     font-size: 1.375rem;
