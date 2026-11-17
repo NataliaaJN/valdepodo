@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
- * Navbar global «camaleón». Arriba del todo es transparente e integrada en la página (logo completo, enlaces
- * y «Pedir cita» sobre el fondo). Al hacer scroll se encoge en una píldora flotante translúcida (solo el
- * símbolo del logo). Cambia de tema (hueso / cyan / tinta) según el capítulo que tiene debajo
+ * Navbar global «camaleón». Arriba del todo es transparente e integrada en la página. Al hacer scroll se
+ * vuelve una barra a todo el ancho, más baja, con filete inferior (sin sombra). Logo a la izquierda; enlaces y
+ * «Pedir cita» (sólido tinta, cian sobre oscuro) agrupados a la derecha. Cambia de tema (hueso / cyan / tinta) según el capítulo que tiene debajo
  * (`data-nav-theme` en cada sección).
  * - «Servicios» es un enlace directo a /servicios y, con su flecha, despliega un panel con los cinco servicios
  *   en bento grid (solo ≥ 1024 px; se abre al pasar el puntero o con la flecha; Esc lo cierra).
@@ -361,16 +361,15 @@ onBeforeUnmount(() => {
   --nav-fg: var(--color-ink);
   --glass-bg: rgb(6 26 44 / 0.06);
   --glass-border: rgb(6 26 44 / 0.14);
-  --pill-bg: rgb(241 239 233 / 0.74);
-  --pill-border: rgb(6 26 44 / 0.1);
+  --pill-bg: rgb(241 239 233 / 0.88);
+  --pill-border: rgb(6 26 44 / 0.14);
   --panel-bg: rgb(241 239 233 / 0.94);
-  --underline: var(--color-coral);
   color: var(--nav-fg);
   pointer-events: none;
   transition: color var(--dur-base) var(--ease-out-soft);
 }
 .theme-blue {
-  --pill-bg: rgb(234 248 252 / 0.78);
+  --pill-bg: rgb(234 248 252 / 0.9);
   --pill-border: rgb(6 26 44 / 0.12);
   --panel-bg: rgb(234 248 252 / 0.95);
 }
@@ -378,128 +377,108 @@ onBeforeUnmount(() => {
   --nav-fg: var(--color-bone);
   --glass-bg: rgb(255 255 255 / 0.12);
   --glass-border: rgb(255 255 255 / 0.28);
-  --pill-bg: rgb(6 26 44 / 0.7);
-  --pill-border: rgb(255 255 255 / 0.16);
+  --pill-bg: rgb(6 26 44 / 0.88);
+  --pill-border: rgb(241 239 233 / 0.18);
   --panel-bg: rgb(6 26 44 / 0.94);
 }
 
-/* ----- Cabecera camaleón: transparente arriba, píldora flotante con scroll ----- */
+/* ----- Cabecera: transparente arriba; con scroll, barra a todo el ancho con filete (sin sombra) ----- */
+.site-navbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-bottom: 1px solid var(--pill-border);
+  background: var(--pill-bg);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out-soft);
+}
+.is-scrolled::before {
+  opacity: 1;
+}
+.is-open::before {
+  opacity: 0;
+}
 .nav-shell {
   position: relative;
-  isolation: isolate;
   display: flex;
   align-items: center;
   width: calc(100% - 2 * var(--gutter));
   max-width: var(--container-wide);
   height: var(--nav-h);
   margin-inline: auto;
-  padding-inline: 0;
   pointer-events: auto;
-  transition:
-    max-width 650ms var(--ease-in-out-soft),
-    height 650ms var(--ease-in-out-soft),
-    margin-top 650ms var(--ease-in-out-soft),
-    padding-inline 650ms var(--ease-in-out-soft);
-}
-/* La píldora (fondo, borde y desenfoque) vive en una capa propia: así el hero no se desenfoca arriba del todo */
-.nav-shell::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: var(--radius-m);
-  border: 1px solid var(--pill-border);
-  background: var(--pill-bg);
-  backdrop-filter: blur(18px) saturate(1.5);
-  -webkit-backdrop-filter: blur(18px) saturate(1.5);
-  box-shadow: 0 10px 30px -12px rgb(6 26 44 / 0.22);
-  opacity: 0;
-  transition: opacity 450ms var(--ease-out-soft);
+  transition: height 500ms var(--ease-in-out-soft);
 }
 .is-scrolled .nav-shell {
-  max-width: 66rem;
-  height: 4rem;
-  margin-top: 0.75rem;
-  padding-inline: 1rem 0.625rem;
-}
-.is-scrolled .nav-shell::before {
-  opacity: 1;
-}
-.is-open .nav-shell::before {
-  opacity: 0;
+  height: var(--nav-h-compact);
 }
 
+/* Logo a la izquierda; enlaces y «Pedir cita» agrupados a la derecha */
 .nav-grid {
   display: flex;
   width: 100%;
   height: 100%;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
-}
-@media (min-width: 1024px) {
-  .nav-grid {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-  }
 }
 .nav-end {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.75rem;
+  margin-left: auto;
+}
+@media (min-width: 1024px) {
+  .nav-grid > nav {
+    margin-left: auto;
+  }
+  .nav-end {
+    margin-left: 1.5rem;
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--pill-border);
+    height: 2rem;
+  }
 }
 
-/* ----- Logo: completo arriba del todo; con scroll, solo el símbolo ----- */
+/* ----- Logo: completo siempre; el símbolo se ajusta con el scroll ----- */
 .brand {
   display: inline-flex;
   align-items: center;
-  justify-self: start;
 }
 .brand__symbol {
-  width: 36px;
+  width: 34px;
   flex: none;
   transition: width var(--dur-base) var(--ease-out-soft);
 }
 .brand__text {
   display: block;
-  overflow: hidden;
-  max-width: 16rem;
-  margin-left: 1rem;
-  opacity: 1;
-  transition:
-    max-width var(--dur-base) var(--ease-out-soft),
-    margin-left var(--dur-base) var(--ease-out-soft),
-    opacity var(--dur-fast) linear;
+  margin-left: 0.875rem;
 }
 .brand__wordmark {
   display: block;
-  width: 200px;
+  width: 184px;
   max-width: none;
 }
-/* Móvil: el logotipo completo cede ancho al botón «Menú» */
 @media (max-width: 480px) {
   .brand__wordmark {
-    width: 150px;
+    width: 144px;
   }
   .brand__text {
     margin-left: 0.625rem;
   }
 }
 .is-scrolled .brand__symbol {
-  width: 28px;
-}
-.is-scrolled .brand__text {
-  max-width: 0;
-  margin-left: 0;
-  opacity: 0;
+  width: 30px;
 }
 
-/* ----- Enlaces: texto sobre el fondo, subrayado que se dibuja ----- */
+/* ----- Enlaces: texto sobre el fondo, subrayado fino que se dibuja ----- */
 .nav-list {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.125rem;
 }
 .nav-item--mega {
   display: flex;
@@ -509,7 +488,7 @@ onBeforeUnmount(() => {
   position: relative;
   display: inline-block;
   padding: 0.6rem 0.9rem;
-  font-size: 1.0625rem;
+  font-size: 1rem;
   font-weight: 500;
   line-height: 1.2;
   white-space: nowrap;
@@ -518,8 +497,8 @@ onBeforeUnmount(() => {
   content: '';
   position: absolute;
   inset: auto 0.9rem 0.3rem;
-  height: 2px;
-  background: var(--underline);
+  height: 1.5px;
+  background: currentColor;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--dur-base) var(--ease-out-soft);
@@ -557,10 +536,30 @@ onBeforeUnmount(() => {
   }
 }
 
+/* «Pedir cita»: sólido tinta sobre claro, cian sobre oscuro (el botón estándar cian claro se perdía) */
 .site-navbar .nav-cta {
   min-height: 2.75rem;
   padding-inline: 1.25rem 1.1rem;
   font-size: 0.9375rem;
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-bone);
+}
+.theme-ink .nav-cta {
+  border-color: var(--color-cyan);
+  background: var(--color-cyan);
+  color: var(--color-ink);
+}
+@media (hover: hover) and (pointer: fine) {
+  .site-navbar .nav-cta:hover {
+    border-color: var(--color-cyan);
+    background: var(--color-cyan);
+    color: var(--color-ink);
+  }
+  .site-navbar.theme-ink .nav-cta:hover {
+    border-color: var(--color-bone);
+    background: var(--color-bone);
+  }
 }
 
 /* ----- Panel de Servicios: bento grid ----- */
@@ -568,22 +567,16 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: 100% 0 auto;
   justify-content: center;
-  /* El relleno superior hace de puente: el puntero no «sale» al cruzar el hueco */
-  padding: 0.5rem var(--gutter) 0;
+  border-bottom: 1px solid var(--pill-border);
+  background: var(--panel-bg);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
   pointer-events: auto;
 }
-.is-scrolled .svcmenu {
-  top: calc(100% - 0.5rem);
-}
 .svcmenu__panel {
-  width: min(64rem, 100%);
-  padding: 0.75rem;
-  border: 1px solid var(--pill-border);
-  border-radius: 0.75rem;
-  background: var(--panel-bg);
-  backdrop-filter: blur(20px) saturate(1.5);
-  -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  box-shadow: 0 24px 60px -24px rgb(6 26 44 / 0.35);
+  width: calc(100% - 2 * var(--gutter));
+  max-width: var(--container-wide);
+  padding: 1.25rem 0 1rem;
 }
 .bento {
   display: grid;
@@ -705,9 +698,9 @@ onBeforeUnmount(() => {
   min-height: 44px;
   padding-inline: 1rem;
   /* Mismo lenguaje que los botones: 8 px y cyan claro con filete (sobre tinta, cristal claro) */
-  border: 1px solid rgb(6 26 44 / 0.14);
+  border: 1px solid var(--color-ink);
   border-radius: var(--radius-m);
-  background: var(--color-cyan-light);
+  background: transparent;
   color: var(--color-ink);
   font-size: 0.9375rem;
   font-weight: 600;
@@ -720,10 +713,8 @@ onBeforeUnmount(() => {
 }
 .theme-ink .menu-button {
   border-color: var(--glass-border);
-  background: var(--glass-bg);
+  background: transparent;
   color: var(--color-bone);
-  backdrop-filter: blur(18px) saturate(1.4);
-  -webkit-backdrop-filter: blur(18px) saturate(1.4);
 }
 /* El CSS con ámbito no está en una capa y ganaría a la utilidad lg:hidden */
 @media (min-width: 1024px) {
@@ -811,10 +802,9 @@ onBeforeUnmount(() => {
 @media (prefers-reduced-motion: reduce) {
   .site-navbar,
   .nav-shell,
-  .nav-shell::before,
+  .site-navbar::before,
   .menu-bar,
   .brand__symbol,
-  .brand__text,
   .nav-link::after,
   .bento__tile,
   .svcmenu-enter-active,
