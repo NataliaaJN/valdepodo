@@ -1,51 +1,23 @@
 <script setup lang="ts">
 /**
- * Plantillas personalizadas (spec 04 §2): hero, plantilla descompuesta + fibras (experiencia nº 3),
- * proceso de personalización, servicios relacionados y CTA. Textos en `pending`.
- * Un único lienzo WebGL por página (spec 08 §1.2): el hero usa el póster de Blender de la plantilla completa
- * y la escena 3D vive en la experiencia de capas y fibras.
+ * Plantillas personalizadas (spec 04 §2): misma cabecera y declaración introductoria que el resto de páginas de
+ * servicio (solo texto, sin imagen) y, debajo, «Cómo hacemos tus plantillas» (InsoleCraft): capítulo fijado en el
+ * que el scroll dibuja el proceso. Servicios relacionados al cierre. Textos clínicos pendientes de validar.
  */
-import { pending, resolveValue } from '#shared/utils/pending'
-import { CONCEPTUAL_LABEL } from '~/data/insole'
-
 const service = useServicePage('plantillas-personalizadas')
-
-const description = pending(
-  'No existen dos pies iguales. Tus plantillas tampoco deberían serlo.',
-  'Descripción del servicio (concepto de la spec 04 §2): validar con la clínica',
-)
+const intro =
+  'Una plantilla a medida no se elige de un estante: se diseña a partir de lo que vemos en tu pie y en tu forma de caminar. Partimos del estudio biomecánico, tenemos en cuenta tu actividad, tu calzado y tus molestias, y la ajustamos contigo hasta que resulte cómoda. Después revisamos cómo te adaptas a ella para corregir lo que haga falta.'
 </script>
 
 <template>
   <div>
     <ServiceHero :service="service" :description="service.description" />
 
-    <ServiceOverview :service="service" :title="resolveValue(description)">
-      <picture>
-        <source
-          srcset="
-            /images/3d-fallbacks/insole/complete-800.avif  800w,
-            /images/3d-fallbacks/insole/complete.avif     1600w
-          "
-          sizes="(min-width: 1024px) 40vw, 100vw"
-          type="image/avif"
-        />
-        <img
-          src="/images/3d-fallbacks/insole/complete.webp"
-          srcset="
-            /images/3d-fallbacks/insole/complete-800.webp  800w,
-            /images/3d-fallbacks/insole/complete.webp     1600w
-          "
-          sizes="(min-width: 1024px) 40vw, 100vw"
-          alt=""
-          width="1600"
-          height="1200"
-          class="float relative w-full"
-          loading="lazy"
-        />
-      </picture>
-      <template #caption>{{ CONCEPTUAL_LABEL }}</template>
-    </ServiceOverview>
+    <ServiceOverview
+      :service="service"
+      title="No existen dos pies iguales. Tus plantillas tampoco deberían serlo."
+      :intro="intro"
+    />
 
     <!-- Proceso de personalización (spec 04 §2.4): capítulo fijado, el scroll dibuja la plantilla -->
     <InsoleCraft />
@@ -53,22 +25,3 @@ const description = pending(
     <RelatedServices :current="service.slug" />
   </div>
 </template>
-
-<style scoped>
-.float {
-  animation: float 7s var(--ease-in-out-soft) infinite alternate;
-}
-@keyframes float {
-  from {
-    transform: translateY(-6px) rotate(-0.6deg);
-  }
-  to {
-    transform: translateY(8px) rotate(0.6deg);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .float {
-    animation: none;
-  }
-}
-</style>
