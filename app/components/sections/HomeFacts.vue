@@ -67,6 +67,8 @@ const items = computed(() =>
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 0.625rem;
+  max-width: 22rem;
+  margin-inline: auto;
 }
 .fact {
   display: grid;
@@ -118,6 +120,7 @@ const items = computed(() =>
   .facts__list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
+    max-width: 42rem;
   }
   .fact {
     display: flex;
