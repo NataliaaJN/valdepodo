@@ -118,9 +118,8 @@ watch(shouldLoad, async (load) => {
 })
 
 function srcset(ext: 'avif' | 'webp') {
-  return props.posterSmall
-    ? `${props.poster}-800.${ext} 800w, ${props.poster}.${ext} 1600w`
-    : `${props.poster}.${ext}`
+  const poster = publicUrl(props.poster)
+  return props.posterSmall ? `${poster}-800.${ext} 800w, ${poster}.${ext} 1600w` : `${poster}.${ext}`
 }
 
 function onSceneReady() {
@@ -155,7 +154,7 @@ onBeforeUnmount(() => {
     >
       <source :srcset="srcset('avif')" :sizes="posterSmall ? posterSizes : undefined" type="image/avif" />
       <img
-        :src="`${poster}.webp`"
+        :src="`${publicUrl(poster)}.webp`"
         :srcset="posterSmall ? srcset('webp') : undefined"
         :sizes="posterSmall ? posterSizes : undefined"
         :alt="posterAlt"
