@@ -281,6 +281,14 @@ html[data-intro='play'] .hero__desc {
   }
 }
 
+/* Móvil: sin indicador de scroll. El ratón es una metáfora de escritorio, el gesto en táctil es evidente y el icono
+   competía con el texto en el borde inferior */
+@media (max-width: 767px) {
+  .hero__scroll {
+    display: none;
+  }
+}
+
 /* Tablet vertical: sigue apilado (texto abajo) pero con un pie más grande; lado a lado solo cabe apaisado */
 @media (min-width: 768px) {
   .hero__model {
