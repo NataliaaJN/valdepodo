@@ -1,0 +1,79 @@
+{
+  "version": "0.2.0",
+  "description": "Plantilla CONCEPTUAL (Fase 4). Valores de forma, no clínicos. Sin materiales ni procesos atribuidos (spec 04 §2.2).",
+  "side": "right",
+  "length_mm": 260,
+  "heel_radius_mm": 31,
+  "toe_radius_mm": 46,
+  "toe_medial_shift_mm": 10,
+  "width_profile": [
+    [0.12, 62],
+    [0.3, 63],
+    [0.45, 69],
+    [0.6, 85],
+    [0.72, 95],
+    [0.823, 92]
+  ],
+  "arch_height_mm": 14,
+  "arch_peak": 0.5,
+  "arch_spread": 0.14,
+  "heel_cup_depth_mm": 10,
+  "toe_spring_mm": 5,
+  "thickness_mm": 6,
+  "grid": { "along": 96, "across": 22 },
+  "layers": [
+    {
+      "id": "top",
+      "order": 3,
+      "thickness_ratio": 0.25,
+      "zone": "full",
+      "explode_offset_mm": 64,
+      "color": "#B9E5F3"
+    },
+    {
+      "id": "middle",
+      "order": 2,
+      "thickness_ratio": 0.45,
+      "zone": "full",
+      "explode_offset_mm": 32,
+      "color": "#1EABE1"
+    },
+    {
+      "id": "base",
+      "order": 1,
+      "thickness_ratio": 0.3,
+      "zone": "rearfoot",
+      "explode_offset_mm": 0,
+      "color": "#1270B6"
+    }
+  ],
+  "zones": {
+    "rearfoot": {
+      "$comment": "Borde delantero curvo: end - front_curve·v² - front_skew·v (v = -1 medial … 1 lateral).",
+      "fade_start": 0.46,
+      "end": 0.72,
+      "front_curve": 0.09,
+      "front_skew": 0.03
+    }
+  },
+  "view": {
+    "$comment": "Encuadre compartido por la escena web y los pósters (coordenadas glTF, Y arriba, metros).",
+    "fov": 24,
+    "aspect": [4, 3],
+    "position": [0.46, 0.27, 0.1],
+    "target": [0, 0.035, 0.005],
+    "explode": { "model_rotation_deg": 10, "camera_orbit_deg": -15 }
+  },
+  "render": {
+    "validation": [
+      { "name": "3q", "azimuth": 35, "elevation": 30 },
+      { "name": "top", "azimuth": 0, "elevation": 89 },
+      { "name": "medial", "azimuth": -90, "elevation": 8 }
+    ],
+    "posters": [
+      { "name": "complete", "explode": 0 },
+      { "name": "exploded", "explode": 1 }
+    ],
+    "poster_width": 1600
+  }
+}

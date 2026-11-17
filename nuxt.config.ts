@@ -4,10 +4,13 @@ import templateCompilerOptions from '@tresjs/core/template-compiler-options'
 // Laboratorio de experiencias (/_lab): visible en desarrollo y, opcionalmente, en previews.
 const enableLab = process.env.NODE_ENV !== 'production' || process.env.NUXT_PUBLIC_ENABLE_LAB === 'true'
 
+// Subruta del sitio (GitHub Pages: '/valdepodo/'). Sin variable, el sitio cuelga de la raíz.
+const baseURL = process.env.NUXT_APP_BASE_URL || '/'
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-01',
 
-  modules: ['@nuxt/fonts', '@nuxt/eslint'],
+  modules: ['@nuxt/eslint'],
 
   devtools: { enabled: true },
 
@@ -26,12 +29,24 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   app: {
+    baseURL,
     head: {
       htmlAttrs: { lang: 'es' },
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
-      meta: [{ name: 'theme-color', content: '#F5F8FC' }],
-      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      meta: [{ name: 'theme-color', content: '#F1EFE9' }],
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: `${baseURL}favicon.svg` }],
+      // Orden de las capas de Tailwind fijado ANTES que cualquier hoja de estilos. BaseIcon y FormField abren
+      // `@layer components`; si su CSS llegaba antes que main.css, `components` quedaba por debajo de `base` y
+      // el reset (`* { margin: 0; padding: 0 }`) anulaba `.under-navbar` y `.container-wide`: el hero dejaba de
+      // ir bajo la navbar (franja de hueso, letras oscuras sin contraste) y las páginas perdían sus márgenes.
+      style: [
+        {
+          key: 'layer-order',
+          innerHTML: '@layer theme, base, components, utilities;',
+          tagPriority: 'critical',
+        },
+      ],
     },
     pageTransition: { name: 'page', mode: 'out-in' },
   },
@@ -47,22 +62,6 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: ['three', '@tresjs/core', 'gsap', 'gsap/ScrollTrigger'],
     },
-  },
-
-  fonts: {
-    defaults: {
-      weights: [400, 500, 600, 700],
-      styles: ['normal', 'italic'],
-      subsets: ['latin', 'latin-ext'],
-    },
-    families: [
-      // Propuesta A (por defecto)
-      { name: 'Instrument Serif', provider: 'google', weights: [400], styles: ['normal', 'italic'] },
-      { name: 'Manrope', provider: 'google', weights: [400, 500, 600, 700], styles: ['normal'] },
-      // Propuesta B (comparación en la propuesta visual)
-      { name: 'DM Serif Display', provider: 'google', weights: [400], styles: ['normal', 'italic'] },
-      { name: 'DM Sans', provider: 'google', weights: [400, 500, 600, 700], styles: ['normal', 'italic'] },
-    ],
   },
 
   routeRules: {
@@ -86,7 +85,29 @@ export default defineNuxtConfig({
     },
   },
 
+  // Estáticos precomprimidos (gzip/brotli) también en `nuxt preview`, como en el hosting final
+  nitro: {
+    compressPublicAssets: true,
+  },
+
   hooks: {
+    // Spec 09 §3: en producción no puede quedar contenido provisional (`pending`)
+    async 'build:before'() {
+      if (process.env.NUXT_PUBLIC_SITE_ENV !== 'production') return
+      const { findPending } = await import('./tools/check-pending.mjs')
+      const entries = await findPending()
+      if (entries.length) {
+        throw new Error(
+          `Quedan ${entries.length} marcadores pending() (npm run check:pending). El build de producción se detiene.`,
+        )
+      }
+    },
+    // Sin <link rel="prefetch"> de los chunks asíncronos: el de three/TresJS (~850 KB sin comprimir) se
+    // descargaba en toda visita aunque la escena 3D no llegue a cargarse (p. ej. móvil sin interacción).
+    // La navegación no lo nota: NuxtLink precarga las páginas por su cuenta.
+    'build:manifest'(manifest) {
+      for (const chunk of Object.values(manifest)) chunk.prefetch = false
+    },
     'pages:extend'(pages) {
       if (enableLab) return
       for (let i = pages.length - 1; i >= 0; i--) {

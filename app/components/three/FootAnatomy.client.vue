@@ -1,19 +1,32 @@
 <script setup lang="ts">
 /**
- * Escena del pie anatómico para el laboratorio (Fase 2). Contrato de SceneGate: emite `ready` y `contextlost`.
- * La interacción (capa activa, rotación) se controla desde fuera con props → accesible con botones.
+ * Escena del pie anatómico (spec 08 §2). Contrato de SceneGate: emite `ready` y `contextlost`.
+ * - Estado declarativo desde fuera (capa activa, rotación): lo animan los controles o ScrollTrigger.
+ * - Encuadre y luces compartidos con los pósters de Blender: tools/blender/config/foot-view.json.
+ * - Variante del GLB según el nivel del dispositivo (full / lite), salvo que se fije `src`.
  */
 import { TresCanvas, dispose, type TresContext } from '@tresjs/core'
 import { AgXToneMapping, PMREMGenerator, SRGBColorSpace, type Object3D, type WebGLRenderer } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+import { FOOT_VIEW } from '~/utils/foot-layers'
 import type { FootLayer } from '~/utils/foot-layers'
 import type { SceneStats } from '~/utils/scene-types'
 
 const props = withDefaults(
-  defineProps<{ src: string; activeLayer: FootLayer; rotationY?: number; idleSpin?: boolean }>(),
-  { rotationY: 0, idleSpin: false },
+  defineProps<{
+    src?: string
+    activeLayer: FootLayer
+    rotationY?: number
+    idleSpin?: boolean
+    studio?: boolean
+    /** Progreso 0..1 del paso del pie (hero); sin definir, no hay paso ni suelo. */
+    step?: number
+    /** Tamaño del modelo en la escena (por defecto, el del encuadre compartido). */
+    fit?: number
+  }>(),
+  { src: undefined, rotationY: FOOT_VIEW.rotationY, idleSpin: false, studio: false, step: undefined, fit: undefined },
 )
 const emit = defineEmits<{
   ready: []
@@ -25,16 +38,18 @@ const emit = defineEmits<{
 const { tier } = useDeviceTier()
 const model = shallowRef<Object3D | null>(null)
 const dpr = computed<[number, number]>(() => (tier.value === 'full' ? [1, 2] : [1, 1.5]))
+const lights = FOOT_VIEW.lights
 let canvasEl: HTMLCanvasElement | undefined
 let emittedReady = false
 
 onMounted(async () => {
   const loader = new GLTFLoader()
   loader.setMeshoptDecoder(MeshoptDecoder)
+  const src = publicUrl(props.src ?? `/models/foot-proto.${tier.value === 'full' ? 'full' : 'lite'}.glb`)
   try {
-    model.value = markRaw((await loader.loadAsync(props.src)).scene)
+    model.value = markRaw((await loader.loadAsync(src)).scene)
   } catch (error) {
-    console.error('[FootAnatomyLab] Error al cargar el GLB', error)
+    console.error('[FootAnatomy] Error al cargar el GLB', error)
     emit('contextlost')
   }
 })
@@ -81,20 +96,34 @@ onBeforeUnmount(() => {
     :antialias="tier === 'full'"
     :tone-mapping="AgXToneMapping"
     :output-color-space="SRGBColorSpace"
+    premultiplied-alpha
     render-mode="on-demand"
     @ready="onReady"
     @render="onRender"
   >
-    <TresPerspectiveCamera :position="[2.6, 1.3, 2.8]" :look-at="[0, 0, 0]" :fov="32" />
-    <TresHemisphereLight :args="['#EAF5FA', '#163C63', 0.9]" />
-    <TresDirectionalLight :position="[3, 5, 4]" :intensity="2" />
-    <TresDirectionalLight :position="[-4, 1, -3]" :intensity="1.2" color="#1EABE1" />
+    <TresPerspectiveCamera :position="FOOT_VIEW.position" :look-at="FOOT_VIEW.target" :fov="FOOT_VIEW.fov" />
+    <TresHemisphereLight
+      :args="[lights.hemisphere.sky, lights.hemisphere.ground, lights.hemisphere.intensity]"
+    />
+    <TresDirectionalLight
+      :position="lights.key.position"
+      :intensity="lights.key.intensity"
+      :color="lights.key.color"
+    />
+    <TresDirectionalLight
+      :position="lights.rim.position"
+      :intensity="lights.rim.intensity"
+      :color="lights.rim.color"
+    />
     <FootAnatomyModel
       v-if="model"
       :model="model"
       :active-layer="activeLayer"
       :rotation-y="rotationY"
       :idle-spin="idleSpin"
+      :fit="fit ?? FOOT_VIEW.fit"
+      :studio="studio"
+      :step="step"
       @layers="(l) => emit('layers', l)"
     />
   </TresCanvas>

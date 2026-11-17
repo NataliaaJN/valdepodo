@@ -9,6 +9,12 @@ const NuxtLinkComponent = resolveComponent('NuxtLink')
 
 const experiments = [
   {
+    to: '/_lab/sistema',
+    title: 'Sistema de diseño',
+    status: 'Fase 6',
+    text: 'Paleta y contrastes, tipografía, botones, formularios, glass, iconos y reveal.',
+  },
+  {
     to: '/_lab/escena',
     title: 'Escena de prueba',
     status: 'Fase 1',
@@ -16,13 +22,19 @@ const experiments = [
   },
   { to: '/_lab/pie', title: 'Pie anatómico', status: 'Fase 2', text: 'Prototipo y validación de capas.' },
   {
-    to: null,
+    to: '/_lab/pie-procedural',
+    title: 'Pie procedural',
+    status: 'Prueba',
+    text: 'Pie 3D estilizado sin modelos externos, en maqueta de hero.',
+  },
+  {
+    to: '/_lab/biomecanico',
     title: 'Estudio biomecánico',
     status: 'Fase 3',
     text: 'Huellas, mapas de presión y marcha (SVG).',
   },
   {
-    to: null,
+    to: '/_lab/plantilla',
     title: 'Plantilla y fibras',
     status: 'Fase 4',
     text: 'Plantilla paramétrica y fibras instanciadas.',

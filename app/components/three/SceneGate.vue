@@ -3,7 +3,9 @@
  * Puerta de entrada de toda escena 3D (spec 08 §1.2).
  * - SSR: renderiza el póster (o un hueco del mismo tamaño) → sin CLS y sin WebGL en servidor.
  * - Cliente: si el nivel no es 'static', carga la escena de forma diferida cuando la sección se acerca
- *   al viewport y el navegador está ocioso; funde póster → canvas al recibir `ready`.
+ *   al viewport y: en `full`, el navegador está ocioso; en `lite`, el usuario interactúa por primera vez
+ *   (scroll, toque, tecla; spec 03 §6 "o al interactuar"). Así el chunk de three y el GLB no compiten con la
+ *   carga inicial en móvil: el póster es el primer fotograma de la escena. Funde póster → canvas en `ready`.
  * - `contextlost`: vuelve al póster y marca la sesión para no reintentar.
  *
  * Contrato de la escena cargada: emite `ready` (primer frame con contenido) y `contextlost`.
@@ -14,15 +16,32 @@ const props = withDefaults(
   defineProps<{
     /** Import dinámico de la escena, p. ej. () => import('./FootAnatomy.client.vue') */
     loader: () => Promise<Component | { default: Component }>
-    /** Ruta del póster en /public (sin extensión: se sirven .avif y .webp). Opcional en el laboratorio. */
+    /**
+     * Ruta del póster en /public, sin extensión: se sirven .avif y .webp (1600 px) y, si `posterSmall`,
+     * también las variantes `-800` (tools/assets/posters.mjs). Opcional en el laboratorio.
+     */
     poster?: string
+    /** Hay variantes de 800 px del póster. */
+    posterSmall?: boolean
+    /** Atributo `sizes` del póster. */
+    posterSizes?: string
     posterAlt?: string
     /** Relación de aspecto del contenedor, p. ej. '1 / 1' o '4 / 3'. */
     aspectRatio?: string
     /** Props que se pasan a la escena. */
     sceneProps?: Record<string, unknown>
+    /** El póster es candidato a LCP (hero): se pide con prioridad alta. */
+    priority?: boolean
   }>(),
-  { poster: undefined, posterAlt: '', aspectRatio: '1 / 1', sceneProps: () => ({}) },
+  {
+    poster: undefined,
+    posterSmall: false,
+    posterSizes: '(min-width: 1024px) 50vw, 100vw',
+    posterAlt: '',
+    aspectRatio: '1 / 1',
+    sceneProps: () => ({}),
+    priority: false,
+  },
 )
 
 const emit = defineEmits<{ ready: []; fallback: [reason: 'static' | 'contextlost' | 'error'] }>()
@@ -59,10 +78,24 @@ onMounted(() => {
   observer.observe(root.value)
 
   const markIdle = () => (idle.value = true)
+  if (tier.value === 'lite') {
+    for (const type of INTERACTION_EVENTS)
+      window.addEventListener(type, onFirstInteraction, { passive: true })
+    return
+  }
   if ('requestIdleCallback' in window) window.requestIdleCallback(markIdle, { timeout: 2500 })
   // Respaldo: algunos navegadores no ejecutan requestIdleCallback en pestañas en segundo plano.
   idleFallbackTimer = setTimeout(markIdle, 'requestIdleCallback' in window ? 3000 : 800)
 })
+
+const INTERACTION_EVENTS = ['pointerdown', 'touchstart', 'keydown', 'wheel', 'scroll'] as const
+function removeInteractionListeners() {
+  for (const type of INTERACTION_EVENTS) window.removeEventListener(type, onFirstInteraction)
+}
+function onFirstInteraction() {
+  removeInteractionListeners()
+  idle.value = true
+}
 
 watch(
   () => resolved.value && tier.value === 'static',
@@ -84,6 +117,11 @@ watch(shouldLoad, async (load) => {
   }
 })
 
+function srcset(ext: 'avif' | 'webp') {
+  const poster = publicUrl(props.poster)
+  return props.posterSmall ? `${poster}-800.${ext} 800w, ${poster}.${ext} 1600w` : `${poster}.${ext}`
+}
+
 function onSceneReady() {
   clearTimeout(slowTimer)
   slowLoad.value = false
@@ -102,6 +140,7 @@ onBeforeUnmount(() => {
   observer?.disconnect()
   clearTimeout(slowTimer)
   clearTimeout(idleFallbackTimer)
+  removeInteractionListeners()
 })
 </script>
 
@@ -113,16 +152,23 @@ onBeforeUnmount(() => {
       class="absolute inset-0 transition-opacity duration-(--dur-reveal) ease-out-soft motion-reduce:transition-none"
       :class="sceneReady ? 'opacity-0' : 'opacity-100'"
     >
-      <source :srcset="`${poster}.avif`" type="image/avif" />
+      <source :srcset="srcset('avif')" :sizes="posterSmall ? posterSizes : undefined" type="image/avif" />
       <img
-        :src="`${poster}.webp`"
+        :src="`${publicUrl(poster)}.webp`"
+        :srcset="posterSmall ? srcset('webp') : undefined"
+        :sizes="posterSmall ? posterSizes : undefined"
         :alt="posterAlt"
         class="size-full object-contain"
-        decoding="async"
-        fetchpriority="low"
+        :decoding="priority ? 'sync' : 'async'"
+        :fetchpriority="priority ? 'high' : 'low'"
       />
     </picture>
-    <div v-else class="absolute inset-0 rounded-l bg-light-blue/60" aria-hidden="true" />
+    <div
+      v-else
+      class="absolute inset-0 rounded-l bg-light-blue/60 transition-opacity duration-(--dur-reveal) ease-out-soft motion-reduce:transition-none"
+      :class="sceneReady ? 'opacity-0' : 'opacity-100'"
+      aria-hidden="true"
+    />
 
     <!-- Escena 3D (solo cliente) -->
     <ClientOnly>

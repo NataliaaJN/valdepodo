@@ -1,36 +1,31 @@
 <script setup lang="ts">
 /**
- * Layout base provisional (Fase 1). La navbar y el footer definitivos se desarrollan en la Fase 6.1 (spec 02).
+ * Layout base (spec 02). La navbar es fija: `main` deja su altura arriba y las páginas con hero a sangre la
+ * recuperan con `.under-navbar` (el hero queda debajo de la navbar transparente).
+ * `data-page-root` marca lo que se vuelve `inert` mientras el menú móvil está abierto.
+ * El CTA global «Da el próximo paso.» cierra todas las páginas; una página lo omite con
+ * `definePageMeta({ hideCta: true })`.
  */
+const route = useRoute()
 </script>
 
 <template>
   <div class="flex min-h-dvh flex-col">
     <a
       href="#contenido"
-      class="sr-only z-50 rounded-pill bg-white px-5 py-3 font-semibold text-deep-blue focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+      class="sr-only z-50 rounded-m bg-bone px-5 py-3 font-semibold text-ink focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+      data-page-root
     >
       Saltar al contenido
     </a>
 
-    <header class="border-b border-border/70 bg-surface/85 backdrop-blur">
-      <div class="container-site flex h-[68px] items-center justify-between gap-6">
-        <NuxtLink to="/" class="block w-[132px]" aria-label="Valdepodo, inicio">
-          <BrandLogo variant="wordmark" label="" />
-        </NuxtLink>
-        <BaseButton size="sm" to="/" arrow>Pedir cita</BaseButton>
-      </div>
-    </header>
+    <SiteNavbar />
 
-    <main id="contenido" class="flex-1" tabindex="-1">
+    <main id="contenido" class="flex-1 pt-(--nav-h)" tabindex="-1" data-page-root>
       <slot />
+      <CtaBlock v-if="!route.meta.hideCta" />
     </main>
 
-    <footer class="bg-deep-blue py-10 text-ice-blue">
-      <div class="container-site flex flex-wrap items-center justify-between gap-4 text-sm">
-        <BrandLogo variant="wordmark" mono label="" class="w-[120px] text-white" />
-        <p>Versión en desarrollo · Fase 1</p>
-      </div>
-    </footer>
+    <SiteFooter />
   </div>
 </template>

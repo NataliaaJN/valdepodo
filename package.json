@@ -24,12 +24,17 @@
     "3d:inspect": "node tools/blender/run-blender.mjs tools/blender/inspect_source.py -- --config tools/blender/config/foot.json",
     "3d:inspect-za": "node tools/blender/run-blender.mjs tools/blender/inspect_zanatomy.py -- --config tools/blender/config/foot.json",
     "3d:foot-validation": "node tools/blender/run-blender.mjs tools/blender/render_foot_validation.py -- --config tools/blender/config/foot.json",
+    "3d:insole": "node tools/blender/run-blender.mjs tools/blender/build_insole.py -- --config tools/blender/config/insole.json --out tools/out/insole.raw.glb --posters",
+    "3d:foot-posters": "node tools/blender/run-blender.mjs tools/blender/render_foot_posters.py -- --config tools/blender/config/foot-view.json && node tools/assets/posters.mjs foot",
+    "3d:posters": "node tools/assets/posters.mjs",
     "3d:optimize": "node tools/assets/optimize.mjs",
     "3d:check": "node tools/assets/check-assets.mjs",
-    "3d:smoke": "npm run 3d:test-cube && npm run 3d:optimize -- test-cube && npm run 3d:check"
+    "3d:smoke": "npm run 3d:test-cube && npm run 3d:optimize -- test-cube && npm run 3d:check",
+    "check:pending": "node tools/check-pending.mjs"
   },
   "dependencies": {
-    "@nuxt/fonts": "^1.2.0",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
     "@tailwindcss/vite": "^4.3.5",
     "@tresjs/cientos": "^5.10.1",
     "@tresjs/core": "^5.10.1",
@@ -38,7 +43,8 @@
     "tailwindcss": "^4.3.5",
     "three": "^0.187.0",
     "vue": "^3.5.45",
-    "vue-router": "^5.5.0"
+    "vue-router": "^5.5.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@gltf-transform/cli": "^4.5.1",

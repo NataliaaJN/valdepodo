@@ -9,7 +9,7 @@ export default defineConfig({
     projects: [
       // Lógica pura (utils, esquemas, servidor): entorno Node, rápido.
       {
-        resolve: { alias: { '~': r('./app'), '#shared': r('./shared') } },
+        resolve: { alias: { '~~': r('.'), '~': r('./app'), '#shared': r('./shared') } },
         test: {
           name: 'unit',
           include: ['tests/unit/**/*.test.ts'],

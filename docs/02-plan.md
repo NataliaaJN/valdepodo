@@ -169,7 +169,9 @@ Cada fase lista **entregables** y **gate** (criterios de cierre). Las fases 2, 3
   - ❌ plan B (modelo de pago o encargo, con presupuesto).
   - Decisión de licencia del GLB (CC BY o CC BY-SA) con la clínica.
 
-### FASE 3 — Recursos gráficos del estudio biomecánico
+### FASE 3 — Recursos gráficos del estudio biomecánico 🟡 laboratorio listo, esperando Gate 3
+
+> **Resultado (10/11/2026):** biblioteca SVG en `app/components/graphics/`, estados en `app/data/biomech.ts` y secuencia de 6 fases en `/_lab/biomecanico` (sticky en ≥ 768 px, tarjetas en móvil). Peso 11,6 KB + 2,0 KB gzip. `PressureShader.client` descartado: el filtro SVG basta. Detalle en [fase3-biomecanico.md](fase3-biomecanico.md). **Pendiente:** aprobación visual, FPS en escritorio medio y móvil real, y prueba con reduced motion.
 
 - Biblioteca SVG propia:
   - huellas izquierda/derecha;
@@ -182,7 +184,9 @@ Cada fase lista **entregables** y **gate** (criterios de cierre). Las fases 2, 3
 - Rótulo "Visualización ilustrativa".
 - **Gate 3:** aprobación visual; rendimiento ≥ 55 fps en escritorio medio y sin jank en móvil; peso < 30 KB.
 
-### FASE 4 — Plantilla conceptual y animación de fibras
+### FASE 4 — Plantilla conceptual y animación de fibras 🟡 laboratorio listo, esperando Gate 4
+
+> **Resultado (10/11/2026):** plantilla paramétrica propia en 3 capas (`insole.glb`, 113 KB, 24k triángulos) con pósters AVIF/WebP, explosión con etiquetas y 6.000/1.500 fibras en un único draw call, en `/_lab/plantilla` (scrub en ≥ 768 px, reproducción autónoma en móvil, modo manual). 144 fps en el equipo de desarrollo. Detalle en [fase4-plantilla.md](fase4-plantilla.md). **Pendiente:** aprobación visual (incluido igualar el color póster ↔ escena), FPS en escritorio medio y móvil real, y prueba con reduced motion.
 
 - `config/insole.json` + `build_insole.py` → `insole.glb` por capas (`layer_*`); renders y fallbacks.
 - `_lab/plantilla`:
@@ -194,7 +198,9 @@ Cada fase lista **entregables** y **gate** (criterios de cierre). Las fases 2, 3
   - fibras a ≥ 55 fps en escritorio y ≥ 30 fps en móvil medio;
   - **sin materiales ni procesos atribuidos**.
 
-### FASE 5 — Integración progresiva de las experiencias 3D en Nuxt + propuesta visual
+### FASE 5 — Integración progresiva de las experiencias 3D en Nuxt + propuesta visual 🟡 propuesta lista, esperando Gate 5
+
+> **Resultado (10/11/2026):** Home en código real (navbar, hero con el pie anatómico provisional y secuencia pineada, fragmento de servicios), tipografía A/B con `?tipo=b`, pósters del pie por capa (`npm run 3d:foot-posters`) y las secuencias del biomecánico y de la plantilla montadas en sus páginas. Sin errores de hidratación ni triggers huérfanos; prerender de 10 rutas. Lighthouse móvil de la Home: 94. Detalle en [fase5-propuesta.md](fase5-propuesta.md). **Pendiente:** aprobación de la dirección artística y prueba con reduced motion.
 
 - `SceneGate` completo: póster SSR desde `public/images/3d-fallbacks/`, carga diferida, `webglcontextlost`, niveles.
 - Coordinación con ScrollTrigger: estado declarativo, `matchMedia` y limpieza en la navegación entre páginas.
@@ -212,7 +218,9 @@ Cada fase lista **entregables** y **gate** (criterios de cierre). Las fases 2, 3
   - sin errores de hidratación;
   - navegación entre páginas sin triggers huérfanos.
 
-### FASE 6 — Desarrollo del resto de secciones de la web
+### FASE 6 — Desarrollo del resto de secciones de la web 🟡 bloques desarrollados, esperando la revisión responsive de cada uno
+
+> **Resultado (11/11/2026):** los 7 bloques en código real: footer, `error.vue`, intro de marca (fundido: sin vector original no hay transformación), Home completa, índice y 5 servicios, Conócenos, Pedir cita (wizard + `/api/cita` con antispam y correo), Contacto y legales/créditos. 14 rutas prerenderizadas, 130 tests, sin avisos de hidratación ni scroll horizontal a 360 px. Lighthouse móvil: Home 89, resto 91-92. `npm run check:pending` lista 161 marcadores y bloquea el build de producción. Detalle en [fase6-web.md](fase6-web.md). **Pendiente:** revisión responsive en los 8 anchos, contenidos de la clínica y textos de la asesoría.
 
 Orden recomendado; cada bloque con su gate de revisión responsive (8 anchos):
 

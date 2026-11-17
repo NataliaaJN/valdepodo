@@ -7,6 +7,7 @@
 
 - H1: "Soluciones para cuidar de tus _pies_."
 - 5 bloques editoriales, **no una rejilla de 5 tarjetas iguales**: alternancia de tamaños y posiciones (imagen izquierda / derecha, uno a sangre, uno compacto), cada uno con número, nombre, descripción, recurso gráfico propio, lista "Te ayuda si…" (necesidades, 2-4 ítems) y enlace.
+  - _Implementado (rediseño de índice):_ `ServiceRows` — filas alternas foto/texto, una por servicio, sin recorrido sticky; el CTA final lo pinta el layout.
 - Recursos por servicio: mapa de presión (biomecánico), plantilla en capas (plantillas), ilustración de uña/piel (general), huellas pequeñas creciendo (infantil), contorno con puntos de control (diabético).
 - Móvil: lista vertical, recurso arriba, texto debajo, todo visible.
 - Animación: `reveal` + leve parallax del recurso (≤ 40 px, solo ≥ 1024).
