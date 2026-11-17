@@ -56,7 +56,7 @@ const rows = services.map((service) => {
           aria-hidden="true"
         >
           <img
-            :src="media.src"
+            :src="publicUrl(media.src)"
             :srcset="srcset"
             :sizes="srcset ? '(min-width: 1024px) 56vw, 100vw' : undefined"
             alt=""

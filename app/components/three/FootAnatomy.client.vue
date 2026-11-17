@@ -45,7 +45,7 @@ let emittedReady = false
 onMounted(async () => {
   const loader = new GLTFLoader()
   loader.setMeshoptDecoder(MeshoptDecoder)
-  const src = props.src ?? `/models/foot-proto.${tier.value === 'full' ? 'full' : 'lite'}.glb`
+  const src = publicUrl(props.src ?? `/models/foot-proto.${tier.value === 'full' ? 'full' : 'lite'}.glb`)
   try {
     model.value = markRaw((await loader.loadAsync(src)).scene)
   } catch (error) {

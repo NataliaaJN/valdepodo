@@ -59,7 +59,7 @@ const onClose = () => opener?.focus()
       >
         <img
           v-if="photo.src"
-          :src="photo.src"
+          :src="publicUrl(photo.src)"
           :alt="resolveValue(photo.alt)"
           :loading="i === 0 ? undefined : 'lazy'"
           class="m-img"
@@ -78,7 +78,7 @@ const onClose = () => opener?.focus()
       @click.self="close"
     >
       <div v-if="viewable.length" class="lb-inner" @touchstart.passive="onTouchStart" @touchend="onTouchEnd">
-        <img :src="viewable[current]!.src!" :alt="resolveValue(viewable[current]!.alt)" class="lb-img" />
+        <img :src="publicUrl(viewable[current]!.src!)" :alt="resolveValue(viewable[current]!.alt)" class="lb-img" />
         <div class="lb-bar">
           <p aria-live="polite">{{ current + 1 }} / {{ viewable.length }}</p>
           <div class="flex gap-2">

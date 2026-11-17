@@ -22,7 +22,7 @@ const name = computed(() => resolveValue(props.member.name))
       <div class="media">
         <img
           v-if="member.photo"
-          :src="member.photo.src"
+          :src="publicUrl(member.photo.src)"
           :alt="member.photo.alt"
           width="200"
           height="200"

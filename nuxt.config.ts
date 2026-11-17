@@ -4,6 +4,9 @@ import templateCompilerOptions from '@tresjs/core/template-compiler-options'
 // Laboratorio de experiencias (/_lab): visible en desarrollo y, opcionalmente, en previews.
 const enableLab = process.env.NODE_ENV !== 'production' || process.env.NUXT_PUBLIC_ENABLE_LAB === 'true'
 
+// Subruta del sitio (GitHub Pages: '/valdepodo/'). Sin variable, el sitio cuelga de la raíz.
+const baseURL = process.env.NUXT_APP_BASE_URL || '/'
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-01',
 
@@ -26,12 +29,13 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   app: {
+    baseURL,
     head: {
       htmlAttrs: { lang: 'es' },
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
       meta: [{ name: 'theme-color', content: '#F1EFE9' }],
-      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: `${baseURL}favicon.svg` }],
       // Orden de las capas de Tailwind fijado ANTES que cualquier hoja de estilos. BaseIcon y FormField abren
       // `@layer components`; si su CSS llegaba antes que main.css, `components` quedaba por debajo de `base` y
       // el reset (`* { margin: 0; padding: 0 }`) anulaba `.under-navbar` y `.container-wide`: el hero dejaba de

@@ -75,7 +75,7 @@ onBeforeUnmount(() => observer?.disconnect())
           <NuxtLink :to="servicePath(service.slug)" class="card__link">
             <span class="card__photo">
               <img
-                :src="media.src"
+                :src="publicUrl(media.src)"
                 :srcset="srcset"
                 sizes="(min-width: 1024px) 18rem, 70vw"
                 alt=""

@@ -24,7 +24,7 @@ defineSlots<{ default?: () => unknown; crumbs?: () => unknown }>()
     <div class="hero__media" aria-hidden="true">
       <img
         v-if="photo.src"
-        :src="photo.src"
+        :src="publicUrl(photo.src)"
         :alt="resolveValue(photo.alt)"
         width="1600"
         height="900"
@@ -36,8 +36,8 @@ defineSlots<{ default?: () => unknown; crumbs?: () => unknown }>()
       <video
         v-if="video"
         class="hero__img hero__video"
-        :src="video"
-        :poster="photo.src ?? undefined"
+        :src="publicUrl(video)"
+        :poster="publicUrl(photo.src)"
         :style="{ objectPosition: focus }"
         autoplay
         muted

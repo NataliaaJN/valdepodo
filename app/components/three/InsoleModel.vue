@@ -131,7 +131,7 @@ onMounted(async () => {
   const t0 = performance.now()
   const loader = new GLTFLoader()
   loader.setMeshoptDecoder(MeshoptDecoder)
-  const gltf = await loader.loadAsync('/models/insole.glb')
+  const gltf = await loader.loadAsync(publicUrl('/models/insole.glb'))
   model = gltf.scene
   model.updateMatrixWorld(true)
 

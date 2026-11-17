@@ -79,7 +79,7 @@ function onPointerLeave() {
     <span class="tile__media" aria-hidden="true">
       <img
         class="tile__img"
-        :src="media.src"
+        :src="publicUrl(media.src)"
         :srcset="srcset"
         :sizes="srcset ? sizes : undefined"
         :alt="media.alt ?? ''"
