@@ -744,6 +744,8 @@ onBeforeUnmount(() => {
   position: fixed;
   inset: 0;
   z-index: -1;
+  /* La cabecera tiene pointer-events: none; sin esto los toques atraviesan el panel y los enlaces no responden */
+  pointer-events: auto;
   background: var(--color-ink);
   color: var(--color-bone);
   overflow-y: auto;
