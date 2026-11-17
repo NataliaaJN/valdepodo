@@ -4,7 +4,7 @@
  *
  * El SVG del logo es un calco automático sin curvas (research §8.1): sin el vector original o un redibujado
  * aprobado por la clínica **no se implementa la transformación huella → logo** (sería inventar marca). La
- * spec permite, como mucho, un fundido simple: eso es lo que hay aquí (≈ 1,3 s, solo CSS).
+ * spec permite, como mucho, un fundido simple: eso es lo que hay aquí (≈ 0,95 s, solo CSS).
  *
  * - Solo la primera visita de la sesión: un script inline en <head> (app.vue) decide antes del primer
  *   pintado y pone `data-intro="play|skip"` en <html>. Sin JS no existe el atributo y el overlay no se ve.
@@ -28,7 +28,7 @@ onMounted(() => {
   if (document.documentElement.dataset.intro !== 'play') return
   for (const e of EVENTS) window.addEventListener(e, leave, { passive: true, once: true })
   root.value?.addEventListener('animationend', (e) => e.target === root.value && finish())
-  window.setTimeout(finish, 2500)
+  window.setTimeout(finish, 1500)
 })
 onBeforeUnmount(finish)
 </script>
@@ -54,10 +54,10 @@ html[data-intro='play'] .brand-intro {
   place-items: center;
   pointer-events: none;
   background: var(--color-primary);
-  animation: intro-out 380ms var(--ease-in-out-soft) 950ms both;
+  animation: intro-out 300ms var(--ease-in-out-soft) 650ms both;
 }
 html[data-intro='play'] .brand-intro__logo {
-  animation: intro-logo 900ms var(--ease-out-soft) both;
+  animation: intro-logo 600ms var(--ease-out-soft) both;
 }
 html[data-intro='play'] .brand-intro.is-leaving {
   animation: intro-out 220ms linear both;
