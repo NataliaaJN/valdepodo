@@ -15,20 +15,21 @@ const icons: Record<ValueIcon, IconName> = {
   technology: 'shield',
   location: 'map-pin',
 }
-const support: Record<ValueIcon, string> = {
+const support: Partial<Record<ValueIcon, string>> = {
   years: 'de experiencia',
   care: 'atención personalizada',
   technology: 'medios adecuados',
-  location: 'fácil acceso',
 }
 
 /** «{years} años de experiencia» → título «años» con la cifra aparte; el resto, tal cual. */
 const items = computed(() =>
-  values.map((v) => ({
-    id: v.id,
-    title: v.id === 'years' ? 'años' : v.title,
-    support: support[v.id],
-  })),
+  values
+    .filter((v) => v.id !== 'location')
+    .map((v) => ({
+      id: v.id,
+      title: v.id === 'years' ? 'años' : v.title,
+      support: support[v.id],
+    })),
 )
 </script>
 
@@ -55,7 +56,7 @@ const items = computed(() =>
 <style scoped>
 .facts {
   z-index: 2;
-  padding-block: 1.75rem;
+  padding-block: 1.25rem;
   color: var(--color-ink);
   background:
     radial-gradient(60% 120% at 12% 0%, rgb(255 255 255 / 0.75), transparent 60%),
@@ -64,22 +65,21 @@ const items = computed(() =>
 }
 .facts__list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.625rem;
 }
 .fact {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.875rem;
   align-items: center;
-  gap: 0.25rem;
-  padding: 1.25rem 0.75rem 1.125rem;
-  text-align: center;
-  border-radius: 1.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
   background: linear-gradient(160deg, rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.38));
   border: 1px solid rgb(255 255 255 / 0.85);
   box-shadow:
     0 1px 0 rgb(255 255 255 / 0.9) inset,
-    0 10px 30px -12px rgb(20 120 160 / 0.22);
+    0 8px 22px -12px rgb(20 120 160 / 0.22);
   -webkit-backdrop-filter: blur(14px) saturate(1.3);
   backdrop-filter: blur(14px) saturate(1.3);
   transition:
@@ -90,49 +90,48 @@ const items = computed(() =>
   transform: translateY(-2px);
   box-shadow:
     0 1px 0 rgb(255 255 255 / 0.9) inset,
-    0 16px 34px -12px rgb(20 120 160 / 0.3);
+    0 12px 26px -12px rgb(20 120 160 / 0.3);
 }
 .fact__icon {
-  width: 2rem;
-  height: 2rem;
-  margin-bottom: 0.625rem;
+  grid-row: span 2;
+  width: 1.5rem;
+  height: 1.5rem;
   color: #0e8fb5;
 }
 .fact__title {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1.1875rem;
+  font-size: 1.0625rem;
   line-height: 1.15;
   letter-spacing: -0.02em;
-  text-wrap: balance;
 }
 .fact__support {
   font-size: 0.8125rem;
   line-height: 1.3;
   color: rgb(6 26 44 / 0.62);
-  text-wrap: balance;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .facts {
-    padding-block: 2.25rem;
+    padding-block: 1.5rem;
   }
   .facts__list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
   }
   .fact {
-    padding: 1.75rem 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 1rem 1rem 0.875rem;
+    text-align: center;
   }
   .fact__icon {
-    width: 2.25rem;
-    height: 2.25rem;
+    margin-bottom: 0.375rem;
   }
   .fact__title {
-    font-size: 1.4375rem;
-  }
-  .fact__support {
-    font-size: 0.9375rem;
+    font-size: 1.1875rem;
   }
 }
 
