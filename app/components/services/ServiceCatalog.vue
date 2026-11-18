@@ -1,242 +1,237 @@
 <script setup lang="ts">
 /**
- * Catálogo de servicios (/servicios): una cuadrícula de tarjetas con fotografía, sin numerar (ningún servicio
- * es «el primero»: cada uno responde a una necesidad distinta). Dos composiciones, no una repetición:
- *   - Escritorio: fila de dos tarjetas anchas (7 + 5 columnas) y fila de tres (4 + 4 + 4).
- *   - Tablet: dos columnas, la primera tarjeta a todo el ancho. Móvil: una columna, foto y luego texto.
- * Cada tarjeta es un único enlace (el del h2, extendido a toda la tarjeta). Hover: la tarjeta sube 2 px y la
- * foto hace zoom 1,03 dentro de su marco; táctil: la foto se muestra siempre en color.
- * Fotografía: monocromo azul de marca en reposo y color al señalarla (tratamiento común con `ServiceTile`).
- * Sin pies de foto: la imagen no se explica.
+ * Índice de servicios (/servicios): una sola pantalla. Sin numerar (ningún servicio es «el primero»).
+ *
+ * Escritorio (≥ 1024 px): lista tipográfica a la izquierda y UNA fotografía grande a la derecha que cambia a la
+ * del servicio señalado (con el puntero o con el teclado). El servicio activo se lee entero (nombre, descripción
+ * y enlace); los demás quedan como nombres atenuados, así la lista cabe en la pantalla.
+ * Tablet y móvil: no hay hover, así que cada servicio es una fila con su miniatura, nombre y descripción.
+ *
+ * Una sola `<img>` por servicio (en escritorio ocupa la columna derecha; en móvil es la miniatura de la fila).
+ * Sin pies de foto. Cada fila es un único enlace (el del h2, extendido a toda la fila).
  */
 import { getServiceMedia, mediaSrcset } from '~/data/service-media'
 import { servicePath, services } from '~/data/services'
 
-const cards = services.map((service) => {
+const active = ref(0)
+
+const items = services.map((service) => {
   const media = getServiceMedia(service.slug)
   return { service, media, srcset: mediaSrcset(media.src) }
 })
+
+function onEnter(i: number, e: PointerEvent) {
+  if (e.pointerType === 'mouse') active.value = i
+}
 </script>
 
 <template>
-  <ul class="catalog container-wide" role="list">
-    <li
-      v-for="({ service, media, srcset }, i) in cards"
-      :key="service.slug"
-      class="card"
-      :class="`card--${i}`"
-    >
-      <div class="card__photo">
+  <div class="index container-wide">
+    <ul class="index__list" role="list">
+      <li
+        v-for="({ service, media, srcset }, i) in items"
+        :key="service.slug"
+        class="item"
+        :class="{ 'is-active': active === i }"
+        @pointerenter="onEnter(i, $event)"
+        @focusin="active = i"
+      >
         <img
+          class="item__photo"
           :src="publicUrl(media.src)"
           :srcset="srcset"
-          :sizes="srcset ? '(min-width: 1024px) 50vw, 100vw' : undefined"
+          :sizes="srcset ? '(min-width: 1024px) 46vw, 40vw' : undefined"
           alt=""
           width="1600"
           height="1200"
-          :loading="i < 2 ? 'eager' : 'lazy'"
+          :loading="i === 0 ? 'eager' : 'lazy'"
           decoding="async"
           draggable="false"
           :style="{ objectPosition: media.focus }"
         />
-        <span class="card__tint" />
-      </div>
-      <div class="card__body">
-        <h2 class="card__name">
-          <NuxtLink :to="servicePath(service.slug)" class="card__link">{{ service.name }}</NuxtLink>
-        </h2>
-        <ContentValue :value="service.description" as="p" class="card__desc" />
-        <span class="card__more" aria-hidden="true">
-          Ver el servicio
-          <BaseIcon name="arrow-right" class="card__arrow" />
-        </span>
-      </div>
-    </li>
-  </ul>
+        <div class="item__text">
+          <h2 class="item__name">
+            <NuxtLink :to="servicePath(service.slug)" class="item__link">{{ service.name }}</NuxtLink>
+          </h2>
+          <div class="item__more">
+            <ContentValue :value="service.description" as="p" class="item__desc" />
+          </div>
+        </div>
+        <BaseIcon name="arrow-up-right" class="item__arrow" />
+      </li>
+    </ul>
+  </div>
 </template>
 
 <style scoped>
-.catalog {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(1.25rem, 2.4vw, 2rem);
-  padding-block: clamp(2.5rem, 5vw, 4.5rem);
+.index {
+  padding-block: clamp(1.5rem, 4vw, 3.5rem) clamp(2.5rem, 6vw, 5rem);
+}
+.index__list {
+  position: relative;
 }
 
-/* ---------- Tarjeta ---------- */
-.card {
+/* ---------- Fila (móvil y tablet) ---------- */
+.item {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  border-radius: var(--radius-m);
-  background: var(--color-light-blue);
-  overflow: hidden;
-  isolation: isolate;
-  transition: translate 300ms var(--ease-out-soft);
+  display: grid;
+  grid-template-columns: clamp(6.5rem, 28vw, 11rem) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem clamp(1rem, 3vw, 1.75rem);
+  padding-block: clamp(1rem, 2.5vw, 1.5rem);
+  border-top: 1px solid var(--color-border);
 }
-.card__photo {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 4 / 3;
-  background: var(--color-ink);
-  /* Safari: recorte con zoom */
-  transform: translateZ(0);
+.item:last-child {
+  border-bottom: 1px solid var(--color-border);
 }
-.card__photo img {
+.item__photo {
   display: block;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1;
   object-fit: cover;
-  scale: 1;
-  transition:
-    scale var(--dur-image) var(--ease-out-soft),
-    filter 900ms var(--ease-out-soft);
+  border-radius: var(--radius-m);
 }
-.card__tint {
-  position: absolute;
-  inset: 0;
-  background: var(--color-cyan-light);
-  mix-blend-mode: multiply;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 900ms var(--ease-out-soft);
-}
-
-.card__body {
+.item__text {
   display: grid;
-  align-content: start;
-  gap: 0.75rem;
-  flex: 1;
-  padding: clamp(1.25rem, 2vw, 1.75rem);
+  gap: 0.4rem;
+  min-width: 0;
 }
-.card__name {
+.item__name {
   font-size: var(--text-heading-s);
   line-height: var(--text-heading-s--line-height);
   color: var(--color-ink);
 }
-/* Un único enlace por tarjeta: su área cubre toda la tarjeta */
-.card__link::after {
+/* Un único enlace por fila: su área cubre toda la fila */
+.item__link::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
 }
-.card__link:focus-visible {
+.item__link:focus-visible {
   outline: none;
 }
-.card:has(.card__link:focus-visible) {
+.item:has(.item__link:focus-visible) {
   outline: 2px solid var(--color-ink);
-  outline-offset: 3px;
+  outline-offset: 2px;
+  border-radius: var(--radius-s);
 }
-.card__desc {
-  max-width: 46ch;
+.item__more {
+  display: grid;
+}
+.item__desc {
+  min-height: 0;
+  overflow: hidden;
   font-size: var(--text-body);
   line-height: var(--text-body--line-height);
-  color: var(--color-text);
+  color: var(--color-text-secondary);
 }
-.card__more {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.25rem;
-  font-weight: 600;
+.item__arrow {
+  width: 1.5rem;
+  height: 1.5rem;
   color: var(--color-ink);
-  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
-  justify-self: start;
-  padding-bottom: 2px;
-  transition: background-size 400ms var(--ease-out-soft);
 }
-.card__arrow {
-  width: 1.1rem;
-  height: 1.1rem;
-  transition: translate 300ms var(--ease-out-soft);
-}
-
-/* Hover solo con puntero fino; en táctil, la foto siempre en color */
-@media (hover: hover) and (pointer: fine) {
-  .card__photo img {
-    filter: grayscale(1) contrast(1.08) brightness(1.05);
+@media (max-width: 479px) {
+  /* Móvil estrecho: la flecha sobra, la fila entera es el enlace */
+  .item {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
   }
-  .card__tint {
-    opacity: 0.95;
-  }
-  .card:hover {
-    translate: 0 -2px;
-  }
-  .card:hover .card__photo img {
-    filter: grayscale(0) contrast(1.02) brightness(1);
-    scale: 1.03;
-  }
-  .card:hover .card__tint {
-    opacity: 0.18;
-  }
-  .card:hover .card__more {
-    background-size: 100% 1px;
-  }
-  .card:hover .card__arrow {
-    translate: 4px 0;
+  .item__arrow {
+    display: none;
   }
 }
 
-/* ---------- Tablet: dos columnas, la primera a todo el ancho ---------- */
-@media (min-width: 700px) {
-  .catalog {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .card--0 {
-    grid-column: 1 / -1;
-  }
-  .card--0 .card__photo {
-    aspect-ratio: 21 / 9;
-  }
-}
-
-/* ---------- Escritorio: 7 + 5 y 4 + 4 + 4 ---------- */
+/* ---------- Escritorio: lista + fotografía única ---------- */
 @media (min-width: 1024px) {
-  .catalog {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+  .index__list {
+    /* La lista ocupa la mitad izquierda; la fotografía, la derecha con el alto de la lista */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    width: 52%;
+    min-height: min(70svh, 40rem);
+    align-content: start;
   }
-  .card--0 {
-    grid-column: 1 / span 7;
+  .item {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding-block: clamp(1.1rem, 2.2svh, 1.6rem);
+    transition: translate 300ms var(--ease-out-soft);
   }
-  .card--1 {
-    grid-column: 8 / span 5;
-  }
-  .card--2,
-  .card--3,
-  .card--4 {
-    grid-column: span 4;
-  }
-  .card--0 .card__photo,
-  .card--1 .card__photo {
-    aspect-ratio: 3 / 2;
-  }
-  /* Las dos tarjetas grandes comparten alto: la foto de la estrecha absorbe la diferencia */
-  .card--1 .card__photo {
+  .item__photo {
+    position: absolute;
+    top: 0;
+    left: calc(100% + clamp(2rem, 4vw, 4rem));
+    width: calc(100% * 46 / 52);
+    height: 100%;
     aspect-ratio: auto;
-    flex: 1;
-    min-height: 0;
+    border-radius: var(--radius-m);
+    opacity: 0;
+    scale: 1;
+    transition:
+      opacity 500ms var(--ease-out-soft),
+      scale var(--dur-image) var(--ease-out-soft);
+    pointer-events: none;
   }
-  .card--0 .card__name,
-  .card--1 .card__name {
-    font-size: var(--text-display-m);
-    line-height: var(--text-display-m--line-height);
+  /* La fila deja de ser la referencia de posición: la fotografía ocupa el alto de TODA la lista */
+  .item {
+    position: static;
+  }
+  .item__text {
+    position: relative;
+  }
+  .item__link::after {
+    inset: -1rem -1.25rem;
+  }
+  .item__name {
+    font-size: clamp(1.75rem, 0.9rem + 2.2vw, 3.25rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    /* Atenuado salvo el activo: texto grande, contraste ≥ 3:1 */
+    color: rgb(6 26 44 / 0.5);
+    transition: color 300ms var(--ease-out-soft);
+  }
+  .item__more {
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 450ms var(--ease-out-soft);
+  }
+  .item__arrow {
+    opacity: 0;
+    translate: -6px 6px;
+    transition:
+      opacity 300ms var(--ease-out-soft),
+      translate 300ms var(--ease-out-soft);
+  }
+  .item.is-active .item__photo {
+    opacity: 1;
+    scale: 1.015;
+  }
+  .item.is-active .item__name {
+    color: var(--color-ink);
+  }
+  .item.is-active .item__more {
+    grid-template-rows: 1fr;
+  }
+  .item.is-active .item__arrow {
+    opacity: 1;
+    translate: 0;
+  }
+  .item__desc {
+    max-width: 44ch;
+    font-size: var(--text-body-l);
+    line-height: var(--text-body-l--line-height);
+    color: var(--color-text);
+  }
+  .item.is-active .item__text {
+    gap: 0.6rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card,
-  .card__photo img,
-  .card__tint,
-  .card__more,
-  .card__arrow {
+  .item,
+  .item__photo,
+  .item__name,
+  .item__more,
+  .item__arrow {
     transition: none;
-  }
-  .card:hover,
-  .card:hover .card__photo img {
-    translate: 0;
-    scale: 1;
   }
 }
 </style>
