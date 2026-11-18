@@ -125,13 +125,16 @@ useGsapContext(section, (c) => {
 }
 
 /* ---------- Pie ---------- */
-/* Apilado (móvil y tablet vertical): el pie ocupa lo que deja el bloque de texto (~17 rem), sin pasarse del ancho */
+/* Apilado (móvil y tablet vertical): el pie ocupa lo que deja el bloque de texto (--text-h), sin pasarse del ancho
+   (108 vw: deja que la puntera y el talón rocen los bordes sin cortarse) y se centra en el hueco entre navbar y texto */
 .hero__model {
+  --text-h: 17rem;
+  --foot-w: clamp(15rem, min(108vw, 34rem), calc(var(--hero-h) - var(--nav-h) - var(--text-h)));
   position: absolute;
   z-index: 1;
-  top: calc(var(--nav-h) + 1rem);
+  top: calc(var(--nav-h) + max(0.5rem, (var(--hero-h) - var(--nav-h) - var(--text-h) - var(--foot-w)) / 2));
   left: 50%;
-  width: clamp(15rem, min(120vw, 34rem), calc(var(--hero-h) - var(--nav-h) - 17rem));
+  width: var(--foot-w);
   translate: -50% 0;
   filter: drop-shadow(0 30px 36px rgb(6 26 44 / 0.22));
   /* Sin fundido desde 0 con retardo: el póster es el LCP y debe verse en cuanto pinta; solo asienta (sube un poco) */
@@ -230,7 +233,8 @@ html[data-intro='play'] .hero__scroll {
 .hero__text {
   position: relative;
   z-index: 2;
-  padding-bottom: clamp(2rem, 8svh, 5rem);
+  /* En iPhone con barra de inicio el texto no queda pegado al borde (viewport-fit=cover) */
+  padding-bottom: calc(clamp(2rem, 8svh, 5rem) + env(safe-area-inset-bottom, 0px));
 }
 .hero__eyebrow {
   margin-bottom: 1rem;
@@ -292,10 +296,18 @@ html[data-intro='play'] .hero__desc {
 /* Tablet vertical: sigue apilado (texto abajo) pero con un pie más grande; lado a lado solo cabe apaisado */
 @media (min-width: 768px) {
   .hero__model {
-    width: clamp(20rem, min(100vw, 44rem), calc(var(--hero-h) - var(--nav-h) - 21rem));
+    --text-h: 21rem;
+    --foot-w: clamp(20rem, min(100vw, 44rem), calc(var(--hero-h) - var(--nav-h) - var(--text-h)));
   }
   .hero__text {
-    padding-bottom: clamp(3rem, 8svh, 5rem);
+    padding-bottom: calc(clamp(3rem, 8svh, 5rem) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Móviles muy estrechos (≤ 340 px): el titular baja un punto para que «Todo empieza» no desborde */
+@media (max-width: 340px) {
+  .hero__title {
+    font-size: 2.6rem;
   }
 }
 
