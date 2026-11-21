@@ -88,14 +88,14 @@ describe('contenido (spec 09)', () => {
     }
   })
 
-  it('equipo confirmado: Paula primero, ambas copropietarias y podólogas con foto y LinkedIn', () => {
+  it('equipo confirmado: Paula primero, Ana en recepción, ambas copropietarias y podólogas con foto y LinkedIn', () => {
     expect(team.map((m) => resolveValue(m.name))).toEqual([
       'Paula Vigara Aranda',
       'Valerie Savignano Gutiérrez',
-      'Nombre pendiente',
+      'Ana',
     ])
-    // La recepcionista es un marcador a la espera de datos de la clínica
-    expect(isPending(team[2]!.name)).toBe(true)
+    expect(resolveValue(team[2]!.role)).toBe('Recepción y administración')
+    expect(team[2]!.photo).not.toBeNull()
     for (const member of team.slice(0, 2)) {
       expect(resolveValue(member.role)).toBe('Copropietaria | Podóloga')
       expect(member.photo).not.toBeNull()

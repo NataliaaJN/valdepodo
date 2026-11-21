@@ -21,17 +21,22 @@ export interface TeamMember {
 }
 
 export interface TeamProfileData {
-  /** Titular corto bajo el nombre. */
-  lead: string
-  /** Formación y trayectoria, en orden cronológico. `when` es opcional. */
-  path: readonly { when?: string; title: string; place: string }[]
-  /** Áreas de interés. */
-  interests: readonly string[]
-  /** Qué hace en consulta. */
-  practice: readonly string[]
+  /** Titular: una frase que presenta a la persona. */
+  lead: Maybe<string>
+  /** Cifra destacada (opcional). */
+  stat?: { value: string; label: string }
+  /** Formación y trayectoria en orden cronológico (opcional). `when` es opcional. */
+  path?: readonly { when?: string; title: Maybe<string>; place: Maybe<string> }[]
+  /** Áreas de interés (opcional). */
+  interests?: readonly Maybe<string>[]
+  /** Qué hace en la clínica, con su título de bloque. */
+  practice: { title: string; items: readonly Maybe<string>[] }
   /** Su forma de trabajar: rasgo destacado y texto. */
-  approach: { trait: string; text: string }
+  approach: { trait: Maybe<string>; text: Maybe<string> }
 }
+
+/** Texto provisional de Valerie: validar con la clínica. */
+const V = (text: string) => pending(text, 'Texto de Valerie: validar con la clínica')
 
 const ROLE = 'Copropietaria | Podóloga'
 
@@ -59,12 +64,15 @@ export const team: readonly TeamMember[] = [
         },
       ],
       interests: ['Pie diabético', 'Quiropodología', 'Biomecánica'],
-      practice: [
-        'Tratamientos quiropodológicos',
-        'Estudios de la pisada',
-        'Exploraciones biomecánicas',
-        'Prescripción de plantillas',
-      ],
+      practice: {
+        title: 'En consulta',
+        items: [
+          'Tratamientos quiropodológicos',
+          'Estudios de la pisada',
+          'Exploraciones biomecánicas',
+          'Prescripción de plantillas',
+        ],
+      },
       approach: {
         trait: 'Cercanía y empatía',
         text: 'Para Paula es importante escuchar a cada paciente, transmitir confianza y encontrar la mejor solución para cada problema, teniendo siempre en cuenta sus necesidades.',
@@ -83,6 +91,23 @@ export const team: readonly TeamMember[] = [
     bio: null,
     specialties: [],
     license: null,
+    profile: {
+      lead: V('Titular de Valerie pendiente: una frase que la presente.'),
+      path: [
+        { when: 'Año', title: V('Formación pendiente'), place: V('Centro pendiente') },
+        { when: 'Año', title: V('Trayectoria pendiente'), place: V('Centro pendiente') },
+        { title: V('Posgrado pendiente'), place: V('Centro pendiente') },
+      ],
+      interests: [V('Área de interés'), V('Área de interés'), V('Área de interés')],
+      practice: {
+        title: 'En consulta',
+        items: [V('Tratamiento pendiente'), V('Tratamiento pendiente'), V('Tratamiento pendiente')],
+      },
+      approach: {
+        trait: V('Forma de trabajar'),
+        text: V('Texto pendiente sobre cómo trabaja Valerie y cómo trata a cada paciente.'),
+      },
+    },
     linkedin: 'https://es.linkedin.com/in/valerie-savignano-guti%C3%A9rrez-8552b3249',
     photo: {
       src: '/images/team/valerie-savignano.jpg',
@@ -90,13 +115,25 @@ export const team: readonly TeamMember[] = [
     },
   },
   {
-    id: 'recepcion',
-    name: pending('Nombre pendiente', 'Nombre de la recepcionista: validar con la clínica'),
-    role: pending('Recepcionista', 'Cargo de la recepcionista: validar con la clínica'),
+    id: 'ana',
+    name: 'Ana',
+    role: 'Recepción y administración',
     bio: null,
     specialties: [],
     license: null,
+    profile: {
+      lead: 'La persona que te recibe cuando llegas a Valdepodo y la que está al otro lado del teléfono cuando nos necesitas.',
+      stat: { value: '+40', label: 'años de experiencia en administración y atención al paciente' },
+      practice: {
+        title: 'En Valdepodo se encarga de',
+        items: ['Recepción', 'Gestión de citas', 'Atención telefónica', 'Tareas administrativas'],
+      },
+      approach: {
+        trait: 'Atenta, amable, empática y cercana',
+        text: 'Su cariño al recibir a cada paciente y la templanza que aporta al equipo hacen que sea una pieza fundamental para nosotras.',
+      },
+    },
     linkedin: null,
-    photo: null,
+    photo: { src: '/images/team/ana.jpg', alt: 'Ana, recepción y administración de Valdepodo' },
   },
 ]
