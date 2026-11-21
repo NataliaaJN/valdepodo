@@ -2,12 +2,11 @@
 /**
  * Índice de servicios (/servicios): una sola pantalla. Sin numerar (ningún servicio es «el primero»).
  *
- * Escritorio y tablet (≥ 700 px): lista tipográfica a la izquierda y UNA fotografía grande a la derecha que cambia a la
+ * Escritorio (≥ 1024 px): lista tipográfica a la izquierda y UNA fotografía grande a la derecha que cambia a la
  * del servicio señalado (con el puntero o con el teclado). El servicio activo se lee entero (nombre, descripción
  * y enlace); los demás quedan como nombres atenuados, así la lista cabe en la pantalla.
- * Tablet y escritorio (≥ 700 px): el mismo diseño.
- * Móvil (< 700 px): índice en filas sobre fondo hueso (nombre, resumen y miniatura), distinto de las piezas de
- * tinta de la landing y con los cinco servicios a la vista casi sin scroll.
+ * Sin hover (móvil y tablet, < 1024 px): índice en filas sobre fondo hueso con miniatura, todo el texto a la vista y
+ * cada fila enlaza a su página. Móvil: resumen corto; tablet: descripción completa y miniatura mayor.
  *
  * Una sola `<img>` por servicio (en escritorio ocupa la columna derecha; en móvil, el fondo de la tarjeta).
  * Sin pies de foto. Cada fila es un único enlace (el del h2, extendido a toda la fila).
@@ -42,7 +41,7 @@ function onEnter(i: number, e: PointerEvent) {
           class="item__photo"
           :src="publicUrl(media.src)"
           :srcset="srcset"
-          :sizes="srcset ? '(min-width: 700px) 46vw, 104px' : undefined"
+          :sizes="srcset ? '(min-width: 1024px) 46vw, (min-width: 700px) 168px, 104px' : undefined"
           alt=""
           width="1600"
           height="1200"
@@ -160,11 +159,11 @@ function onEnter(i: number, e: PointerEvent) {
   height: 1.25rem;
 }
 
-/* ---------- Móvil (< 700 px): filas con miniatura (anula las tarjetas de arriba) ---------- */
+/* ---------- Móvil y tablet (< 1024 px): filas con miniatura (anula las tarjetas de arriba) ---------- */
 .item__desc--short {
   display: none;
 }
-@media (max-width: 699px) {
+@media (max-width: 1023px) {
   .item__desc--short {
     display: block;
   }
@@ -173,7 +172,6 @@ function onEnter(i: number, e: PointerEvent) {
   }
   .index__list {
     gap: 0;
-    border-top: 1px solid var(--color-border);
   }
   .item {
     display: grid;
@@ -187,12 +185,15 @@ function onEnter(i: number, e: PointerEvent) {
     aspect-ratio: auto;
     overflow: visible;
     padding-block: 1.125rem;
-    border-bottom: 1px solid var(--color-border);
     border-radius: 0;
     background: none;
     color: var(--color-ink);
     transform: none;
     -webkit-tap-highlight-color: transparent;
+  }
+  /* Solo líneas entre servicios: ni encima del primero ni debajo del último */
+  .item + .item {
+    border-top: 1px solid var(--color-border);
   }
   .item::before {
     display: none;
@@ -230,6 +231,8 @@ function onEnter(i: number, e: PointerEvent) {
   .item__arrow {
     position: static;
     grid-area: arrow;
+    display: block;
+    justify-self: start;
     align-self: end;
     width: auto;
     height: auto;
@@ -247,8 +250,40 @@ function onEnter(i: number, e: PointerEvent) {
   }
 }
 
+/* ---------- Tablet (700–1023 px): la misma lista, a mayor escala (sin hover: todo el texto a la vista) ---------- */
+@media (min-width: 700px) and (max-width: 1023px) {
+  .item {
+    grid-template-columns: minmax(0, 1fr) 10.5rem;
+    column-gap: 2rem;
+    padding-block: 1.75rem;
+  }
+  .item__photo {
+    width: 10.5rem;
+    border-radius: var(--radius-m);
+  }
+  .item__text {
+    gap: 0.625rem;
+  }
+  .item__arrow {
+    align-self: start;
+    margin-top: 1rem;
+  }
+  .item__name {
+    font-size: var(--text-display-m);
+  }
+  .item__desc--short {
+    display: none;
+  }
+  .item__desc--full {
+    display: block;
+    max-width: 46ch;
+    font-size: var(--text-body-l);
+    line-height: var(--text-body-l--line-height);
+  }
+}
+
 /* ---------- Escritorio: lista + fotografía única ---------- */
-@media (min-width: 700px) {
+@media (min-width: 1024px) {
   .index__list {
     /* La lista ocupa la mitad izquierda; la fotografía, la derecha con el alto de la lista */
     position: relative;
@@ -276,8 +311,8 @@ function onEnter(i: number, e: PointerEvent) {
     grid-column: auto;
     aspect-ratio: auto;
   }
-  .item:last-child {
-    border-bottom: 1px solid var(--color-border);
+  .item:first-child {
+    border-top: 0;
   }
   .item::before {
     display: none;
