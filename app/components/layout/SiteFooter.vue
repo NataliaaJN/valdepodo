@@ -18,7 +18,11 @@ const year = new Date().getFullYear()
             <BrandLogo variant="symbol" mono label="" class="w-[20px]" />
             <BrandLogo variant="wordmark" mono label="" class="w-[108px]" />
           </NuxtLink>
-          <ContentValue :value="site.tagline" as="p" class="mt-6 font-display text-display-m text-bone" />
+          <ContentValue
+            :value="site.tagline"
+            as="p"
+            class="mt-6 font-display text-[length:clamp(1.5rem,1.1rem+1.5vw,2.25rem)] leading-[1.05] text-bone"
+          />
         </div>
 
         <address class="footer-col not-italic">

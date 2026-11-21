@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 /**
  * Pre-footer global: una pieza compacta, no un hero. Mensaje a la izquierda, un recorrido de huellas alternas
  * (pie izquierdo / derecho) que sube en diagonal y desemboca en «Pedir cita». Fondo claro con tokens de marca;
  * el footer (tinta) viene justo debajo.
  *
- * Animación: un timeline GSAP + ScrollTrigger con `scrub` (useGsapContext, como el resto del sitio) revela las
- * huellas con el scroll y, al final, el botón. Sin JS o con `prefers-reduced-motion` todo se ve ya dibujado.
+ * Animación: un timeline GSAP (useGsapContext, como el resto del sitio) que se reproduce una vez al entrar la
+ * sección en vista: las huellas aparecen una a una y, al final, el botón. Sin JS o con `prefers-reduced-motion` todo se ve ya dibujado.
  * Lo pinta el layout al final de todas las páginas (salvo en `/contacto`, donde ya está el formulario).
  */
 withDefaults(
@@ -53,19 +54,31 @@ useGsapContext(section, (c) => {
   if (c.reduce || !section.value) return undefined
   const prints = gsap.utils.toArray<SVGElement>('.print', section.value)
   const link = section.value.querySelector('.cta__link')
+  // Reproducción única al entrar en vista (no scrub): la sección está al final de la página y, con scrub, el
+  // progreso dependía del scroll máximo disponible (huellas a medias, o ya todas visibles al llegar por
+  // navegación). Así siempre arranca desde cero y termina completa, esté donde esté el scroll.
   const tl = gsap.timeline({
     defaults: { ease: 'power2.out' },
-    scrollTrigger: { trigger: section.value, start: 'top 95%', end: 'bottom 80%', scrub: 0.6 },
+    paused: true,
   })
-  tl.fromTo(prints, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 1, stagger: 0.55 })
+  tl.fromTo(prints, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.14 })
   if (link)
     tl.fromTo(
       link,
       { opacity: 0, scale: 0.8 },
-      { opacity: 1, scale: 1, duration: 1.1, ease: 'back.out(1.4)' },
-      '>-0.2',
+      { opacity: 1, scale: 1, duration: 0.7, ease: 'back.out(1.4)' },
+      '>-0.15',
     )
-  return undefined
+  const st = ScrollTrigger.create({
+    trigger: section.value,
+    start: 'top 92%',
+    once: true,
+    onEnter: () => tl.play(),
+  })
+  return () => {
+    st.kill()
+    tl.kill()
+  }
 })
 </script>
 
