@@ -2,12 +2,11 @@
 /**
  * Índice de servicios (/servicios): una sola pantalla. Sin numerar (ningún servicio es «el primero»).
  *
- * Escritorio (≥ 1024 px): lista tipográfica a la izquierda y UNA fotografía grande a la derecha que cambia a la
+ * Escritorio y tablet (≥ 700 px): lista tipográfica a la izquierda y UNA fotografía grande a la derecha que cambia a la
  * del servicio señalado (con el puntero o con el teclado). El servicio activo se lee entero (nombre, descripción
  * y enlace); los demás quedan como nombres atenuados, así la lista cabe en la pantalla.
- * Tablet (≥ 700 px): no hay hover, así que cada servicio es una tarjeta de fotografía a sangre con el nombre y la
- * descripción sobre un velo de tinta (contraste garantizado) y un botón de flecha.
- * Móvil (< 700 px): índice en filas sobre fondo hueso (nombre, descripción y miniatura), distinto de las piezas de
+ * Tablet y escritorio (≥ 700 px): el mismo diseño.
+ * Móvil (< 700 px): índice en filas sobre fondo hueso (nombre, resumen y miniatura), distinto de las piezas de
  * tinta de la landing y con los cinco servicios a la vista casi sin scroll.
  *
  * Una sola `<img>` por servicio (en escritorio ocupa la columna derecha; en móvil, el fondo de la tarjeta).
@@ -43,7 +42,7 @@ function onEnter(i: number, e: PointerEvent) {
           class="item__photo"
           :src="publicUrl(media.src)"
           :srcset="srcset"
-          :sizes="srcset ? '(min-width: 1024px) 46vw, (min-width: 700px) 50vw, 104px' : undefined"
+          :sizes="srcset ? '(min-width: 700px) 46vw, 104px' : undefined"
           alt=""
           width="1600"
           height="1200"
@@ -72,51 +71,55 @@ function onEnter(i: number, e: PointerEvent) {
   padding-block: clamp(1rem, 3vw, 3.5rem) clamp(2.5rem, 6vw, 5rem);
 }
 
-/* ---------- Móvil (< 700 px): índice en filas con miniatura ----------
-   Fondo hueso, hairlines y una fotografía pequeña por fila: los cinco servicios caben en poco más de una
-   pantalla y no repite las piezas de tinta de la landing. Cada fila entera es el enlace. */
+/* ---------- Móvil: tarjetas de fotografía a sangre ---------- */
 .index__list {
   display: grid;
-  border-top: 1px solid var(--color-border);
+  gap: 0.75rem;
 }
 .item {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 6.5rem;
-  grid-template-areas:
-    'text photo'
-    'arrow photo';
-  grid-template-rows: auto 1fr;
-  column-gap: 1.125rem;
-  align-items: start;
-  padding-block: 1.125rem;
-  border-bottom: 1px solid var(--color-border);
-  color: var(--color-ink);
-  -webkit-tap-highlight-color: transparent;
+  isolation: isolate;
+  display: flex;
+  align-items: flex-end;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-m);
+  background: var(--color-ink);
+  color: var(--color-bone);
+  /* Safari: recorte con radio */
+  transform: translateZ(0);
 }
 .item__photo {
-  grid-area: photo;
+  position: absolute;
+  z-index: -2;
+  inset: 0;
   display: block;
-  width: 6.5rem;
-  aspect-ratio: 4 / 5;
-  height: auto;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: var(--radius-s);
+}
+/* Velo de tinta: firme abajo (texto), casi nada arriba (la foto manda) */
+.item::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(to top, rgb(6 26 44 / 0.92) 0%, rgb(6 26 44 / 0.62) 38%, rgb(6 26 44 / 0) 72%);
 }
 .item__text {
-  grid-area: text;
   display: grid;
-  gap: 0.375rem;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1.25rem 4.5rem 1.375rem 1.25rem;
   min-width: 0;
 }
 .item__name {
-  font-size: clamp(1.5rem, 1.1rem + 1.8vw, 1.875rem);
-  line-height: 1.05;
+  font-size: clamp(1.75rem, 1.2rem + 2.4vw, 2.5rem);
+  line-height: 1.02;
   letter-spacing: -0.02em;
-  color: var(--color-ink);
-  text-wrap: balance;
+  color: var(--color-bone);
 }
-/* Un único enlace por fila: su área cubre toda la fila */
+/* Un único enlace por tarjeta: su área cubre toda la tarjeta */
 .item__link::after {
   content: '';
   position: absolute;
@@ -128,137 +131,124 @@ function onEnter(i: number, e: PointerEvent) {
 }
 .item:has(.item__link:focus-visible) {
   outline: 2px solid var(--color-ink);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 .item__more {
   display: grid;
 }
-/* Móvil: resumen corto; la descripción completa solo desde tablet */
-.item__desc--full {
-  display: none;
-}
 .item__desc {
   font-size: var(--text-body);
-  line-height: 1.45;
-  color: var(--color-text);
+  line-height: 1.5;
+  color: rgb(241 239 233 / 0.92);
 }
+/* Botón circular de flecha, abajo a la derecha */
 .item__arrow {
-  grid-area: arrow;
-  align-self: end;
-  margin-top: 0.5rem;
+  position: absolute;
+  right: 1.125rem;
+  bottom: 1.25rem;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  background: var(--color-bone);
   color: var(--color-ink);
   pointer-events: none;
 }
 .item__arrow :deep(svg) {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-.item:active .item__name {
-  opacity: 0.6;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
-/* ---------- Tablet (≥ 700 px): tarjetas de fotografía a sangre con velo de tinta ---------- */
-@media (min-width: 700px) {
-  .index__list {
-    border-top: 0;
-  }
-  .item {
-    display: flex;
-    align-items: flex-end;
-    isolation: isolate;
-    aspect-ratio: 4 / 5;
-    overflow: hidden;
-    padding-block: 0;
-    border-bottom: 0;
-    border-radius: var(--radius-m);
-    background: var(--color-ink);
-    color: var(--color-bone);
-    /* Safari: recorte con radio */
-    transform: translateZ(0);
-  }
-  .item__photo {
-    position: absolute;
-    z-index: -2;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    aspect-ratio: auto;
-    border-radius: 0;
-  }
-  /* Velo de tinta: firme abajo (texto), casi nada arriba (la foto manda) */
-  .item::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: 0;
-    background: linear-gradient(to top, rgb(6 26 44 / 0.92) 0%, rgb(6 26 44 / 0.62) 38%, rgb(6 26 44 / 0) 72%);
-  }
-  .item__text {
-    width: 100%;
-    gap: 0.5rem;
-    padding: 1.25rem 4.5rem 1.375rem 1.25rem;
-  }
-  .item__name {
-    font-size: clamp(1.75rem, 1.2rem + 2.4vw, 2.5rem);
-    line-height: 1.02;
-    color: var(--color-bone);
-  }
-  .item:has(.item__link:focus-visible) {
-    outline-offset: 3px;
-  }
+/* ---------- Móvil (< 700 px): filas con miniatura (anula las tarjetas de arriba) ---------- */
+.item__desc--short {
+  display: none;
+}
+@media (max-width: 699px) {
   .item__desc--short {
-    display: none;
-  }
-  .item__desc--full {
     display: block;
   }
-  .item__desc {
-    line-height: 1.5;
-    color: rgb(241 239 233 / 0.92);
+  .item__desc--full {
+    display: none;
   }
-  /* Botón circular de flecha, abajo a la derecha */
-  .item__arrow {
-    position: absolute;
-    right: 1.125rem;
-    bottom: 1.25rem;
+  .index__list {
+    gap: 0;
+    border-top: 1px solid var(--color-border);
+  }
+  .item {
     display: grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    margin: 0;
-    border-radius: 999px;
-    background: var(--color-bone);
+    grid-template-columns: minmax(0, 1fr) 6.5rem;
+    grid-template-areas:
+      'text photo'
+      'arrow photo';
+    grid-template-rows: auto 1fr;
+    column-gap: 1.125rem;
+    align-items: start;
+    aspect-ratio: auto;
+    overflow: visible;
+    padding-block: 1.125rem;
+    border-bottom: 1px solid var(--color-border);
+    border-radius: 0;
+    background: none;
+    color: var(--color-ink);
+    transform: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .item::before {
+    display: none;
+  }
+  .item__photo {
+    position: static;
+    z-index: auto;
+    grid-area: photo;
+    width: 6.5rem;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-s);
+  }
+  .item__text {
+    grid-area: text;
+    gap: 0.375rem;
+    padding: 0;
+  }
+  .item__name {
+    font-size: clamp(1.5rem, 1.1rem + 1.8vw, 1.875rem);
+    line-height: 1.05;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+  .item__link::after {
+    inset: 0;
+  }
+  .item:has(.item__link:focus-visible) {
+    outline-offset: 2px;
+  }
+  .item__desc {
+    line-height: 1.45;
+    color: var(--color-text);
+  }
+  .item__arrow {
+    position: static;
+    grid-area: arrow;
+    align-self: end;
+    width: auto;
+    height: auto;
+    margin-top: 0.5rem;
+    border-radius: 0;
+    background: none;
     color: var(--color-ink);
   }
   .item__arrow :deep(svg) {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
   }
   .item:active .item__name {
-    opacity: 1;
-  }
-}
-
-/* ---------- Tablet: dos columnas, la primera a todo el ancho ---------- */
-@media (min-width: 700px) {
-  .index__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-  }
-  .item:first-child {
-    grid-column: 1 / -1;
-    aspect-ratio: 16 / 8;
-  }
-  .item:first-child .item__text {
-    max-width: 42rem;
-  }
-  .item:first-child .item__name {
-    font-size: var(--text-display-m);
+    opacity: 0.6;
   }
 }
 
 /* ---------- Escritorio: lista + fotografía única ---------- */
-@media (min-width: 1024px) {
+@media (min-width: 700px) {
   .index__list {
     /* La lista ocupa la mitad izquierda; la fotografía, la derecha con el alto de la lista */
     position: relative;
