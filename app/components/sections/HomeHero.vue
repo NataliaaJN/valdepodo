@@ -24,10 +24,27 @@ const { tier } = useDeviceTier()
 const progress = ref(0)
 const sceneReady = ref(false)
 
+const POSTER = '/images/3d-fallbacks/foot/muscles'
+/** Anchura real del póster en cada diseño: apilado (móvil/tablet vertical) o lado a lado (≥ 768 px apaisado) */
+const POSTER_SIZES = '(min-width: 768px) and (min-aspect-ratio: 1/1) 56vw, (min-width: 768px) 100vw, 100vw'
+const poster = POSTER
 
-const poster = computed(
-  () => '/images/3d-fallbacks/foot/muscles',
-)
+// El póster es el LCP del sitio: se pide desde el <head>, en paralelo al JS, en vez de esperar al HTML del hero.
+// `type` evita descargarlo en navegadores sin AVIF (el <picture> cae a WebP por su cuenta).
+useHead({
+  link: [
+    {
+      key: 'hero-poster',
+      rel: 'preload',
+      as: 'image',
+      type: 'image/avif',
+      href: `${publicUrl(POSTER)}.avif`,
+      imagesrcset: `${publicUrl(POSTER)}-800.avif 800w, ${publicUrl(POSTER)}.avif 1600w`,
+      imagesizes: POSTER_SIZES,
+      fetchpriority: 'high',
+    },
+  ],
+})
 
 const loader = () => import('~/components/three/FootAnatomy.client.vue')
 const sceneProps = computed(() => ({
@@ -56,19 +73,24 @@ useGsapContext(section, (c) => {
 </script>
 
 <template>
-  <section ref="section" class="hero section-clip relative isolate" data-nav-theme="bone" aria-labelledby="hero-title">
+  <section
+    ref="section"
+    class="hero section-clip relative isolate"
+    data-nav-theme="bone"
+    aria-labelledby="hero-title"
+  >
     <div class="hero__model" aria-hidden="true">
       <div class="hero__fade">
-      <SceneGate
-        :loader="loader"
-        :scene-props="sceneProps"
-        :poster="poster"
-        poster-small
-        poster-sizes="(min-width: 1024px) 70vw, 100vw"
-        aspect-ratio="1 / 1"
-        priority
-        @ready="sceneReady = true"
-      />
+        <SceneGate
+          :loader="loader"
+          :scene-props="sceneProps"
+          :poster="poster"
+          poster-small
+          :poster-sizes="POSTER_SIZES"
+          aspect-ratio="1 / 1"
+          priority
+          @ready="sceneReady = true"
+        />
       </div>
     </div>
 
@@ -81,7 +103,8 @@ useGsapContext(section, (c) => {
     <div class="hero__text container-wide">
       <p class="eyebrow hero__eyebrow">Clínica de podología · <ContentValue :value="site.city" /></p>
       <h1 id="hero-title" class="hero__title">
-        {{ hero.title.before }}<em class="hero__accent">{{ hero.title.accent }}</em>{{ hero.title.after }}
+        {{ hero.title.before }}<em class="hero__accent">{{ hero.title.accent }}</em
+        >{{ hero.title.after }}
       </h1>
       <p class="hero__desc"><ContentValue :value="hero.description" /></p>
     </div>
@@ -90,9 +113,11 @@ useGsapContext(section, (c) => {
 
 <style scoped>
 .hero {
+  /* Alto de la sección; el pie se dimensiona con él para no pisar el texto en pantallas bajas */
+  --hero-h: max(100svh, 40rem);
   display: grid;
   align-items: end;
-  min-height: max(100svh, 40rem);
+  min-height: var(--hero-h);
   padding-top: var(--nav-h);
   color: var(--color-ink);
   /* Hueso plano: el pie 3D es la única pieza de color */
@@ -100,24 +125,28 @@ useGsapContext(section, (c) => {
 }
 
 /* ---------- Pie ---------- */
+/* Apilado (móvil y tablet vertical): el pie ocupa lo que deja el bloque de texto (--text-h), sin pasarse del ancho
+   (108 vw: deja que la puntera y el talón rocen los bordes sin cortarse) y se centra en el hueco entre navbar y texto */
 .hero__model {
+  --text-h: 17rem;
+  --foot-w: clamp(15rem, min(108vw, 34rem), calc(var(--hero-h) - var(--nav-h) - var(--text-h)));
   position: absolute;
   z-index: 1;
-  top: calc(var(--nav-h) + 1rem);
+  top: calc(var(--nav-h) + max(0.5rem, (var(--hero-h) - var(--nav-h) - var(--text-h) - var(--foot-w)) / 2));
   left: 50%;
-  width: min(120vw, 34rem);
+  width: var(--foot-w);
   translate: -50% 0;
   filter: drop-shadow(0 30px 36px rgb(6 26 44 / 0.22));
-  animation: model-in 1.8s var(--ease-out-soft) both;
-  animation-delay: 0.3s;
+  /* Sin fundido desde 0 con retardo: el póster es el LCP y debe verse en cuanto pinta; solo asienta (sube un poco) */
+  animation: model-in 0.9s var(--ease-out-soft) both;
 }
 html[data-intro='play'] .hero__model {
-  animation-delay: 1.4s;
+  animation-delay: 0.75s;
 }
 @keyframes model-in {
   from {
-    opacity: 0;
-    transform: translateY(6%) scale(0.97);
+    opacity: 0.4;
+    transform: translateY(4%) scale(0.98);
   }
 }
 
@@ -139,11 +168,11 @@ html[data-intro='play'] .hero__model {
   gap: 0.5rem;
   pointer-events: none;
   transition: opacity 0.3s linear;
-  animation: fade-up 1.4s var(--ease-out-soft) both;
-  animation-delay: 1s;
+  animation: fade-up 0.9s var(--ease-out-soft) both;
+  animation-delay: 0.5s;
 }
 html[data-intro='play'] .hero__scroll {
-  animation-delay: 2s;
+  animation-delay: 1.3s;
 }
 .hero__mouse {
   display: block;
@@ -204,13 +233,14 @@ html[data-intro='play'] .hero__scroll {
 .hero__text {
   position: relative;
   z-index: 2;
-  padding-bottom: clamp(2rem, 8svh, 5rem);
+  /* En iPhone con barra de inicio el texto no queda pegado al borde (viewport-fit=cover) */
+  padding-bottom: calc(clamp(2rem, 8svh, 5rem) + env(safe-area-inset-bottom, 0px));
 }
 .hero__eyebrow {
   margin-bottom: 1rem;
   color: rgb(6 26 44 / 0.7);
-  animation: fade-up 1.2s var(--ease-out-soft) both;
-  animation-delay: 0.2s;
+  animation: fade-up 0.7s var(--ease-out-soft) both;
+  animation-delay: 0.05s;
 }
 .hero__title {
   max-width: 9.5ch;
@@ -220,8 +250,8 @@ html[data-intro='play'] .hero__scroll {
   line-height: 0.96;
   letter-spacing: -0.035em;
   text-wrap: balance;
-  animation: fade-up 1.4s var(--ease-out-soft) both;
-  animation-delay: 0.35s;
+  animation: fade-up 0.8s var(--ease-out-soft) both;
+  animation-delay: 0.12s;
 }
 .hero__desc {
   max-width: 32ch;
@@ -229,8 +259,8 @@ html[data-intro='play'] .hero__scroll {
   color: rgb(6 26 44 / 0.72);
   font-size: var(--text-body);
   line-height: var(--text-body--line-height);
-  animation: fade-up 1.4s var(--ease-out-soft) both;
-  animation-delay: 0.5s;
+  animation: fade-up 0.8s var(--ease-out-soft) both;
+  animation-delay: 0.22s;
 }
 /* Acento: las propias letras en el cyan principal de la paleta */
 .hero__accent {
@@ -238,14 +268,15 @@ html[data-intro='play'] .hero__scroll {
   font-weight: 600;
   color: var(--color-primary);
 }
+/* Con el loading de marca encima (primera visita) el texto entra justo cuando se retira, no después */
 html[data-intro='play'] .hero__eyebrow {
-  animation-delay: 1.3s;
+  animation-delay: 0.75s;
 }
 html[data-intro='play'] .hero__title {
-  animation-delay: 1.45s;
+  animation-delay: 0.82s;
 }
 html[data-intro='play'] .hero__desc {
-  animation-delay: 1.6s;
+  animation-delay: 0.92s;
 }
 @keyframes fade-up {
   from {
@@ -254,7 +285,34 @@ html[data-intro='play'] .hero__desc {
   }
 }
 
+/* Móvil: sin indicador de scroll. El ratón es una metáfora de escritorio, el gesto en táctil es evidente y el icono
+   competía con el texto en el borde inferior */
+@media (max-width: 767px) {
+  .hero__scroll {
+    display: none;
+  }
+}
+
+/* Tablet vertical: sigue apilado (texto abajo) pero con un pie más grande; lado a lado solo cabe apaisado */
 @media (min-width: 768px) {
+  .hero__model {
+    --text-h: 21rem;
+    --foot-w: clamp(20rem, min(100vw, 44rem), calc(var(--hero-h) - var(--nav-h) - var(--text-h)));
+  }
+  .hero__text {
+    padding-bottom: calc(clamp(3rem, 8svh, 5rem) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Móviles muy estrechos (≤ 340 px): el titular baja un punto para que «Todo empieza» no desborde */
+@media (max-width: 340px) {
+  .hero__title {
+    font-size: 2.6rem;
+  }
+}
+
+/* Lado a lado: tablet/escritorio apaisados y móvil apaisado */
+@media (min-width: 768px) and (min-aspect-ratio: 1/1), (max-height: 520px) and (min-aspect-ratio: 1/1) {
   .hero {
     align-items: center;
   }
@@ -270,6 +328,25 @@ html[data-intro='play'] .hero__desc {
   }
 }
 
+/* Móvil apaisado y ventanas muy bajas: el hero cabe en la pantalla (sin los 40 rem mínimos) y el titular escala con el alto */
+@media (max-height: 520px) and (min-aspect-ratio: 1/1) {
+  .hero {
+    --hero-h: 100svh;
+  }
+  .hero__model {
+    width: min(48vw, calc(100svh - var(--nav-h) - 1rem));
+    right: 6vw;
+  }
+  .hero__title {
+    font-size: clamp(2.25rem, 13svh, 4.5rem);
+  }
+  .hero__desc {
+    margin-top: 0.75rem;
+  }
+  .hero__scroll {
+    display: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .hero__wheel,
   .hero__chevron {
