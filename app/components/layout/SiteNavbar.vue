@@ -214,9 +214,10 @@ onBeforeUnmount(() => {
     <div class="nav-shell">
     <div class="nav-grid">
       <NuxtLink to="/" class="brand relative z-10" aria-label="Valdepodo, inicio">
-        <!-- Arriba del todo: logotipo completo (con subtítulo). Con scroll: solo huella + VALDEPODO, más pequeño -->
+        <!-- Arriba del todo: huella a la izquierda y VALDEPODO + subtítulo a la derecha. Con scroll: solo huella + VALDEPODO, más pequeño -->
         <span class="brand__full" aria-hidden="true">
-          <BrandLogo variant="full" label="" :mono="theme !== 'bone'" class="brand__full-svg" />
+          <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="brand__full-symbol" />
+          <BrandLogo variant="text" label="" :mono="theme !== 'bone'" class="brand__full-text" />
         </span>
         <span class="brand__compact">
           <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="brand__symbol" />
@@ -457,14 +458,22 @@ onBeforeUnmount(() => {
 .brand__full {
   position: absolute;
   left: 0;
-  top: 0.5rem;
-  width: 8.25rem;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.875rem;
+  transform: translateY(-50%);
   transition:
     opacity var(--dur-base) var(--ease-out-soft),
     transform var(--dur-base) var(--ease-out-soft);
 }
-.brand__full-svg {
-  width: 100%;
+.brand__full-symbol {
+  width: 38px;
+  flex: none;
+}
+.brand__full-text {
+  width: 216px;
+  max-width: none;
 }
 .brand__compact {
   display: inline-flex;
@@ -490,7 +499,13 @@ onBeforeUnmount(() => {
 }
 @media (max-width: 480px) {
   .brand__full {
-    width: 6.5rem;
+    gap: 0.5rem;
+  }
+  .brand__full-symbol {
+    width: 30px;
+  }
+  .brand__full-text {
+    width: 160px;
   }
   .brand__wordmark {
     width: 128px;
@@ -501,7 +516,7 @@ onBeforeUnmount(() => {
 }
 .is-compact .brand__full {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateY(calc(-50% - 8px));
   pointer-events: none;
 }
 .is-compact .brand__compact {

@@ -3,11 +3,12 @@
  * Logotipo de Valdepodo, vectorizado desde la imagen completa del logotipo (1024 × 1024 px,
  * trazado a 2048 px). La rejilla del viewBox es la de ese trazado ampliado ×2.
  * - variant "full": símbolo + wordmark + subtítulo «Clínica de podología»
+ * - variant "text": «VALDEPODO» + subtítulo (sin huella)
  * - variant "lockup": símbolo + wordmark (sin subtítulo)
  * - variant "symbol": solo la huella
  * - variant "wordmark": solo "VALDEPODO"
  */
-type LogoVariant = 'full' | 'lockup' | 'symbol' | 'wordmark'
+type LogoVariant = 'full' | 'lockup' | 'text' | 'symbol' | 'wordmark'
 
 const props = withDefaults(
   defineProps<{
@@ -23,13 +24,14 @@ const props = withDefaults(
 const viewBoxes: Record<LogoVariant, string> = {
   full: '370 190 1310 1650',
   lockup: '420 190 1205 1485',
+  text: '370 1535 1310 305',
   symbol: '720 195 605 1260',
   wordmark: '425 1535 1195 136',
 }
 
-const showSymbol = computed(() => props.variant !== 'wordmark')
+const showSymbol = computed(() => props.variant !== 'wordmark' && props.variant !== 'text')
 const showWordmark = computed(() => props.variant !== 'symbol')
-const showSubtitle = computed(() => props.variant === 'full')
+const showSubtitle = computed(() => props.variant === 'full' || props.variant === 'text')
 </script>
 
 <template>
