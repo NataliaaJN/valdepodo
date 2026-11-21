@@ -44,16 +44,21 @@ if (confirmedPeople.length) {
     <!-- Hero a pantalla completa: foto del equipo -->
     <ClinicHero id="about-title" title="Clínica de podología Valdepodo" :photo="clinic.teamPhoto" />
 
-    <!-- 1. Personas: un capítulo a sangre por profesional, los tres con el mismo peso -->
-    <section id="equipo" aria-labelledby="team-title">
-      <div class="container-wide py-[clamp(3.5rem,6vw,5.5rem)]" data-nav-theme="bone">
+    <!-- 1. Personas: tarjetas iguales; la ficha completa se abre en un modal -->
+    <section
+      id="equipo"
+      class="py-[clamp(3.5rem,6vw,5.5rem)]"
+      aria-labelledby="team-title"
+      data-nav-theme="bone"
+    >
+      <div class="container-wide">
         <SectionHeading
           id="team-title"
           :title="{ before: 'Equipo' }"
           intro="Profesionales que te escuchan y te explican cada paso."
         />
+        <TeamMembers :members="team" class="mt-8 lg:mt-12" />
       </div>
-      <TeamMembers :members="team" />
     </section>
 
     <!-- 2. Forma de trabajar -->
