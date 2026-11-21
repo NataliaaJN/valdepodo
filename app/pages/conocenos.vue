@@ -44,22 +44,20 @@ if (confirmedPeople.length) {
     <!-- Hero a pantalla completa: foto del equipo -->
     <ClinicHero id="about-title" title="Clínica de podología Valdepodo" :photo="clinic.teamPhoto" />
 
-    <!-- 1. Personas -->
+    <!-- 1. Personas: tarjetas iguales; la ficha completa se abre en un modal -->
     <section
       id="equipo"
-      class="team py-[clamp(3.5rem,6vw,5.5rem)]"
+      class="py-[clamp(3.5rem,6vw,5.5rem)]"
       aria-labelledby="team-title"
       data-nav-theme="bone"
     >
-      <div class="container-wide team__grid">
+      <div class="container-wide">
         <SectionHeading
           id="team-title"
           :title="{ before: 'Equipo' }"
           intro="Profesionales que te escuchan y te explican cada paso."
         />
-        <div class="team__cards">
-          <TeamCard v-for="(member, i) in team" :key="member.id" v-reveal="i" :member="member" />
-        </div>
+        <TeamMembers :members="team" class="mt-8 lg:mt-12" />
       </div>
     </section>
 
@@ -80,16 +78,6 @@ if (confirmedPeople.length) {
 </template>
 
 <style scoped>
-.team__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 2rem;
-}
-.team__cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
-  gap: 1rem;
-}
 .space__head {
   display: grid;
   gap: 1.25rem;
@@ -99,18 +87,6 @@ if (confirmedPeople.length) {
   color: var(--color-text-secondary);
 }
 @media (min-width: 1024px) {
-  .team__grid {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: 1.5rem;
-    align-items: start;
-  }
-  .team__grid > :first-child {
-    grid-column: 1 / span 4;
-  }
-  .team__cards {
-    grid-column: 5 / span 8;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
   .space__head {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: 1.5rem;
