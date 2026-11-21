@@ -207,17 +207,22 @@ onBeforeUnmount(() => {
   <header
     ref="header"
     class="site-navbar fixed inset-x-0 top-0 z-40"
-    :class="[`theme-${theme}`, { 'is-scrolled': scrolled && !open, 'is-open': open, 'has-mega': megaOpen }]"
+    :class="[`theme-${theme}`, { 'is-scrolled': scrolled && !open, 'is-compact': scrolled || open, 'is-open': open, 'has-mega': megaOpen }]"
     @keydown="onKeydown"
     @focusout="onFocusOut"
   >
     <div class="nav-shell">
     <div class="nav-grid">
       <NuxtLink to="/" class="brand relative z-10" aria-label="Valdepodo, inicio">
-        <!-- El símbolo (262 × 472) se dimensiona por anchura: BrandLogo fija height: auto -->
-        <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="brand__symbol" />
-        <span class="brand__text">
-          <BrandLogo variant="wordmark" label="" :mono="theme !== 'bone'" class="brand__wordmark" />
+        <!-- Arriba del todo: logotipo completo (con subtítulo). Con scroll: solo huella + VALDEPODO, más pequeño -->
+        <span class="brand__full" aria-hidden="true">
+          <BrandLogo variant="full" label="" :mono="theme !== 'bone'" class="brand__full-svg" />
+        </span>
+        <span class="brand__compact">
+          <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="brand__symbol" />
+          <span class="brand__text">
+            <BrandLogo variant="wordmark" label="" :mono="theme !== 'bone'" class="brand__wordmark" />
+          </span>
         </span>
       </NuxtLink>
 
@@ -443,35 +448,65 @@ onBeforeUnmount(() => {
   }
 }
 
-/* ----- Logo: completo siempre; el símbolo se ajusta con el scroll ----- */
+/* ----- Logo: completo (con subtítulo) en scroll 0; con scroll, huella + VALDEPODO más pequeño ----- */
 .brand {
+  position: relative;
   display: inline-flex;
   align-items: center;
 }
+.brand__full {
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  width: 8.25rem;
+  transition:
+    opacity var(--dur-base) var(--ease-out-soft),
+    transform var(--dur-base) var(--ease-out-soft);
+}
+.brand__full-svg {
+  width: 100%;
+}
+.brand__compact {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity var(--dur-base) var(--ease-out-soft),
+    transform var(--dur-base) var(--ease-out-soft);
+}
 .brand__symbol {
-  width: 34px;
+  width: 30px;
   flex: none;
-  transition: width var(--dur-base) var(--ease-out-soft);
 }
 .brand__text {
   display: block;
-  margin-left: 0.875rem;
+  margin-left: 0.75rem;
 }
 .brand__wordmark {
   display: block;
-  width: 184px;
+  width: 160px;
   max-width: none;
 }
 @media (max-width: 480px) {
+  .brand__full {
+    width: 6.5rem;
+  }
   .brand__wordmark {
-    width: 144px;
+    width: 128px;
   }
   .brand__text {
-    margin-left: 0.625rem;
+    margin-left: 0.5rem;
   }
 }
-.is-scrolled .brand__symbol {
-  width: 30px;
+.is-compact .brand__full {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+.is-compact .brand__compact {
+  opacity: 1;
+  transform: none;
 }
 
 /* ----- Enlaces: texto sobre el fondo, subrayado fino que se dibuja ----- */
@@ -806,7 +841,8 @@ onBeforeUnmount(() => {
   .nav-shell,
   .site-navbar::before,
   .menu-bar,
-  .brand__symbol,
+  .brand__full,
+  .brand__compact,
   .nav-link::after,
   .bento__tile,
   .svcmenu-enter-active,
