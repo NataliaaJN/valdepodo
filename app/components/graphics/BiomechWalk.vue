@@ -114,7 +114,13 @@ useGsapContext(root, (c) => {
               :class="{ 'is-active': i === idx }"
               :aria-current="live && i === idx ? 'step' : undefined"
             >
-              <svg v-if="!live" class="walk__mini" viewBox="0 70 400 500" aria-hidden="true" focusable="false">
+              <svg
+                v-if="!live"
+                class="walk__mini"
+                viewBox="0 70 400 500"
+                aria-hidden="true"
+                focusable="false"
+              >
                 <WalkStation :phase="i" :cy="320" role="active" :sub="1" mode="instant" />
               </svg>
               <p class="walk__num">{{ phase.number }}</p>
