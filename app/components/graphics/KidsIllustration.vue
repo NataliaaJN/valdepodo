@@ -55,13 +55,25 @@ defineProps<{ kind: KidsIllustrationKind }>()
     <!-- Dedos y uñas: cinco dedos vistos desde arriba -->
     <template v-else-if="kind === 'toes'">
       <g transform="translate(-12 0)">
-      <ellipse cx="70" cy="78" rx="21" ry="26" stroke="var(--color-primary)" stroke-width="1.5" fill="var(--color-light-blue)" />
-      <path d="M58 66 C 58 54, 82 54, 82 66 C 78 70, 62 70, 58 66 Z" stroke="var(--color-cyan)" stroke-width="1.5" />
-      <ellipse cx="108" cy="64" rx="12" ry="16" stroke="var(--color-primary)" stroke-width="1.5" />
-      <ellipse cx="132" cy="70" rx="10.5" ry="14" stroke="var(--color-primary)" stroke-width="1.5" />
-      <ellipse cx="152" cy="79" rx="9.5" ry="12.5" stroke="var(--color-primary)" stroke-width="1.5" />
-      <ellipse cx="168" cy="91" rx="8" ry="10.5" stroke="var(--color-primary)" stroke-width="1.5" />
-      <path d="M44 112 h124" stroke="var(--color-ice-blue)" stroke-width="1.5" stroke-dasharray="2 5" />
+        <ellipse
+          cx="70"
+          cy="78"
+          rx="21"
+          ry="26"
+          stroke="var(--color-primary)"
+          stroke-width="1.5"
+          fill="var(--color-light-blue)"
+        />
+        <path
+          d="M58 66 C 58 54, 82 54, 82 66 C 78 70, 62 70, 58 66 Z"
+          stroke="var(--color-cyan)"
+          stroke-width="1.5"
+        />
+        <ellipse cx="108" cy="64" rx="12" ry="16" stroke="var(--color-primary)" stroke-width="1.5" />
+        <ellipse cx="132" cy="70" rx="10.5" ry="14" stroke="var(--color-primary)" stroke-width="1.5" />
+        <ellipse cx="152" cy="79" rx="9.5" ry="12.5" stroke="var(--color-primary)" stroke-width="1.5" />
+        <ellipse cx="168" cy="91" rx="8" ry="10.5" stroke="var(--color-primary)" stroke-width="1.5" />
+        <path d="M44 112 h124" stroke="var(--color-ice-blue)" stroke-width="1.5" stroke-dasharray="2 5" />
       </g>
     </template>
 

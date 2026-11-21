@@ -58,7 +58,13 @@ useGsapContext(section, (c) => {
     scrollTrigger: { trigger: section.value, start: 'top 95%', end: 'bottom 80%', scrub: 0.6 },
   })
   tl.fromTo(prints, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 1, stagger: 0.55 })
-  if (link) tl.fromTo(link, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 1.1, ease: 'back.out(1.4)' }, '>-0.2')
+  if (link)
+    tl.fromTo(
+      link,
+      { opacity: 0, scale: 0.8 },
+      { opacity: 1, scale: 1, duration: 1.1, ease: 'back.out(1.4)' },
+      '>-0.2',
+    )
   return undefined
 })
 </script>
@@ -72,7 +78,9 @@ useGsapContext(section, (c) => {
   >
     <div class="container-wide cta__inner">
       <div class="cta__msg">
-        <h2 id="cta-title" v-reveal class="cta__title">{{ title }}<span class="cta__stop" aria-hidden="true">.</span></h2>
+        <h2 id="cta-title" v-reveal class="cta__title">
+          {{ title }}<span class="cta__stop" aria-hidden="true">.</span>
+        </h2>
         <p v-reveal="1" class="cta__text">{{ text }}</p>
       </div>
 
@@ -87,7 +95,9 @@ useGsapContext(section, (c) => {
           focusable="false"
           :style="{ '--i': p.i, left: `${p.x}%`, top: `${p.y}%`, '--rot': `${p.rot}deg` }"
         >
-          <g class="print__shadow" transform="translate(3.5 4.5)"><Footprint :side="p.side" variant="fill" /></g>
+          <g class="print__shadow" transform="translate(3.5 4.5)">
+            <Footprint :side="p.side" variant="fill" />
+          </g>
           <g class="print__body"><Footprint :side="p.side" variant="fill" /></g>
           <g class="print__light" transform="translate(-2 -2.5)">
             <Footprint :side="p.side" variant="outline" :stroke-width="1.6" />

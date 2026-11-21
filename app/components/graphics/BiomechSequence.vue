@@ -99,7 +99,9 @@ onBeforeUnmount(() => observer?.disconnect())
           <div class="sticky top-0 flex h-svh items-center">
             <div class="flex w-full items-center gap-5 lg:gap-10">
               <div class="shrink-0">
-                <p class="font-display text-display-m leading-none text-primary-strong">{{ current.number }}</p>
+                <p class="font-display text-display-m leading-none text-primary-strong">
+                  {{ current.number }}
+                </p>
                 <p class="mt-1 text-sm text-text-secondary">— {{ lastNumber }}</p>
                 <svg viewBox="0 0 48 250" class="mt-6 w-10 overflow-visible">
                   <g

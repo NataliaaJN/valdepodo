@@ -31,7 +31,10 @@ defineSlots<{ default?: () => unknown; actions?: () => unknown }>()
           :id="id ?? 'page-title'"
           v-reveal
           class="page-header__title"
-          :class="[size === 'mega' ? 'mega' : size === 'l' ? 'size-l' : 'text-display-xl', { 'no-eyebrow': !eyebrow }]"
+          :class="[
+            size === 'mega' ? 'mega' : size === 'l' ? 'size-l' : 'text-display-xl',
+            { 'no-eyebrow': !eyebrow },
+          ]"
         >
           {{ title }}
         </h1>

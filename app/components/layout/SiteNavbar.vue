@@ -207,88 +207,101 @@ onBeforeUnmount(() => {
   <header
     ref="header"
     class="site-navbar fixed inset-x-0 top-0 z-40"
-    :class="[`theme-${theme}`, { 'is-scrolled': scrolled && !open, 'is-compact': scrolled || open, 'is-open': open, 'has-mega': megaOpen }]"
+    :class="[
+      `theme-${theme}`,
+      {
+        'is-scrolled': scrolled && !open,
+        'is-compact': scrolled || open,
+        'is-open': open,
+        'has-mega': megaOpen,
+      },
+    ]"
     @keydown="onKeydown"
     @focusout="onFocusOut"
   >
     <div class="nav-shell">
-    <div class="nav-grid">
-      <NuxtLink to="/" class="brand relative z-10" aria-label="Valdepodo, inicio">
-        <!-- Arriba del todo: huella a la izquierda y VALDEPODO + subtítulo a la derecha. Con scroll: solo huella + VALDEPODO, más pequeño -->
-        <span class="brand__full" aria-hidden="true">
-          <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="brand__full-symbol" />
-          <BrandLogo variant="text" label="" :mono="theme !== 'bone'" class="brand__full-text" />
-        </span>
-        <span class="brand__compact">
-          <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="brand__symbol" />
-          <span class="brand__text">
-            <BrandLogo variant="wordmark" label="" :mono="theme !== 'bone'" class="brand__wordmark" />
+      <div class="nav-grid">
+        <NuxtLink to="/" class="brand relative z-10" aria-label="Valdepodo, inicio">
+          <!-- Arriba del todo: huella a la izquierda y VALDEPODO + subtítulo a la derecha. Con scroll: solo huella + VALDEPODO, más pequeño -->
+          <span class="brand__full" aria-hidden="true">
+            <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="brand__full-symbol" />
+            <BrandLogo variant="text" label="" :mono="theme !== 'bone'" class="brand__full-text" />
           </span>
-        </span>
-      </NuxtLink>
+          <span class="brand__compact">
+            <BrandLogo variant="symbol" label="" :mono="theme !== 'bone'" class="brand__symbol" />
+            <span class="brand__text">
+              <BrandLogo variant="wordmark" label="" :mono="theme !== 'bone'" class="brand__wordmark" />
+            </span>
+          </span>
+        </NuxtLink>
 
-      <nav class="hidden lg:block" aria-label="Principal">
-        <ul class="nav-list">
-          <li v-for="item in site.nav" :key="item.to">
-            <div
-              v-if="item.to === '/servicios'"
-              class="nav-item--mega"
-              @pointerenter="openMega"
-              @pointerleave="closeMega"
-            >
+        <nav class="hidden lg:block" aria-label="Principal">
+          <ul class="nav-list">
+            <li v-for="item in site.nav" :key="item.to">
+              <div
+                v-if="item.to === '/servicios'"
+                class="nav-item--mega"
+                @pointerenter="openMega"
+                @pointerleave="closeMega"
+              >
+                <NuxtLink
+                  :to="item.to"
+                  class="nav-link nav-link--mega"
+                  :aria-current="isActive(item.to) ? 'page' : undefined"
+                  >{{ item.label }}</NuxtLink
+                >
+                <button
+                  ref="megaButton"
+                  type="button"
+                  class="nav-chevron"
+                  aria-controls="mega-servicios"
+                  :aria-expanded="megaOpen"
+                  aria-label="Ver los servicios"
+                  @click="toggleMega"
+                >
+                  <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                    <path
+                      d="M2.5 4.5 6 8l3.5-3.5"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="square"
+                    />
+                  </svg>
+                </button>
+              </div>
               <NuxtLink
+                v-else
                 :to="item.to"
-                class="nav-link nav-link--mega"
+                class="nav-link"
                 :aria-current="isActive(item.to) ? 'page' : undefined"
                 >{{ item.label }}</NuxtLink
               >
-              <button
-                ref="megaButton"
-                type="button"
-                class="nav-chevron"
-                aria-controls="mega-servicios"
-                :aria-expanded="megaOpen"
-                aria-label="Ver los servicios"
-                @click="toggleMega"
-              >
-                <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                  <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
-                </svg>
-              </button>
-            </div>
-            <NuxtLink
-              v-else
-              :to="item.to"
-              class="nav-link"
-              :aria-current="isActive(item.to) ? 'page' : undefined"
-              >{{ item.label }}</NuxtLink
-            >
-          </li>
-        </ul>
-      </nav>
+            </li>
+          </ul>
+        </nav>
 
-      <div class="nav-end relative z-10">
-        <div class="hidden lg:block">
-          <BaseButton size="sm" class="nav-cta" variant="primary" :to="site.cta.to" arrow>
-            {{ site.cta.label }}
-          </BaseButton>
+        <div class="nav-end relative z-10">
+          <div class="hidden lg:block">
+            <BaseButton size="sm" class="nav-cta" variant="primary" :to="site.cta.to" arrow>
+              {{ site.cta.label }}
+            </BaseButton>
+          </div>
+          <button
+            ref="menuButton"
+            type="button"
+            class="menu-button lg:hidden"
+            aria-controls="site-menu"
+            :aria-expanded="open"
+            @click="open ? closeMenu() : openMenu()"
+          >
+            <span class="menu-label">{{ open ? 'Cerrar' : 'Menú' }}</span>
+            <span class="menu-bars" aria-hidden="true">
+              <span class="menu-bar" />
+              <span class="menu-bar" />
+            </span>
+          </button>
         </div>
-        <button
-          ref="menuButton"
-          type="button"
-          class="menu-button lg:hidden"
-          aria-controls="site-menu"
-          :aria-expanded="open"
-          @click="open ? closeMenu() : openMenu()"
-        >
-          <span class="menu-label">{{ open ? 'Cerrar' : 'Menú' }}</span>
-          <span class="menu-bars" aria-hidden="true">
-            <span class="menu-bar" />
-            <span class="menu-bar" />
-          </span>
-        </button>
       </div>
-    </div>
     </div>
 
     <!-- Servicios en bento grid (≥ 1024 px) -->
@@ -302,7 +315,11 @@ onBeforeUnmount(() => {
       >
         <div class="svcmenu__panel">
           <ul class="bento" role="list">
-            <li v-for="(service, i) in services" :key="service.slug" :class="`bento__item bento__item--${i + 1}`">
+            <li
+              v-for="(service, i) in services"
+              :key="service.slug"
+              :class="`bento__item bento__item--${i + 1}`"
+            >
               <NuxtLink :to="servicePath(service.slug)" class="bento__tile">
                 <span class="bento__name">{{ service.name }}</span>
                 <BaseIcon name="arrow-up-right" class="bento__go" />
@@ -328,12 +345,7 @@ onBeforeUnmount(() => {
         <div class="container-wide flex h-full flex-col pt-28 pb-8">
           <nav aria-label="Principal (móvil)">
             <ul class="grid">
-              <li
-                v-for="(item, i) in site.nav"
-                :key="item.to"
-                class="menu-item"
-                :style="{ '--i': i }"
-              >
+              <li v-for="(item, i) in site.nav" :key="item.to" class="menu-item" :style="{ '--i': i }">
                 <NuxtLink
                   :to="item.to"
                   class="menu-link"
