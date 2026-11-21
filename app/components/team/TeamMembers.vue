@@ -1,25 +1,39 @@
 <script setup lang="ts">
 /**
- * Equipo (spec 05 §2): tríptico editorial. Las tres personas tienen exactamente el mismo peso: mismo ancho,
- * misma estructura y todo a la vista, sin pestañas ni acordeones que destaquen a nadie. Cada columna lleva un
- * retrato en arco sobre un fondo suave, nombre y cargo, una frase, sus datos (cifra, formación, áreas, qué hace)
- * y, al pie y alineada entre columnas, su forma de trabajar. Columnas separadas por filetes, no por cajas.
- * Hover: el retrato hace zoom 1,03. Sin foto: marcador. Los textos pendientes se resuelven con `ContentValue`.
+ * Equipo (spec 05 §2): tres «capítulos» a sangre, uno por persona, como el resto del rediseño («Paso a paso»:
+ * capítulos de color, tipografía monumental). Los tres son idénticos en estructura, tamaño y contenido, solo
+ * cambian el color y el lado de la foto (alternan), así que nadie pesa más que otra:
+ * mitad foto a sangre + mitad texto con el nombre de pila en grande, su frase, formación o cifra, áreas,
+ * qué hace y su forma de trabajar. Todo el color sale de `currentColor`, así que cada capítulo cambia solo
+ * `--bg` y `--fg`. Móvil: foto arriba a sangre y texto debajo. Hover: la foto hace zoom 1,03.
  */
 import { resolveValue } from '#shared/utils/pending'
 import type { TeamMember } from '~/data/team'
 
 defineProps<{ members: readonly TeamMember[] }>()
 
-/** Tres tintes de la misma claridad: ninguna columna pesa más que otra. */
-const tints = ['var(--color-cyan-light)', 'var(--color-ice)', 'var(--color-cyan-mist)']
+/** Paleta de los capítulos: cian de marca, tinta y cian claro. */
+const chapters = [
+  { bg: 'var(--color-primary)', fg: 'var(--color-ink)', nav: 'bone' },
+  { bg: 'var(--color-ink)', fg: 'var(--color-bone)', nav: 'ink' },
+  { bg: 'var(--color-cyan-light)', fg: 'var(--color-ink)', nav: 'bone' },
+] as const
+
+const first = (m: TeamMember) => resolveValue(m.name).split(' ')[0]
 </script>
 
 <template>
-  <div class="trio">
+  <div class="team">
     <template v-for="(m, i) in members" :key="m.id">
-      <article v-if="m.profile" v-reveal="i" class="person" :aria-labelledby="`${m.id}-name`">
-        <div class="portrait" :style="{ '--tint': tints[i % tints.length] }">
+      <article
+        v-if="m.profile"
+        class="spread"
+        :class="{ 'spread--flip': i % 2 === 1 }"
+        :style="{ '--bg': chapters[i % 3]!.bg, '--fg': chapters[i % 3]!.fg }"
+        :data-nav-theme="chapters[i % 3]!.nav"
+        :aria-labelledby="`${m.id}-name`"
+      >
+        <div class="spread__photo">
           <img
             v-if="m.photo"
             :src="publicUrl(m.photo.src)"
@@ -27,168 +41,193 @@ const tints = ['var(--color-cyan-light)', 'var(--color-ice)', 'var(--color-cyan-
             width="800"
             height="1000"
             loading="lazy"
-            class="portrait__img"
+            class="spread__img"
           />
-          <PhotoPlaceholder v-else ratio="4 / 5" variant="portrait" class="portrait__img" />
-          <a v-if="m.linkedin" :href="resolveValue(m.linkedin)" target="_blank" rel="noopener" class="social">
-            <BaseIcon name="linkedin" class="size-5" />
-            <span class="sr-only">LinkedIn de {{ resolveValue(m.name) }} (se abre en una pestaña nueva)</span>
-          </a>
+          <PhotoPlaceholder v-else ratio="4 / 5" variant="portrait" class="spread__img" />
         </div>
 
-        <header class="who">
-          <h3 :id="`${m.id}-name`" class="who__name">{{ resolveValue(m.name) }}</h3>
-          <p class="who__role"><ContentValue :value="m.role" /></p>
-        </header>
-
-        <p class="lead"><ContentValue :value="m.profile.lead" /></p>
-
-        <p v-if="m.profile.stat" class="stat">
-          <span class="stat__value">{{ m.profile.stat.value }}</span>
-          <span class="stat__label">{{ m.profile.stat.label }}</span>
-        </p>
-
-        <section v-if="m.profile.path" class="blk" :aria-labelledby="`${m.id}-path`">
-          <h4 :id="`${m.id}-path`" class="blk__title">Formación y trayectoria</h4>
-          <ol class="path">
-            <li v-for="(step, k) in m.profile.path" :key="k" class="path__item">
-              <p class="path__title">
-                <ContentValue :value="step.title" />
-                <span v-if="step.when" class="path__when">{{ step.when }}</span>
+        <div class="spread__text">
+          <div v-reveal class="spread__inner">
+            <header>
+              <p class="role"><ContentValue :value="m.role" /></p>
+              <h3 :id="`${m.id}-name`" class="name">
+                <span class="name__first" aria-hidden="true">{{ first(m) }}</span>
+                <span class="sr-only">{{ resolveValue(m.name) }}</span>
+              </h3>
+              <p v-if="resolveValue(m.name) !== first(m)" class="fullname" aria-hidden="true">
+                {{ resolveValue(m.name) }}
               </p>
-              <p class="path__place"><ContentValue :value="step.place" /></p>
-            </li>
-          </ol>
-        </section>
+            </header>
 
-        <section v-if="m.profile.interests" class="blk" :aria-labelledby="`${m.id}-int`">
-          <h4 :id="`${m.id}-int`" class="blk__title">Áreas de interés</h4>
-          <ul class="chips">
-            <li v-for="(a, k) in m.profile.interests" :key="k"><ContentValue :value="a" /></li>
-          </ul>
-        </section>
+            <p class="lead"><ContentValue :value="m.profile.lead" /></p>
 
-        <section class="blk" :aria-labelledby="`${m.id}-prac`">
-          <h4 :id="`${m.id}-prac`" class="blk__title">{{ m.profile.practice.title }}</h4>
-          <ul class="prac">
-            <li v-for="(item, k) in m.profile.practice.items" :key="k">
-              <BaseIcon name="check" class="size-5 flex-none" />
-              <ContentValue :value="item" />
-            </li>
-          </ul>
-        </section>
+            <div class="facts">
+              <p v-if="m.profile.stat" class="stat">
+                <span class="stat__value">{{ m.profile.stat.value }}</span>
+                <span class="stat__label">{{ m.profile.stat.label }}</span>
+              </p>
 
-        <blockquote class="approach">
-          <p class="approach__trait"><ContentValue :value="m.profile.approach.trait" /></p>
-          <p class="approach__text"><ContentValue :value="m.profile.approach.text" /></p>
-        </blockquote>
+              <section v-if="m.profile.path" :aria-labelledby="`${m.id}-path`">
+                <h4 :id="`${m.id}-path`" class="blk__title">Formación y trayectoria</h4>
+                <ol class="path">
+                  <li v-for="(step, k) in m.profile.path" :key="k">
+                    <p class="path__title">
+                      <ContentValue :value="step.title" />
+                      <span v-if="step.when" class="path__when">{{ step.when }}</span>
+                    </p>
+                    <p class="path__place"><ContentValue :value="step.place" /></p>
+                  </li>
+                </ol>
+              </section>
+
+              <div class="facts__col">
+                <section v-if="m.profile.interests" :aria-labelledby="`${m.id}-int`">
+                  <h4 :id="`${m.id}-int`" class="blk__title">Áreas de interés</h4>
+                  <ul class="chips">
+                    <li v-for="(a, k) in m.profile.interests" :key="k"><ContentValue :value="a" /></li>
+                  </ul>
+                </section>
+
+                <section :aria-labelledby="`${m.id}-prac`">
+                  <h4 :id="`${m.id}-prac`" class="blk__title">{{ m.profile.practice.title }}</h4>
+                  <ul class="prac">
+                    <li v-for="(item, k) in m.profile.practice.items" :key="k">
+                      <BaseIcon name="check" class="size-5 flex-none" />
+                      <ContentValue :value="item" />
+                    </li>
+                  </ul>
+                </section>
+              </div>
+            </div>
+
+            <blockquote class="approach">
+              <p class="approach__trait"><ContentValue :value="m.profile.approach.trait" /></p>
+              <p class="approach__text"><ContentValue :value="m.profile.approach.text" /></p>
+            </blockquote>
+
+            <a
+              v-if="m.linkedin"
+              :href="resolveValue(m.linkedin)"
+              target="_blank"
+              rel="noopener"
+              class="social"
+            >
+              <BaseIcon name="linkedin" class="size-5" />
+              <span>LinkedIn</span>
+              <span class="sr-only">de {{ resolveValue(m.name) }} (se abre en una pestaña nueva)</span>
+            </a>
+          </div>
+        </div>
       </article>
     </template>
   </div>
 </template>
 
 <style scoped>
-.trio {
+.spread {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 3.5rem;
-}
-.person {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  min-width: 0;
+  background: var(--bg);
+  color: var(--fg);
 }
 
-/* ---------- Retrato en arco ---------- */
-.portrait {
+/* ---------- Foto a sangre ---------- */
+.spread__photo {
   position: relative;
   overflow: hidden;
   aspect-ratio: 4 / 5;
-  border-radius: 999px 999px var(--radius-l) var(--radius-l);
-  background: var(--tint);
+  max-height: 80svh;
+  width: 100%;
+  background: var(--color-text);
   transform: translateZ(0);
 }
-.portrait__img {
+.spread__img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 15%;
+  object-position: 50% 14%;
   scale: 1;
   transition: scale var(--dur-image) var(--ease-out-soft);
 }
-.social {
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: var(--radius-s);
-  background: var(--color-bone);
-  color: var(--color-ink);
-  transition:
-    background-color var(--dur-base) var(--ease-out-soft),
-    color var(--dur-base) var(--ease-out-soft),
-    scale var(--dur-fast) var(--ease-out-soft);
-}
-.social:active {
-  scale: 0.96;
-}
 
 /* ---------- Texto ---------- */
-.who__name {
-  font-family: var(--font-display);
-  font-weight: 650;
-  font-stretch: 80%;
-  font-size: clamp(1.75rem, 1.3rem + 1.4vw, 2.5rem);
-  line-height: 1;
-  color: var(--color-ink);
-  text-wrap: balance;
+.spread__text {
+  display: flex;
+  align-items: center;
+  padding: clamp(2.5rem, 6vw, 5rem) var(--gutter);
 }
-.who__role {
+.spread__inner {
+  display: grid;
+  gap: clamp(1.5rem, 2.4vw, 2rem);
+  width: 100%;
+  max-width: 42rem;
+}
+.role {
+  font-weight: 600;
+  opacity: 0.8;
+}
+.name {
   margin-top: 0.5rem;
-  color: var(--color-text-secondary);
+  line-height: 0.8;
 }
-.lead {
+.name__first {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-stretch: 75%;
+  font-size: clamp(4.5rem, 1rem + 10vw, 10rem);
+  line-height: 0.82;
+  letter-spacing: -0.02em;
+}
+.fullname {
+  margin-top: 0.75rem;
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.5rem);
-  line-height: 1.2;
-  color: var(--color-ink);
+  font-size: var(--text-heading-s);
+  line-height: 1.1;
+}
+.lead {
+  max-width: 34ch;
+  font-size: var(--text-body-l);
+  line-height: 1.4;
   text-wrap: pretty;
 }
+
+.facts {
+  display: grid;
+  gap: 1.75rem 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+}
+.facts__col {
+  display: grid;
+  gap: 1.5rem;
+  align-content: start;
+}
+.blk__title {
+  margin-bottom: 0.625rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
 .stat {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
+  gap: 1rem;
 }
 .stat__value {
   font-family: var(--font-display);
   font-weight: 700;
   font-stretch: 75%;
-  font-size: 4.5rem;
+  font-size: clamp(4rem, 2rem + 5vw, 6.5rem);
   line-height: 0.8;
-  color: var(--color-ink);
 }
 .stat__label {
+  max-width: 20ch;
   line-height: 1.3;
-  font-size: 0.9375rem;
-  color: var(--color-text-secondary);
-}
-.blk {
-  display: grid;
-  gap: 0.75rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
-}
-.blk__title {
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: var(--color-ink);
 }
 
 .path {
@@ -198,18 +237,17 @@ const tints = ['var(--color-cyan-light)', 'var(--color-ice)', 'var(--color-cyan-
 .path__title {
   font-weight: 650;
   line-height: 1.3;
-  color: var(--color-ink);
 }
 .path__when {
   margin-left: 0.5rem;
   font-size: var(--text-small);
   font-weight: 500;
-  color: var(--color-text-secondary);
+  opacity: 0.75;
 }
 .path__place {
   font-size: 0.9375rem;
   line-height: 1.35;
-  color: var(--color-text-secondary);
+  opacity: 0.8;
 }
 
 .chips {
@@ -219,11 +257,10 @@ const tints = ['var(--color-cyan-light)', 'var(--color-ice)', 'var(--color-cyan-
 }
 .chips li {
   padding: 0.3125rem 0.75rem;
-  border: 1px solid var(--color-ink);
+  border: 1px solid currentColor;
   border-radius: var(--radius-pill);
   font-weight: 600;
   font-size: 0.9375rem;
-  color: var(--color-ink);
 }
 .prac li {
   display: flex;
@@ -233,70 +270,85 @@ const tints = ['var(--color-cyan-light)', 'var(--color-ice)', 'var(--color-cyan-
   font-size: 0.9375rem;
 }
 .prac li + li {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent);
 }
 
-/* Forma de trabajar: pegada al pie, alineada entre columnas */
 .approach {
-  margin-top: auto;
-  padding: 1.25rem;
-  border-radius: var(--radius-m);
-  background: var(--color-primary);
-  color: var(--color-ink);
+  padding-top: 1.5rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 30%, transparent);
 }
 .approach__trait {
   font-family: var(--font-display);
   font-weight: 650;
   font-stretch: 80%;
-  font-size: 1.375rem;
+  font-size: var(--text-heading-s);
   line-height: 1.1;
 }
 .approach__text {
   margin-top: 0.625rem;
-  font-size: 0.9375rem;
-  line-height: 1.5;
+  max-width: 52ch;
+  line-height: 1.55;
 }
 
-@media (min-width: 768px) {
-  .trio {
-    max-width: 34rem;
-    margin-inline: auto;
+.social {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-self: start;
+  min-height: 2.75rem;
+  padding: 0 1.125rem 0 0.875rem;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-s);
+  font-weight: 600;
+  transition:
+    background-color var(--dur-base) var(--ease-out-soft),
+    color var(--dur-base) var(--ease-out-soft),
+    scale var(--dur-fast) var(--ease-out-soft);
+}
+.social:active {
+  scale: 0.97;
+}
+.social:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+@media (min-width: 640px) {
+  .facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stat {
+    grid-column: 1 / -1;
   }
 }
 @media (min-width: 1024px) {
-  .trio {
-    --cg: clamp(2rem, 4vw, 4rem);
-    max-width: none;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    column-gap: var(--cg);
-    row-gap: 0;
+  .spread {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: clamp(36rem, 56vw, 52rem);
   }
-  /* Filete en mitad del hueco: las tres columnas miden exactamente lo mismo */
-  .person + .person::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: calc(var(--cg) / -2);
-    width: 1px;
-    background: var(--color-border);
+  .spread__photo {
+    aspect-ratio: auto;
+    max-height: none;
+    height: 100%;
   }
-  /* Nombres de una o dos líneas: la frase empieza a la misma altura en las tres */
-  .who__name {
-    min-height: 2em;
+  .spread--flip .spread__photo {
+    order: 2;
+  }
+  .spread__text {
+    padding-inline: clamp(2rem, 5vw, 6rem);
   }
 }
 @media (hover: hover) and (pointer: fine) {
-  .portrait:hover .portrait__img {
+  .spread__photo:hover .spread__img {
     scale: 1.03;
   }
   .social:hover {
-    background: var(--color-ink);
-    color: var(--color-bone);
+    background: var(--fg);
+    color: var(--bg);
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .portrait__img,
+  .spread__img,
   .social {
     transition-duration: 1ms;
   }
