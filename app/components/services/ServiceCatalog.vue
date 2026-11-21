@@ -5,8 +5,8 @@
  * Escritorio (≥ 1024 px): lista tipográfica a la izquierda y UNA fotografía grande a la derecha que cambia a la
  * del servicio señalado (con el puntero o con el teclado). El servicio activo se lee entero (nombre, descripción
  * y enlace); los demás quedan como nombres atenuados, así la lista cabe en la pantalla.
- * Tablet y móvil: no hay hover, así que cada servicio es una tarjeta de fotografía a sangre con el nombre y la
- * descripción sobre un velo de tinta (contraste garantizado) y un botón de flecha.
+ * Sin hover (móvil y tablet, < 1024 px): índice en filas sobre fondo hueso con miniatura, todo el texto a la vista y
+ * cada fila enlaza a su página. Móvil: resumen corto; tablet: descripción completa y miniatura mayor.
  *
  * Una sola `<img>` por servicio (en escritorio ocupa la columna derecha; en móvil, el fondo de la tarjeta).
  * Sin pies de foto. Cada fila es un único enlace (el del h2, extendido a toda la fila).
@@ -41,7 +41,7 @@ function onEnter(i: number, e: PointerEvent) {
           class="item__photo"
           :src="publicUrl(media.src)"
           :srcset="srcset"
-          :sizes="srcset ? '(min-width: 1024px) 46vw, (min-width: 700px) 50vw, 100vw' : undefined"
+          :sizes="srcset ? '(min-width: 1024px) 46vw, (min-width: 700px) 168px, 104px' : undefined"
           alt=""
           width="1600"
           height="1200"
@@ -55,7 +55,8 @@ function onEnter(i: number, e: PointerEvent) {
             <NuxtLink :to="servicePath(service.slug)" class="item__link">{{ service.name }}</NuxtLink>
           </h2>
           <div class="item__more">
-            <ContentValue :value="service.description" as="p" class="item__desc" />
+            <ContentValue :value="service.summary" as="p" class="item__desc item__desc--short" />
+            <ContentValue :value="service.description" as="p" class="item__desc item__desc--full" />
           </div>
         </div>
         <span class="item__arrow" aria-hidden="true"><BaseIcon name="arrow-up-right" /></span>
@@ -158,21 +159,126 @@ function onEnter(i: number, e: PointerEvent) {
   height: 1.25rem;
 }
 
-/* ---------- Tablet: dos columnas, la primera a todo el ancho ---------- */
-@media (min-width: 700px) {
+/* ---------- Móvil y tablet (< 1024 px): filas con miniatura (anula las tarjetas de arriba) ---------- */
+.item__desc--short {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .item__desc--short {
+    display: block;
+  }
+  .item__desc--full {
+    display: none;
+  }
   .index__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
+    gap: 0;
   }
-  .item:first-child {
-    grid-column: 1 / -1;
-    aspect-ratio: 16 / 8;
+  .item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 6.5rem;
+    grid-template-areas:
+      'text photo'
+      'arrow photo';
+    grid-template-rows: auto 1fr;
+    column-gap: 1.125rem;
+    align-items: start;
+    aspect-ratio: auto;
+    overflow: visible;
+    padding-block: 1.125rem;
+    border-radius: 0;
+    background: none;
+    color: var(--color-ink);
+    transform: none;
+    -webkit-tap-highlight-color: transparent;
   }
-  .item:first-child .item__text {
-    max-width: 42rem;
+  /* Solo líneas entre servicios: ni encima del primero ni debajo del último */
+  .item + .item {
+    border-top: 1px solid var(--color-border);
   }
-  .item:first-child .item__name {
+  .item::before {
+    display: none;
+  }
+  .item__photo {
+    position: static;
+    z-index: auto;
+    grid-area: photo;
+    width: 6.5rem;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-s);
+  }
+  .item__text {
+    grid-area: text;
+    gap: 0.375rem;
+    padding: 0;
+  }
+  .item__name {
+    font-size: clamp(1.5rem, 1.1rem + 1.8vw, 1.875rem);
+    line-height: 1.05;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+  .item__link::after {
+    inset: 0;
+  }
+  .item:has(.item__link:focus-visible) {
+    outline-offset: 2px;
+  }
+  .item__desc {
+    line-height: 1.45;
+    color: var(--color-text);
+  }
+  .item__arrow {
+    position: static;
+    grid-area: arrow;
+    display: block;
+    justify-self: start;
+    align-self: end;
+    width: auto;
+    height: auto;
+    margin-top: 0.5rem;
+    border-radius: 0;
+    background: none;
+    color: var(--color-ink);
+  }
+  .item__arrow :deep(svg) {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  .item:active .item__name {
+    opacity: 0.6;
+  }
+}
+
+/* ---------- Tablet (700–1023 px): la misma lista, a mayor escala (sin hover: todo el texto a la vista) ---------- */
+@media (min-width: 700px) and (max-width: 1023px) {
+  .item {
+    grid-template-columns: minmax(0, 1fr) 10.5rem;
+    column-gap: 2rem;
+    padding-block: 1.75rem;
+  }
+  .item__photo {
+    width: 10.5rem;
+    border-radius: var(--radius-m);
+  }
+  .item__text {
+    gap: 0.625rem;
+  }
+  .item__arrow {
+    align-self: start;
+    margin-top: 1rem;
+  }
+  .item__name {
     font-size: var(--text-display-m);
+  }
+  .item__desc--short {
+    display: none;
+  }
+  .item__desc--full {
+    display: block;
+    max-width: 46ch;
+    font-size: var(--text-body-l);
+    line-height: var(--text-body-l--line-height);
   }
 }
 
@@ -205,8 +311,8 @@ function onEnter(i: number, e: PointerEvent) {
     grid-column: auto;
     aspect-ratio: auto;
   }
-  .item:last-child {
-    border-bottom: 1px solid var(--color-border);
+  .item:first-child {
+    border-top: 0;
   }
   .item::before {
     display: none;
