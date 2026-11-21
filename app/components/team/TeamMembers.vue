@@ -372,6 +372,9 @@ onBeforeUnmount(() => {
 @media (min-width: 1024px) {
   .grid {
     gap: 1.5rem;
+    /* Tarjetas algo más contenidas: el bloque se centra bajo el título */
+    max-width: 66rem;
+    margin-inline: auto;
   }
   .card {
     aspect-ratio: 4 / 5;
