@@ -9,7 +9,6 @@ export type ServiceGraphic = 'pressure' | 'insole' | 'nail' | 'growth' | 'contro
 
 export interface Service {
   slug: string
-  number: string
   name: string
   summary: Maybe<string>
   /** Descripción del índice de servicios y de la meta description (spec 04 §0). */
@@ -29,7 +28,6 @@ const NEEDS = '"Te ayuda si…" del servicio (spec 04 §0): validar con la clín
 export const services: readonly Service[] = [
   {
     slug: 'estudio-biomecanico',
-    number: '01',
     name: 'Estudio biomecánico',
     summary: pending('Analizamos cómo apoyas y cómo te mueves para entender tu pisada.', VALIDATE),
     description: pending(
@@ -47,7 +45,6 @@ export const services: readonly Service[] = [
   },
   {
     slug: 'plantillas-personalizadas',
-    number: '02',
     name: 'Plantillas personalizadas',
     summary: pending('Plantillas diseñadas a partir de la valoración de tu pie.', VALIDATE),
     description: pending(
@@ -65,7 +62,6 @@ export const services: readonly Service[] = [
   },
   {
     slug: 'podologia-general',
-    number: '03',
     name: 'Podología general',
     summary: pending('Cuidado de uñas y piel del pie, y tratamiento de molestias frecuentes.', VALIDATE),
     description: pending(
@@ -83,7 +79,6 @@ export const services: readonly Service[] = [
   },
   {
     slug: 'podologia-infantil',
-    number: '04',
     name: 'Podología infantil',
     summary: pending('Seguimiento del pie durante el crecimiento.', VALIDATE),
     description: pending(
@@ -101,7 +96,6 @@ export const services: readonly Service[] = [
   },
   {
     slug: 'pie-diabetico',
-    number: '05',
     name: 'Pie diabético',
     summary: pending('Revisión y cuidado preventivo del pie en personas con diabetes.', VALIDATE),
     description: pending(
