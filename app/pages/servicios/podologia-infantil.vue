@@ -50,7 +50,11 @@ const [gait, arch, toes, shoe] = kids.assessments
       </div>
     </ServiceSection>
 
-    <section class="consult chapter-blue section-clip" aria-labelledby="kids-consult-title" data-nav-theme="bone">
+    <section
+      class="consult chapter-blue section-clip"
+      aria-labelledby="kids-consult-title"
+      data-nav-theme="bone"
+    >
       <div class="container-wide">
         <h2 id="kids-consult-title" v-reveal class="consult__title">{{ kids.consultTitle }}</h2>
         <ol class="path" role="list">

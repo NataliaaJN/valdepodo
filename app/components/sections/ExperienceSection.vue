@@ -13,9 +13,7 @@ const { years } = useClinic()
     <div class="container-wide">
       <div class="exp__row">
         <h2 id="exp-title" v-reveal class="exp__headline">
-          <span class="exp__num"
-            >{{ years }}</span
-          >
+          <span class="exp__num">{{ years }}</span>
           <span class="exp__rest">años cuidando de la salud de tus pies.</span>
         </h2>
       </div>

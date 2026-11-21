@@ -26,7 +26,14 @@ const props = withDefaults(
     /** Tamaño del modelo en la escena (por defecto, el del encuadre compartido). */
     fit?: number
   }>(),
-  { src: undefined, rotationY: FOOT_VIEW.rotationY, idleSpin: false, studio: false, step: undefined, fit: undefined },
+  {
+    src: undefined,
+    rotationY: FOOT_VIEW.rotationY,
+    idleSpin: false,
+    studio: false,
+    step: undefined,
+    fit: undefined,
+  },
 )
 const emit = defineEmits<{
   ready: []

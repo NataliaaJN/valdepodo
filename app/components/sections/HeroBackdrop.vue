@@ -17,10 +17,27 @@ const uid = useId().replace(/[^a-z0-9]/gi, '')
     <svg class="bd__silk" preserveAspectRatio="none">
       <defs>
         <filter :id="`silk-${uid}`" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-          <feTurbulence type="fractalNoise" baseFrequency="0.0013 0.0034" numOctaves="2" seed="11" result="n" />
-          <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 3.4 -1.2" result="na" />
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.0013 0.0034"
+            numOctaves="2"
+            seed="11"
+            result="n"
+          />
+          <feColorMatrix
+            in="n"
+            type="matrix"
+            values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 3.4 -1.2"
+            result="na"
+          />
           <feGaussianBlur in="na" stdDeviation="14" result="nb" />
-          <feDiffuseLighting in="nb" surfaceScale="9" diffuseConstant="1.05" lighting-color="#ffffff" result="d">
+          <feDiffuseLighting
+            in="nb"
+            surfaceScale="9"
+            diffuseConstant="1.05"
+            lighting-color="#ffffff"
+            result="d"
+          >
             <feDistantLight azimuth="235" elevation="46" />
           </feDiffuseLighting>
           <feSpecularLighting

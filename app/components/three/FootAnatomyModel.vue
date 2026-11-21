@@ -320,7 +320,8 @@ function onPointerMove(e: PointerEvent) {
 }
 onMounted(() => {
   const fine = window.matchMedia('(pointer: fine)').matches
-  if (stepTable && fine && !reduceMotion) window.addEventListener('pointermove', onPointerMove, { passive: true })
+  if (stepTable && fine && !reduceMotion)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
 })
 onBeforeRender(({ delta }) => {
   if (fadeDir !== 0) {
@@ -344,10 +345,12 @@ onBeforeRender(({ delta }) => {
       invalidate()
     }
   }
-  if (Math.abs(pointer.targetX - pointer.x) > 1e-4) pointer.x += (pointer.targetX - pointer.x) * Math.min(1, delta * 4)
+  if (Math.abs(pointer.targetX - pointer.x) > 1e-4)
+    pointer.x += (pointer.targetX - pointer.x) * Math.min(1, delta * 4)
   const target = props.rotationY
   const next = currentY + (target - currentY) * Math.min(1, delta * 8)
-  if (Math.abs(next - currentY) > 1e-4 || props.idleSpin) currentY = props.idleSpin ? currentY + delta * 0.15 : next
+  if (Math.abs(next - currentY) > 1e-4 || props.idleSpin)
+    currentY = props.idleSpin ? currentY + delta * 0.15 : next
   const yaw = currentY + stepYaw + pointer.x * 0.06
   if (Math.abs(group.value.rotation.y - yaw) > 1e-5) {
     group.value.rotation.y = yaw

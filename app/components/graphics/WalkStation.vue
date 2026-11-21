@@ -11,7 +11,14 @@
  */
 import { jointPoints, walkFeet, walkHeat, WALK_SCALE } from '~/data/biomech-walk'
 import { pressureStates } from '~/data/biomech'
-import { FOOT_H, FOOT_W, INSOLE_PATH, focusList, type MapTransition, type PressureState } from '~/utils/pressure'
+import {
+  FOOT_H,
+  FOOT_W,
+  INSOLE_PATH,
+  focusList,
+  type MapTransition,
+  type PressureState,
+} from '~/utils/pressure'
 
 const props = defineProps<{
   phase: number
