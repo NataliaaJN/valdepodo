@@ -57,7 +57,7 @@ if (confirmedPeople.length) {
           :title="{ before: 'Equipo' }"
           intro="Profesionales que te escuchan y te explican cada paso."
         />
-        <TeamRoster :members="team" class="mt-8 lg:mt-12" />
+        <TeamMembers :members="team" class="mt-8 lg:mt-12" />
       </div>
     </section>
 
