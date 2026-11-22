@@ -156,6 +156,16 @@ html[data-intro='play'] .hero__model {
   }
 }
 
+/* TresCanvas pinta en el <canvas> `touch-action: none` y `pointer-events: auto` inline: en táctil el dedo se queda en
+   el modelo y no se puede hacer scroll encima. El pie del hero no es interactivo: se anula (solo hace falta !important
+   porque compite con el estilo inline) */
+@media (pointer: coarse) {
+  .hero__model :deep(canvas) {
+    pointer-events: none !important;
+    touch-action: pan-y !important;
+  }
+}
+
 /* Degradado superior: el corte del tobillo se funde con el fondo. La máscara va en la capa interior para no recortar la sombra */
 .hero__fade {
   -webkit-mask-image: linear-gradient(to bottom, transparent 14%, #000 46%);
