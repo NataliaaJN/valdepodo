@@ -281,6 +281,19 @@ onBeforeUnmount(() => {
         </nav>
 
         <div class="nav-end relative z-10">
+          <a
+            :href="clinic.whatsappHref"
+            target="_blank"
+            rel="noopener"
+            class="nav-whatsapp"
+            aria-label="Escríbenos por WhatsApp (se abre en una pestaña nueva)"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path
+                d="M12.04 2a9.93 9.93 0 0 0-8.5 15.07L2 22l5.07-1.5A9.94 9.94 0 1 0 12.04 2Zm0 18.1a8.1 8.1 0 0 1-4.13-1.13l-.3-.18-3 .88.9-2.92-.2-.31a8.1 8.1 0 1 1 6.73 3.66Zm4.44-6.07c-.24-.12-1.44-.71-1.66-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.77.95-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.32-.75-1.8-.2-.47-.4-.41-.55-.42h-.47c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.69 2.58 4.1 3.62.57.25 1.02.4 1.37.5.58.18 1.1.16 1.51.1.46-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"
+              />
+            </svg>
+          </a>
           <div class="hidden lg:block">
             <BaseButton size="sm" class="nav-cta" variant="primary" :to="site.cta.to" arrow>
               {{ site.cta.label }}
@@ -594,6 +607,29 @@ onBeforeUnmount(() => {
     transform: scaleX(1);
   }
   .nav-chevron:hover {
+    background: var(--glass-bg);
+  }
+}
+
+/* Icono de WhatsApp a la izquierda de «Pedir cita» (objetivo táctil de 44 px) */
+.nav-whatsapp {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  transition: background-color var(--dur-base) var(--ease-out-soft);
+}
+.nav-whatsapp svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.nav-whatsapp:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+@media (hover: hover) and (pointer: fine) {
+  .nav-whatsapp:hover {
     background: var(--glass-bg);
   }
 }
