@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { layerRoles } from '~/utils/foot-layers'
+import { layerRoles } from '~/features/home/utils/foot-layers'
 
 describe('layerRoles', () => {
   it('exterior activo: solo se ve la piel', () => {

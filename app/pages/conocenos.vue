@@ -7,8 +7,8 @@
  * Schema `Person`: solo con datos confirmados (ahora ninguno).
  */
 import { isPending } from '#shared/utils/pending'
-import { clinic } from '~/data/clinic'
-import { team } from '~/data/team'
+import { clinic } from '~/features/clinic/data/clinic'
+import { team } from '~/features/clinic/data/team'
 
 usePageSeo({
   title: 'La clínica · Equipo y espacio',

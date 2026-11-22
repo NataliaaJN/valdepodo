@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SceneStats } from '~/utils/scene-types'
+import type { SceneStats } from '~/types/scene-types'
 
 useSeoMeta({ title: 'Laboratorio · Escena de prueba', robots: 'noindex, nofollow' })
 
@@ -13,7 +13,7 @@ const route = useRoute()
 const requested = typeof route.query.src === 'string' ? route.query.src : ''
 const src = /^\/models\/[\w.-]+\.glb$/.test(requested) ? requested : '/models/test-cube.glb'
 
-const loader = () => import('~/components/three/LabModelScene.client.vue')
+const loader = () => import('~/features/lab/components/LabModelScene.client.vue')
 const sceneProps = { src, onStats: (s: SceneStats) => (stats.value = s) }
 </script>
 

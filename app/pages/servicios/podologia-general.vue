@@ -4,7 +4,7 @@
  * cuatro tratamientos en filas editoriales.
  */
 import { pending } from '#shared/utils/pending'
-import { treatments } from '~/data/treatments'
+import { treatments } from '~/features/services/data/treatments'
 
 const service = useServicePage('podologia-general')
 

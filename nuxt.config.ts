@@ -15,7 +15,16 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   // Nombres de componente sin prefijo de carpeta (SceneGate, no ThreeSceneGate), como en las specs.
-  components: [{ path: '~/components', pathPrefix: false }],
+  // Los componentes de cada feature (`app/features/*/components`, subcarpetas incluidas) se registran igual.
+  components: [
+    { path: '~/components', pathPrefix: false },
+    { path: '~/features', pattern: '*/components/**/*.vue', pathPrefix: false },
+  ],
+
+  // Composables y utilidades propios de una feature: mismo auto-import que los globales.
+  imports: {
+    dirs: ['features/*/composables', 'features/*/utils'],
+  },
 
   typescript: {
     strict: true,

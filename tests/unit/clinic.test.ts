@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { collectPending, isPending, resolveValue } from '#shared/utils/pending'
-import { emptyDraft, parseDraft } from '~/composables/useBookingDraft'
-import { reviews } from '~/data/reviews'
-import { bookingPath, getService, services } from '~/data/services'
+import { emptyDraft, parseDraft } from '~/features/booking/composables/useBookingDraft'
+import { reviews } from '~/features/home/data/reviews'
+import { bookingPath, getService, services } from '~/features/services/data/services'
 import { site, type WeeklyHours } from '~/data/site'
-import { team } from '~/data/team'
+import { team } from '~/features/clinic/data/team'
 import {
   earliestStep,
   failureMessage,
   firstIncompleteStep,
   validateStep,
   type WizardValues,
-} from '~/utils/booking'
+} from '~/features/booking/utils/booking'
 import { groupHours, madridClock, openStatus, openingHoursSchema, telHref, yearsSince } from '~/utils/clinic'
 
 const week: WeeklyHours = [

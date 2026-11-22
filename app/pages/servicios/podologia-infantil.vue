@@ -5,7 +5,7 @@
  *  - «Qué revisamos»: composición bento a todo el ancho (marcha grande, arco, dedos, calzado y una pieza de cierre).
  *  - «Cuándo conviene consultar»: banda cyan propia con los motivos habituales en tres columnas.
  */
-import { kids } from '~/data/kids'
+import { kids } from '~/features/services/data/kids'
 
 const service = useServicePage('podologia-infantil')
 

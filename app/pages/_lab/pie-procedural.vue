@@ -4,7 +4,7 @@
  * y progreso de scroll sobre una sección pineada. Sin modelos externos. Comparar con /_lab/pie.
  * `progress` y `pointer` son el estado declarativo que más adelante animará ScrollTrigger (spec 08 §1.4).
  */
-import type { SceneStats } from '~/utils/scene-types'
+import type { SceneStats } from '~/types/scene-types'
 
 useSeoMeta({ title: 'Laboratorio · Pie procedural', robots: 'noindex, nofollow' })
 
@@ -14,7 +14,7 @@ const progress = ref(0)
 const pointer = markRaw({ x: 0, y: 0 }) // mutable, no reactivo: lo lee el bucle de render
 const stats = ref<(SceneStats & { buildMs: number }) | null>(null)
 
-const loader = () => import('~/components/three/ProceduralFootScene.client.vue')
+const loader = () => import('~/features/lab/components/ProceduralFootScene.client.vue')
 const sceneProps = computed(() => ({
   progress: progress.value,
   pointer,

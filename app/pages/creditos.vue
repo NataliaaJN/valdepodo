@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /** Créditos y licencias (plan Fase 6.7, spec 10 §7). */
-import { assetCredits, fontCredits, softwareCredits, type Credit } from '~/data/credits'
+import { assetCredits, fontCredits, softwareCredits, type Credit } from '~/features/legal/data/credits'
 
 usePageSeo({
   title: 'Créditos',

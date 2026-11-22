@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /** Aviso legal (LSSI-CE). Borrador estructural en `pending()` hasta la revisión de la asesoría. */
-import { controller, legalNotice } from '~/data/legal'
+import { controller, legalNotice } from '~/features/legal/data/legal'
 
 const clinic = useClinic()
 </script>

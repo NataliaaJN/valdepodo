@@ -37,7 +37,7 @@ npm run dev            # http://localhost:3000
 ## Estructura
 
 ```
-app/        Aplicación Nuxt (páginas, componentes, composables, estilos)
+app/        Aplicación Nuxt: pages/ (solo rutas), features/ (lógica por área: home, services, clinic, contact, booking, legal, lab), components/ (ui, shared, layout), composables/ y utils/ globales
 shared/     Código compartido cliente/servidor (esquemas, tipos, utilidades)
 server/     API de Nitro: POST /api/cita (solicitud de cita) y GET /api/cita/token
 public/     Estáticos: modelos GLB (+ CREDITS.md), imágenes, favicon

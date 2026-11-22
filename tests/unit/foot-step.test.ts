@@ -6,7 +6,7 @@ import {
   soleProfile,
   STEP_CONTACT,
   type SolePoint,
-} from '~/utils/foot-step'
+} from '~/features/home/utils/foot-step'
 
 // Suela sintética parecida a la del GLB: talón (z −0.09) a 2 mm, antepié (z 0.03) a 0, dedos hasta 0.10
 const sole: SolePoint[] = Array.from({ length: 21 }, (_, i) => {

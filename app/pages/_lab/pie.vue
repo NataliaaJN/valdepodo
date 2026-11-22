@@ -4,8 +4,8 @@
  * - Capas generadas desde las presentes en el GLB.
  * - Rotación por arrastre horizontal (no bloquea el scroll vertical en táctil) y por botones.
  */
-import { FOOT_LAYER_LABELS, FOOT_LAYER_ORDER, type FootLayer } from '~/utils/foot-layers'
-import type { SceneStats } from '~/utils/scene-types'
+import { FOOT_LAYER_LABELS, FOOT_LAYER_ORDER, type FootLayer } from '~/features/home/utils/foot-layers'
+import type { SceneStats } from '~/types/scene-types'
 
 useSeoMeta({ title: 'Laboratorio · Pie anatómico', robots: 'noindex, nofollow' })
 
@@ -19,7 +19,7 @@ const reducedMotion = useReducedMotion()
 const idleSpin = ref(false)
 
 const layers = computed(() => FOOT_LAYER_ORDER.filter((l) => available.value.includes(l)))
-const loader = () => import('~/components/three/FootAnatomy.client.vue')
+const loader = () => import('~/features/home/components/FootAnatomy.client.vue')
 const sceneProps = computed(() => ({
   src: `/models/foot-proto.${variant.value}.glb`,
   activeLayer: activeLayer.value,

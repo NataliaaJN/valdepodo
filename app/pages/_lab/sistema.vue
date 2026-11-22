@@ -4,7 +4,7 @@
  * tipográfica, botones en todos sus estados, campos, option cards, glass, degradados, iconos, biblioteca
  * SVG y demo de `reveal`. Los ratios se calculan aquí con la fórmula de WCAG 2.2.
  */
-import type { IconName } from '~/components/base/BaseIcon.vue'
+import type { IconName } from '~/components/ui/BaseIcon.vue'
 
 useSeoMeta({ title: 'Sistema de diseño', robots: 'noindex, nofollow' })
 

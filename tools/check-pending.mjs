@@ -2,7 +2,7 @@
 /**
  * Comprobación de contenido provisional (spec 09 §3).
  *
- * - Importa todos los ficheros de `app/data/` (con jiti, para leer TypeScript y los alias `~` y `#shared`)
+ * - Importa todos los ficheros de datos, `app/data/` y el `data/` de cada feature (con jiti, para leer TypeScript y los alias `~` y `#shared`)
  *   y lista cada marcador `pending()` con su ruta y su nota.
  * - Busca además el literal `pending(` en `app/**\/*.vue` (textos provisionales definidos en las páginas).
  *
@@ -39,7 +39,11 @@ export async function findPending(root = ROOT) {
   const { collectPending } = await jiti.import(join(root, 'shared/utils/pending.ts'))
 
   const entries = []
-  for (const file of (await walk(join(root, 'app/data'), '.ts')).sort()) {
+  // Datos globales (`app/data/`) y de cada feature (`app/features/*/data/`)
+  const dataFiles = (await walk(join(root, 'app'), '.ts')).filter((f) =>
+    /[\\/]app[\\/](data|features[\\/][^\\/]+[\\/]data)[\\/]/.test(f),
+  )
+  for (const file of dataFiles.sort()) {
     const mod = await jiti.import(file)
     const rel = relative(root, file).replaceAll('\\', '/')
     for (const [name, value] of Object.entries(mod)) {
