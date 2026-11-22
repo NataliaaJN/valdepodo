@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Índice de servicios: la misma cabecera que el resto de páginas (`ClinicHero`: fotografía a sangre, migas de
+ * Índice de servicios: la misma cabecera que el resto de páginas (`ClinicHero`: vídeo a sangre con la foto de póster, migas de
  * pan, título y entradilla, sin botón: pedir cita está en la navbar y en el cierre) y el catálogo de los cinco
  * servicios, sin numerar. El cierre «Pedir cita» lo pinta el layout (CtaBlock).
  */
@@ -21,6 +21,7 @@ useBreadcrumbSchema([
     <ClinicHero
       id="services-title"
       title="Servicios de podología"
+      video="/videos/servicios.mp4"
       :photo="{ src: '/images/clinic/contacto.jpg', alt: '' }"
       focus="50% 60%"
     >
