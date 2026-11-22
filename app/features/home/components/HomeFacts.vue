@@ -38,7 +38,7 @@ const clinic = useClinic()
       </ul>
       <p class="mt-6 text-center">
         <NuxtLink to="/conocenos" class="font-semibold text-primary-strong underline underline-offset-4"
-          >Conoce al equipo de podólogos y la clínica</NuxtLink
+          >Conoce a nuestro equipo y la clínica</NuxtLink
         >
       </p>
     </div>
