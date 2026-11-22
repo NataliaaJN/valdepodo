@@ -6,7 +6,7 @@
  * 3. Secuencia de 6 fases (spec 04 §1.3): sticky en ≥ 768 px, tarjetas en móvil, reduced motion.
  */
 import { pending } from '#shared/utils/pending'
-import { ILLUSTRATIVE_LABEL, pressureStates, type PressureStateId } from '~/data/biomech'
+import { ILLUSTRATIVE_LABEL, pressureStates, type PressureStateId } from '~/features/services/data/biomech'
 
 useSeoMeta({ title: 'Laboratorio · Estudio biomecánico', robots: 'noindex, nofollow' })
 

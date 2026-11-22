@@ -2,10 +2,16 @@ import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { isPending } from '#shared/utils/pending'
-import { HERO_EXIT_START, heroLayers, heroRotationAt, heroSequence, heroStepIndex } from '~/data/home'
-import { servicePath, services } from '~/data/services'
+import {
+  HERO_EXIT_START,
+  heroLayers,
+  heroRotationAt,
+  heroSequence,
+  heroStepIndex,
+} from '~/features/home/data/home'
+import { servicePath, services } from '~/features/services/data/services'
 import { site } from '~/data/site'
-import { FOOT_LAYER_ORDER, FOOT_VIEW, layerRoles } from '~/utils/foot-layers'
+import { FOOT_LAYER_ORDER, FOOT_VIEW, layerRoles } from '~/features/home/utils/foot-layers'
 import footView from '~~/tools/blender/config/foot-view.json'
 
 const root = resolve(import.meta.dirname, '..', '..')

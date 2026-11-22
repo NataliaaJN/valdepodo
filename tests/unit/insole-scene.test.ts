@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CONCEPTUAL_LABEL, fiberSteps, insoleLayers } from '~/data/insole'
+import { CONCEPTUAL_LABEL, fiberSteps, insoleLayers } from '~/features/services/data/insole'
 import {
   FIBER_COUNT,
   FIBER_PHASES,
@@ -9,7 +9,7 @@ import {
   layerState,
   seededRandom,
   type FiberSample,
-} from '~/utils/insole-scene'
+} from '~/features/services/utils/insole-scene'
 import insoleConfig from '~~/tools/blender/config/insole.json'
 
 const samples: FiberSample[] = Array.from({ length: 50 }, (_, i) => ({

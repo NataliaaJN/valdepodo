@@ -5,8 +5,8 @@
  * modo manual con deslizadores, el número de fibras y las estadísticas para validar los parámetros (Gate 4).
  */
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { FIBER_COUNT } from '~/utils/insole-scene'
-import type { SceneStats } from '~/utils/scene-types'
+import { FIBER_COUNT } from '~/features/services/utils/insole-scene'
+import type { SceneStats } from '~/types/scene-types'
 
 useSeoMeta({ title: 'Laboratorio · Plantilla y fibras', robots: 'noindex, nofollow' })
 

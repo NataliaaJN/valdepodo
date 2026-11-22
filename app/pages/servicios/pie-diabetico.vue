@@ -6,7 +6,7 @@
  *  - «Señales que requieren valoración»: capítulo tinta con cuatro señales y el aviso de urgencias destacado.
  *  - «Cuidados de cada día»: filas editoriales con filetes, seguidas del descargo.
  */
-import { diabetic } from '~/data/diabetic'
+import { diabetic } from '~/features/services/data/diabetic'
 
 const service = useServicePage('pie-diabetico')
 </script>
