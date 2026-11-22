@@ -247,6 +247,9 @@ useGsapContext(root, (c) => {
   margin-inline: calc(var(--gutter) * -1);
   padding: 0.25rem var(--gutter) 1rem;
   overflow-x: auto;
+  /* `overflow-x: auto` fuerza `auto` también en vertical: las cards que entran desde y: 56 px creaban un
+     scroll vertical interno que se comía la rueda/el dedo y hacía «saltar» la página. */
+  overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--gutter);
   scrollbar-width: none;
