@@ -49,12 +49,14 @@ export const reviews: readonly Review[] = [
   {
     text: 'Llegué a la consulta de Valeri con un problema en las uñas, las tenía encarnadas. Ella con su profesionalidad ha conseguido que ya no sufra más. Te agradezco mucho tu amabilidad y cariño. Sois un gran equipo. Gracias de corazón.',
     author: 'Mar M.',
+    rating: 5,
     source: 'Google',
     url: GOOGLE_URL,
   },
   {
     text: 'Me trata Paula, uñas y durezas: sales con los pies como nuevos. Una atención y trato excelente. Yo trabajo y adaptan el horario a tus necesidades. En definitiva, muy recomendable, ¡probad!',
     author: 'Carmen P.',
+    rating: 5,
     source: 'Google',
     url: GOOGLE_URL,
   },
