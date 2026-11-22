@@ -57,7 +57,8 @@ export const site: SiteData = {
   name: 'Valdepodo',
   legalName: pending('[Razón social pendiente]', 'Titular de la web (aviso legal y privacidad)'),
   tagline: pending('Salud desde la base.', 'Frase de marca del footer (spec 02 §3): validar con la clínica'),
-  city: pending('Valdemoro', 'Confirmar la ciudad que debe aparecer en los textos y el SEO'),
+  // Coincide con la localidad de la dirección, confirmada por la clínica.
+  city: 'Valdemoro',
   address: {
     street: 'Calle Dr. Barraquer, 7',
     postalCode: '28342',

@@ -28,11 +28,11 @@ export const serviceMedia: Record<string, ServiceMedia> = {
     focus: '50% 60%',
   },
   'podologia-general': {
-    src: '/images/servicios/podologia-general.jpg',
+    src: '/images/servicios/podologia-general.webp',
     focus: '40% 50%',
   },
   'podologia-infantil': {
-    src: '/images/servicios/podologia-infantil.jpg',
+    src: '/images/servicios/podologia-infantil.webp',
     focus: '55% 55%',
   },
   'pie-diabetico': {

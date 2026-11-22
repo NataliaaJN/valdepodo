@@ -1,7 +1,8 @@
 /**
- * SEO común de las páginas de servicio (spec 04): título, descripción, `MedicalProcedure` y breadcrumbs.
+ * SEO común de las páginas de servicio (spec 04): título, descripción, `Service` y breadcrumbs.
  */
 import { resolveValue } from '#shared/utils/pending'
+import { site } from '~/data/site'
 import { getService, servicePath } from '~/features/services/data/services'
 
 export function useServicePage(slug: string) {
@@ -9,7 +10,10 @@ export function useServicePage(slug: string) {
   const path = servicePath(slug)
   const description = resolveValue(service.description)
 
-  usePageSeo({ title: service.name, description, path })
+  // Título con la intención de búsqueda: servicio + ciudad (la marca la añade la plantilla de títulos)
+  const title = `${service.seoTitle ?? service.name} en ${resolveValue(site.city)}`
+
+  usePageSeo({ title, description, path })
   useServiceSchema({ name: service.name, description, path })
   useBreadcrumbSchema([
     { name: 'Inicio', path: '/' },

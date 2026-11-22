@@ -9,12 +9,12 @@ import { site } from '~/data/site'
 const city = resolveValue(site.city)
 
 usePageSeo({
-  title: `Clínica de podología en ${city}`,
+  // Título absoluto: «podólogo en {ciudad}» + tipo de negocio + marca
+  title: `Podólogos en ${city} · Clínica de podología Valdepodo`,
+  brand: false,
   description: `Valdepodo, clínica de podología en ${city}: estudio biomecánico, plantillas personalizadas, podología general, infantil y pie diabético.`,
   path: '/',
 })
-// La plantilla de títulos añadiría "· Valdepodo" al final: aquí la marca va delante (spec 03 SEO)
-useHead({ titleTemplate: `Valdepodo · Clínica de podología en ${city}` })
 </script>
 
 <template>
