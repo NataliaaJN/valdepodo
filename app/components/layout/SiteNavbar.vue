@@ -11,7 +11,7 @@
  *   (foco atrapado, Esc, resto de la página `inert`, scroll bloqueado, se cierra al navegar).
  */
 import { site } from '~/data/site'
-import { services, servicePath } from '~/data/services'
+import { services, servicePath } from '~/features/services/data/services'
 
 type NavTheme = 'blue' | 'ink' | 'bone'
 

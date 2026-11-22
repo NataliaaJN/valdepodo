@@ -16,6 +16,7 @@ usePageSeo({
   title: `Contacto y cita · Podología en ${city}`,
   description: `Teléfono, email, horario, cómo llegar y solicitud de cita en Valdepodo, clínica de podología en ${city}.`,
   path: '/contacto',
+  type: 'ContactPage',
 })
 
 /* Datos de la propia clínica (site.ts), no entrada de usuario: seguro en v-html */
@@ -39,7 +40,7 @@ async function copy(text: string, what: string) {
     <ClinicHero
       id="contact-title"
       title="Contacto"
-      :photo="{ src: '/images/clinic/contacto.jpg', alt: '' }"
+      :photo="{ src: '/images/clinic/contacto.webp', alt: '' }"
       focus="50% 50%"
     />
 

@@ -15,7 +15,16 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   // Nombres de componente sin prefijo de carpeta (SceneGate, no ThreeSceneGate), como en las specs.
-  components: [{ path: '~/components', pathPrefix: false }],
+  // Los componentes de cada feature (`app/features/*/components`, subcarpetas incluidas) se registran igual.
+  components: [
+    { path: '~/components', pathPrefix: false },
+    { path: '~/features', pattern: '*/components/**/*.vue', pathPrefix: false },
+  ],
+
+  // Composables y utilidades propios de una feature: mismo auto-import que los globales.
+  imports: {
+    dirs: ['features/*/composables', 'features/*/utils'],
+  },
 
   typescript: {
     strict: true,
@@ -88,12 +97,20 @@ export default defineNuxtConfig({
   // Estáticos precomprimidos (gzip/brotli) también en `nuxt preview`, como en el hosting final
   nitro: {
     compressPublicAssets: true,
+    // Archivos para rastreadores generados en el build (las rutas de servidor no se descubren solas)
+    prerender: { routes: ['/robots.txt', '/sitemap.xml'] },
   },
 
   hooks: {
     // Spec 09 §3: en producción no puede quedar contenido provisional (`pending`)
     async 'build:before'() {
       if (process.env.NUXT_PUBLIC_SITE_ENV !== 'production') return
+      // Canonical, Open Graph, schema.org y sitemap necesitan URLs absolutas
+      if (!/^https:\/\/[^/]+/.test(process.env.NUXT_PUBLIC_SITE_URL ?? '')) {
+        throw new Error(
+          'El build de producción necesita NUXT_PUBLIC_SITE_URL con el dominio público (https://…): canonical, Open Graph, schema.org y sitemap dependen de él.',
+        )
+      }
       const { findPending } = await import('./tools/check-pending.mjs')
       const entries = await findPending()
       if (entries.length) {

@@ -29,7 +29,7 @@ useHead({
 })
 
 useSeoMeta({
-  robots: isProduction ? 'index, follow' : 'noindex, nofollow',
+  robots: isProduction ? 'index, follow, max-image-preview:large' : 'noindex, nofollow',
   ogSiteName: 'Valdepodo',
   ogLocale: 'es_ES',
   ogType: 'website',

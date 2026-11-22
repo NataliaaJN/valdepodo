@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { biomechPhases, gaitCycle, pressureStates, runCycle } from '~/data/biomech'
+import { biomechPhases, gaitCycle, pressureStates, runCycle } from '~/features/services/data/biomech'
 import { FOCUS_KEYS, FOOT_H, FOOT_W, PRESSURE_RAMP, focusList, lerpState } from '~/utils/pressure'
 import { collectPending } from '#shared/utils/pending'
 

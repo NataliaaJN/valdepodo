@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
 import { mountSuspended, registerEndpoint } from '@nuxt/test-utils/runtime'
-import BookingWizard from '~/components/booking/BookingWizard.vue'
-import MapFacade from '~/components/contact/MapFacade.vue'
-import CtaBlock from '~/components/sections/CtaBlock.vue'
-import TeamCard from '~/components/team/TeamCard.vue'
-import { team } from '~/data/team'
+import BookingWizard from '~/features/booking/components/BookingWizard.vue'
+import MapFacade from '~/features/contact/components/MapFacade.vue'
+import CtaBlock from '~/components/layout/CtaBlock.vue'
+import TeamCard from '~/features/clinic/components/TeamCard.vue'
+import { team } from '~/features/clinic/data/team'
 
 registerEndpoint('/api/cita/token', () => ({ token: 'token-de-prueba' }))
 
