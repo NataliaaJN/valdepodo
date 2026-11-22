@@ -6,6 +6,7 @@ usePageSeo({
   title: 'Créditos',
   description: 'Recursos de terceros usados en la web de Valdepodo y sus licencias.',
   path: '/creditos',
+  noindex: true,
 })
 
 const groups: { title: string; items: readonly Credit[] }[] = [

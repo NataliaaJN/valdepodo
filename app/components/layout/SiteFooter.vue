@@ -26,7 +26,7 @@ const year = new Date().getFullYear()
         </div>
 
         <address class="footer-col not-italic">
-          <h2 class="footer-title">Ubicación</h2>
+          <p class="footer-title">Ubicación</p>
           <p>
             <ContentValue :value="site.address.street" /><br />
             <ContentValue :value="site.address.postalCode" />{{ ' ' }}
@@ -38,13 +38,13 @@ const year = new Date().getFullYear()
         </address>
 
         <div class="footer-col">
-          <h2 class="footer-title">Contacto</h2>
+          <p class="footer-title">Contacto</p>
           <a :href="clinic.phoneHref" class="footer-link"><ContentValue :value="site.phone" /></a>
           <a :href="clinic.mailHref" class="footer-link break-all"><ContentValue :value="site.email" /></a>
         </div>
 
         <div class="footer-col">
-          <h2 class="footer-title">Síguenos</h2>
+          <p class="footer-title">Síguenos</p>
           <ul class="footer-social" role="list">
             <li>
               <a :href="clinic.instagram.url" class="footer-social__link" target="_blank" rel="noopener">

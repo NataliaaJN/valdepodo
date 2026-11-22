@@ -21,7 +21,7 @@ const TREAT = 'Te proponemos el tratamiento adecuado y te lo explicamos.'
 export const clinic = {
   /** Fotografía de equipo del hero (horizontal, ≥ 1600 px). `src: null` = pendiente. */
   teamPhoto: {
-    src: '/images/clinic/fachada-equipo.jpg' as string | null,
+    src: '/images/clinic/fachada-equipo.webp' as string | null,
     alt: 'Paula y Valerie, el equipo de Valdepodo, ante la fachada de la clínica',
   },
   /** Texto de apoyo de la sección «Un espacio pensado para cuidar de ti». */
@@ -32,7 +32,7 @@ export const clinic = {
   /** Mosaico del espacio (hasta 6): la primera es la principal. Solo se pintan las que tienen `src`; al llegar las fotos reales basta con rellenarlo. */
   photos: [
     {
-      src: '/images/clinic/contacto.jpg',
+      src: '/images/clinic/contacto.webp',
       alt: 'Recepción y sala de espera de la clínica, luminosa y en tonos azules',
       caption: 'Recepción',
     },

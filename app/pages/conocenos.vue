@@ -4,39 +4,22 @@
  * Espacio. Hero con la foto del equipo (y los años de experiencia en su frase), equipo (#equipo), método en
  * línea de tiempo y el espacio de la clínica. El CTA de cierre lo pone el layout.
  * Sin fotos reales todavía: placeholders ilustrados marcados ("Fotografía pendiente"), nunca stock.
- * Schema `Person`: solo con datos confirmados (ahora ninguno).
+ * Schema `Person`: solo con datos confirmados (`useTeamSchema`).
  */
-import { isPending } from '#shared/utils/pending'
+import { resolveValue } from '#shared/utils/pending'
+import { site } from '~/data/site'
 import { clinic } from '~/features/clinic/data/clinic'
 import { team } from '~/features/clinic/data/team'
 
 usePageSeo({
-  title: 'La clínica · Equipo y espacio',
+  title: `Equipo y clínica de podología en ${resolveValue(site.city)}`,
   description:
     'El equipo y la clínica de Valdepodo: quiénes somos, cómo trabajamos y el espacio donde te atendemos.',
   path: '/conocenos',
+  type: 'AboutPage',
 })
 
-const confirmedPeople = team.filter((m) => !isPending(m.name) && !isPending(m.role))
-if (confirmedPeople.length) {
-  useHead({
-    script: [
-      {
-        key: 'schema-team',
-        type: 'application/ld+json',
-        innerHTML: JSON.stringify(
-          confirmedPeople.map((m) => ({
-            '@context': 'https://schema.org',
-            '@type': 'Person',
-            name: m.name,
-            jobTitle: m.role,
-            worksFor: { '@id': '#clinica' },
-          })),
-        ),
-      },
-    ],
-  })
-}
+useTeamSchema(team)
 </script>
 
 <template>
@@ -58,6 +41,17 @@ if (confirmedPeople.length) {
           intro="Profesionales que te escuchan y te explican cada paso."
         />
         <TeamMembers :members="team" class="mt-8 lg:mt-12" />
+        <p class="mt-10 max-w-[60ch] text-body-l text-text-secondary">
+          Conoce los
+          <NuxtLink to="/servicios" class="font-semibold text-primary-strong underline underline-offset-4"
+            >servicios de podología</NuxtLink
+          >
+          que ofrecemos o
+          <NuxtLink to="/contacto#cita" class="font-semibold text-primary-strong underline underline-offset-4"
+            >pide tu cita</NuxtLink
+          >
+          y empezamos por lo que más te preocupa.
+        </p>
       </div>
     </section>
 

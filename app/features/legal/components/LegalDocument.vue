@@ -4,7 +4,7 @@ import type { LegalPage } from '~/features/legal/data/legal'
 
 const props = defineProps<{ page: LegalPage; path: string }>()
 
-usePageSeo({ title: props.page.title, description: props.page.description, path: props.path })
+usePageSeo({ title: props.page.title, description: props.page.description, path: props.path, noindex: true })
 </script>
 
 <template>

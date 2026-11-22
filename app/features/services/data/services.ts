@@ -10,6 +10,8 @@ export type ServiceGraphic = 'pressure' | 'insole' | 'nail' | 'growth' | 'contro
 export interface Service {
   slug: string
   name: string
+  /** Título SEO sin ciudad (se le añade « en {ciudad}»). Por defecto, `name`. */
+  seoTitle?: string
   summary: Maybe<string>
   /** Descripción del índice de servicios y de la meta description (spec 04 §0). */
   description: Maybe<string>
@@ -29,6 +31,7 @@ export const services: readonly Service[] = [
   {
     slug: 'estudio-biomecanico',
     name: 'Estudio biomecánico',
+    seoTitle: 'Estudio biomecánico de la pisada',
     summary: pending('Analizamos cómo apoyas y cómo te mueves para entender tu pisada.', VALIDATE),
     description: pending(
       'Una valoración de cómo apoyas el pie en reposo, al caminar y al correr, para entender el origen de tus molestias.',
@@ -97,6 +100,7 @@ export const services: readonly Service[] = [
   {
     slug: 'pie-diabetico',
     name: 'Pie diabético',
+    seoTitle: 'Pie diabético: revisión podológica',
     summary: pending('Revisión y cuidado preventivo del pie en personas con diabetes.', VALIDATE),
     description: pending(
       'Revisiones periódicas y cuidados podológicos para prevenir complicaciones en el pie de las personas con diabetes.',
