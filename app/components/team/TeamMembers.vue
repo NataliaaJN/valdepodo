@@ -34,6 +34,9 @@ function step(delta: number) {
   const n = people.value.length
   current.value = (current.value + delta + n) % n
   dialog.value?.querySelector('.sheet__body')?.scrollTo({ top: 0 })
+  // En móvil el que hace scroll es el propio <dialog> (ficha a pantalla completa): se vuelve arriba para que se
+  // vea la foto y el nombre de la persona nueva. En ≥ 768 px la ficha cabe y solo scrollea `.sheet__body`.
+  if (window.matchMedia('(max-width: 767px)').matches) dialog.value?.scrollTo({ top: 0 })
 }
 function onKey(e: KeyboardEvent) {
   if (e.key === 'ArrowRight') step(1)
