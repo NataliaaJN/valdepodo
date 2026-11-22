@@ -66,7 +66,7 @@ export const site: SiteData = {
   },
   geo: { lat: 40.1922932, lng: -3.6762537 },
   phone: '687 50 69 27',
-  email: 'info@valdepodo.es',
+  email: 'valdepodo26@gmail.com',
   instagram: { handle: '@valdepodo', url: 'https://www.instagram.com/valdepodo/' },
   linkedin: { label: 'Valdepodo', url: 'https://es.linkedin.com/company/valdepodo' },
   foundedYear: 2017,
