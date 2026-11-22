@@ -107,6 +107,8 @@ useGsapContext(section, (c) => {
         >{{ hero.title.after }}
       </h1>
       <p class="hero__desc"><ContentValue :value="hero.description" /></p>
+      <!-- Solo móvil: en ≥ 768 px el botón ya está en la cabecera -->
+      <BaseButton to="/contacto#cita" arrow class="hero__cta">Pedir cita</BaseButton>
     </div>
   </section>
 </template>
@@ -128,8 +130,8 @@ useGsapContext(section, (c) => {
 /* Apilado (móvil y tablet vertical): el pie ocupa lo que deja el bloque de texto (--text-h), sin pasarse del ancho
    (108 vw: deja que la puntera y el talón rocen los bordes sin cortarse) y se centra en el hueco entre navbar y texto */
 .hero__model {
-  --text-h: 17rem;
-  --foot-w: clamp(15rem, min(108vw, 34rem), calc(var(--hero-h) - var(--nav-h) - var(--text-h)));
+  --text-h: 22rem;
+  --foot-w: clamp(13rem, min(84vw, 26rem), calc(var(--hero-h) - var(--nav-h) - var(--text-h)));
   position: absolute;
   z-index: 1;
   top: calc(var(--nav-h) + max(0.5rem, (var(--hero-h) - var(--nav-h) - var(--text-h) - var(--foot-w)) / 2));
@@ -137,6 +139,10 @@ useGsapContext(section, (c) => {
   width: var(--foot-w);
   translate: -50% 0;
   filter: drop-shadow(0 30px 36px rgb(6 26 44 / 0.22));
+  /* El pie solo reacciona al scroll de la página, no es interactivo: los toques lo atraviesan y el dedo puede
+     arrastrar para hacer scroll encima del modelo (el canvas WebGL, si no, captura el gesto) */
+  pointer-events: none;
+  touch-action: pan-y;
   /* Sin fundido desde 0 con retardo: el póster es el LCP y debe verse en cuanto pinta; solo asienta (sube un poco) */
   animation: model-in 0.9s var(--ease-out-soft) both;
 }
@@ -285,6 +291,26 @@ html[data-intro='play'] .hero__desc {
   }
 }
 
+.hero__cta {
+  display: none;
+  margin-top: 1.5rem;
+  animation: fade-up 0.8s var(--ease-out-soft) both;
+  animation-delay: 0.32s;
+}
+html[data-intro='play'] .hero__cta {
+  animation-delay: 1.02s;
+}
+@media (max-width: 767px) {
+  .hero__cta {
+    display: inline-flex;
+  }
+}
+@media (max-width: 767px) and (max-height: 520px) and (min-aspect-ratio: 1/1) {
+  .hero__cta {
+    display: none;
+  }
+}
+
 /* Móvil: sin indicador de scroll. El ratón es una metáfora de escritorio, el gesto en táctil es evidente y el icono
    competía con el texto en el borde inferior */
 @media (max-width: 767px) {
@@ -357,6 +383,7 @@ html[data-intro='play'] .hero__desc {
   .hero__model,
   .hero__eyebrow,
   .hero__desc,
+  .hero__cta,
   .hero__title {
     animation: none;
   }

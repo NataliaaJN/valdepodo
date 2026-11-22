@@ -15,14 +15,14 @@ export interface Review {
   url: string
 }
 
-/** Ficha de Google de Valdepodo (Valdemoro). Reseñas copiadas el 2026-11-14; nombre abreviado a nombre + inicial. */
+/** Ficha de Google de Valdepodo (Valdemoro). Reseñas copiadas el 2026-11-14 y el 2026-11-22; nombre abreviado a nombre + inicial. */
 const GOOGLE_URL = 'https://www.google.com/maps/place/?q=place_id:ChIJx99Z58YeQg0RoJD__ddoaX0'
 
 /**
- * Resumen público de la ficha de Google, a fecha 2026-11-14. Se muestra como texto; NO se marca como
+ * Resumen público de la ficha de Google, a fecha 2026-11-22. Se muestra como texto; NO se marca como
  * `AggregateRating` (spec 10 §3). Actualizar a mano junto con las reseñas.
  */
-export const googleSummary = { rating: 4.7, count: 58, url: GOOGLE_URL } as const
+export const googleSummary = { rating: 4.7, count: 59, url: GOOGLE_URL } as const
 
 export const reviews: readonly Review[] = [
   {
@@ -43,6 +43,18 @@ export const reviews: readonly Review[] = [
     text: 'Está ha sido la mejor podología en la que he estado, las demás podologías me ponían precios muy altos y me metían presión para operarme antes, que al final acabé haciendo en esta podologia. Muy buen comportamiento y tratamiento de las podólogas y si tienes miedo a lo que te puedan hacer puedo confirmar que no hacen casi daño y es muy económico. 5 estrellas.',
     author: 'Sergio T.',
     rating: 5,
+    source: 'Google',
+    url: GOOGLE_URL,
+  },
+  {
+    text: 'Llegué a la consulta de Valeri con un problema en las uñas, las tenía encarnadas. Ella con su profesionalidad ha conseguido que ya no sufra más. Te agradezco mucho tu amabilidad y cariño. Sois un gran equipo. Gracias de corazón.',
+    author: 'Mar M.',
+    source: 'Google',
+    url: GOOGLE_URL,
+  },
+  {
+    text: 'Me trata Paula, uñas y durezas: sales con los pies como nuevos. Una atención y trato excelente. Yo trabajo y adaptan el horario a tus necesidades. En definitiva, muy recomendable, ¡probad!',
+    author: 'Carmen P.',
     source: 'Google',
     url: GOOGLE_URL,
   },

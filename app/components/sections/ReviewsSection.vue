@@ -1,11 +1,11 @@
 <script setup lang="ts">
 /**
- * Reseñas (spec 03 §4). Se muestran dos: el titular centrado en vertical a la izquierda (frase de apoyo, nota de
- * Google y botón a la ficha) y las dos cards a la derecha, una junto a otra.
- * - ≥ 768 px: dos columnas. < 768 px: carrusel con scroll-snap (se desliza con el dedo; teclado con Tab entre los enlaces).
+ * Reseñas (spec 03 §4). El titular centrado en vertical a la izquierda (frase de apoyo, nota de Google y botón a
+ * la ficha) y a la derecha un carrusel con scroll-snap con todas las reseñas de `data/reviews.ts`.
+ * - ≥ 768 px: se ven dos a la vez. < 768 px: una asoma con la siguiente. Se desliza con el dedo; flechas
+ *   anterior/siguiente en todos los tamaños (teclado con Tab entre los enlaces).
  * - Scroll: las cards entran una tras otra (ScrollTrigger.batch). El titular no se anima. Reduced motion: todo visible.
  * **Si `reviews` está vacía, la sección no se renderiza** (solo reseñas reales con permiso).
- * Más de 6 reseñas → carrusel con flechas (pendiente: no hay datos que lo justifiquen todavía).
  */
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -14,10 +14,31 @@ import { googleSummary, reviews } from '~/data/reviews'
 const root = ref<HTMLElement | null>(null)
 const list = ref<HTMLElement | null>(null)
 
-const shown = computed(() => reviews.slice(0, 2))
+const shown = computed(() => reviews)
 const rating = googleSummary.rating.toLocaleString('es-ES', { minimumFractionDigits: 1 })
 /** Porcentaje de estrellas rellenas (4,7 de 5 → 94 %). */
 const fill = `${(googleSummary.rating / 5) * 100}%`
+const canPrev = ref(false)
+const canNext = ref(false)
+const updateNav = () => {
+  const el = list.value
+  if (!el) return
+  canPrev.value = el.scrollLeft > 4
+  canNext.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 4
+}
+const go = (dir: 1 | -1) => {
+  const el = list.value
+  const item = el?.firstElementChild as HTMLElement | null
+  if (!el || !item) return
+  const gap = parseFloat(getComputedStyle(el).columnGap) || 0
+  el.scrollBy({ left: dir * (item.offsetWidth + gap), behavior: 'smooth' })
+}
+onMounted(() => {
+  updateNav()
+  window.addEventListener('resize', updateNav, { passive: true })
+})
+onBeforeUnmount(() => window.removeEventListener('resize', updateNav))
+
 const STAR = 'm8 1.5 1.9 4 4.4.5-3.3 3 .9 4.3L8 11.1 4.1 13.3 5 9 1.7 6l4.4-.5Z'
 
 useGsapContext(root, (c) => {
@@ -76,11 +97,53 @@ useGsapContext(root, (c) => {
         </BaseButton>
       </div>
 
-      <ul ref="list" class="reviews__list" role="list" aria-label="Opiniones de pacientes">
-        <li v-for="(review, i) in shown" :key="i" class="reviews__item">
-          <ReviewCard :review="review" />
-        </li>
-      </ul>
+      <div class="reviews__carousel">
+        <ul
+          ref="list"
+          class="reviews__list"
+          role="list"
+          aria-label="Opiniones de pacientes"
+          @scroll.passive="updateNav"
+        >
+          <li v-for="(review, i) in shown" :key="i" class="reviews__item">
+            <ReviewCard :review="review" />
+          </li>
+        </ul>
+        <div v-if="shown.length > 1" class="reviews__nav">
+          <button
+            type="button"
+            class="reviews__arrow"
+            aria-label="Opiniones anteriores"
+            :disabled="!canPrev"
+            @click="go(-1)"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M19 12H5m6-6-6 6 6 6"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="square"
+              />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="reviews__arrow"
+            aria-label="Opiniones siguientes"
+            :disabled="!canNext"
+            @click="go(1)"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M5 12h14m-6-6 6 6-6 6"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="square"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 </template>
@@ -174,12 +237,15 @@ useGsapContext(root, (c) => {
   margin-top: 0.5rem;
 }
 
-/* ---------- Móvil: carrusel con scroll-snap que asoma la siguiente card ---------- */
+/* ---------- Carrusel: scroll-snap en todos los tamaños; en móvil asoma la siguiente card ---------- */
+.reviews__carousel {
+  min-width: 0;
+}
 .reviews__list {
   display: flex;
   gap: 1rem;
   margin-inline: calc(var(--gutter) * -1);
-  padding: 0.25rem var(--gutter) 1.5rem;
+  padding: 0.25rem var(--gutter) 1rem;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--gutter);
@@ -188,31 +254,58 @@ useGsapContext(root, (c) => {
 .reviews__list::-webkit-scrollbar {
   display: none;
 }
-.reviews__list:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-  border-radius: var(--radius-l);
-}
 .reviews__item {
   flex: 0 0 min(84%, 22rem);
   min-width: 0;
   scroll-snap-align: start;
 }
+.reviews__nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+.reviews__arrow {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-deep-blue);
+  color: var(--color-deep-blue);
+  transition:
+    background-color var(--dur-base) var(--ease-out-soft),
+    color var(--dur-base) var(--ease-out-soft),
+    opacity var(--dur-base) var(--ease-out-soft);
+}
+.reviews__arrow svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.reviews__arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.reviews__arrow:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+@media (hover: hover) and (pointer: fine) {
+  .reviews__arrow:not(:disabled):hover {
+    background: var(--color-deep-blue);
+    color: var(--color-bone);
+  }
+}
 
-/* ---------- Tablet y escritorio: escalonado como la referencia ---------- */
+/* ---------- Tablet y escritorio: dos cards a la vez ---------- */
 @media (min-width: 768px) {
   .reviews__list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: stretch;
-    gap: 1.25rem 1.5rem;
+    gap: 1.5rem;
     margin-inline: 0;
-    padding: 0;
-    overflow: visible;
-    scroll-snap-type: none;
+    padding-inline: 0;
+    scroll-padding-inline: 0;
   }
   .reviews__item {
-    flex: none;
+    flex: 0 0 calc((100% - 1.5rem) / 2);
   }
 }
 
@@ -221,9 +314,6 @@ useGsapContext(root, (c) => {
     grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
     gap: clamp(2.5rem, 5vw, 5rem);
     align-items: center;
-  }
-  .reviews__list {
-    gap: 1.5rem;
   }
 }
 </style>

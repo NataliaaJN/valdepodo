@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 /**
  * Pre-footer global: una pieza compacta, no un hero. Mensaje a la izquierda, un recorrido de huellas alternas
@@ -55,7 +56,15 @@ useGsapContext(section, (c) => {
   const link = section.value.querySelector('.cta__link')
   const tl = gsap.timeline({
     defaults: { ease: 'power2.out' },
-    scrollTrigger: { trigger: section.value, start: 'top 95%', end: 'bottom 80%', scrub: 0.6 },
+    // refreshPriority negativo: este bloque vive en el layout (se crea antes que los pines de la página) y debe
+    // calcularse el último, cuando los pin-spacers de arriba ya suman su altura.
+    scrollTrigger: {
+      trigger: section.value,
+      start: 'top 95%',
+      end: 'bottom 80%',
+      scrub: 0.6,
+      refreshPriority: -10,
+    },
   })
   tl.fromTo(prints, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 1, stagger: 0.55 })
   if (link)
@@ -65,7 +74,24 @@ useGsapContext(section, (c) => {
       { opacity: 1, scale: 1, duration: 1.1, ease: 'back.out(1.4)' },
       '>-0.2',
     )
-  return undefined
+
+  // Este bloque vive en el layout (no se recrea al cambiar de página) y su posición depende de la altura de todo
+  // lo anterior (imágenes, 3D, transición de página). Sin recalcular, start/end quedan desfasados y las huellas
+  // salen ya dibujadas o ausentes. Se recalcula cuando cambia la altura del documento.
+  let raf = 0
+  let lastH = document.documentElement.scrollHeight
+  const ro = new ResizeObserver(() => {
+    const h = document.documentElement.scrollHeight
+    if (Math.abs(h - lastH) < 2) return
+    lastH = h
+    cancelAnimationFrame(raf)
+    raf = requestAnimationFrame(() => ScrollTrigger.refresh())
+  })
+  ro.observe(document.body)
+  return () => {
+    cancelAnimationFrame(raf)
+    ro.disconnect()
+  }
 })
 </script>
 
