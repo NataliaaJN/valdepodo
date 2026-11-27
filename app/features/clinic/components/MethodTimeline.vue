@@ -168,6 +168,25 @@ useGsapContext(root, (c) => {
     transform: scaleX(var(--p));
     transform-origin: left;
   }
+  /* El atenuado y el desplazamiento van solo en el texto: el nodo se queda centrado en la línea y la tapa */
+  .step,
+  .step.is-on {
+    opacity: 1;
+    transform: none;
+  }
+  .step__title,
+  .step__text {
+    opacity: 0.46;
+    transform: translateY(6px);
+    transition:
+      opacity 600ms var(--ease-out-soft),
+      transform 600ms var(--ease-out-soft);
+  }
+  .step.is-on .step__title,
+  .step.is-on .step__text {
+    opacity: 1;
+    transform: none;
+  }
   .step__node {
     top: -2.75rem;
     left: 0;
@@ -179,7 +198,9 @@ useGsapContext(root, (c) => {
 
 @media (prefers-reduced-motion: reduce) {
   .step,
-  .step__node {
+  .step__node,
+  .step__title,
+  .step__text {
     transition: none;
   }
 }

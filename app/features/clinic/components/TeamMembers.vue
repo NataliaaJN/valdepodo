@@ -417,10 +417,10 @@ onBeforeUnmount(() => {
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
+/* Solo fundido: un desplazamiento movería el botón de cerrar (en móvil es `fixed` y saltaría al terminar) */
 @keyframes sheet-in {
   from {
     opacity: 0;
-    translate: 0 16px;
   }
 }
 .sheet__close {
@@ -626,6 +626,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--color-ink);
   border-radius: 50%;
   color: var(--color-ink);
+  cursor: pointer;
   transition:
     background-color var(--dur-base) var(--ease-out-soft),
     color var(--dur-base) var(--ease-out-soft),
@@ -671,10 +672,12 @@ onBeforeUnmount(() => {
   .sheet__photo {
     aspect-ratio: auto;
   }
+  /* El scroll empieza bajo el botón de cerrar, para que la barra no se le meta debajo */
   .sheet__body {
+    min-height: 0;
+    margin-top: 4.25rem;
     overflow-y: auto;
-    padding: 2.5rem 2.5rem 2rem;
-    padding-top: 3.5rem;
+    padding: 0 2.5rem 2rem;
   }
 }
 

@@ -4,7 +4,8 @@
  * la ficha) y a la derecha un carrusel con scroll-snap con todas las reseñas de `data/reviews.ts`.
  * - ≥ 768 px: se ven dos a la vez. < 768 px: una asoma con la siguiente. Se desliza con el dedo; flechas
  *   anterior/siguiente en todos los tamaños (teclado con Tab entre los enlaces).
- * - Scroll: las cards entran una tras otra (ScrollTrigger.batch). El titular no se anima. Reduced motion: todo visible.
+ * - Scroll: las cards entran una tras otra, subiendo un poco con fundido (ScrollTrigger.batch). Recorrido corto y
+ *   sin escala, para que no parezca un error de maquetación. El titular no se anima. Reduced motion: todo visible.
  * **Si `reviews` está vacía, la sección no se renderiza** (solo reseñas reales con permiso).
  */
 import { gsap } from 'gsap'
@@ -45,7 +46,7 @@ useGsapContext(root, (c) => {
   const cards = list.value ? gsap.utils.toArray<HTMLElement>(list.value.children) : []
   if (c.reduce || !cards.length) return undefined
 
-  gsap.set(cards, { autoAlpha: 0, y: 56, scale: 0.97 })
+  gsap.set(cards, { autoAlpha: 0, y: 24 })
   const triggers = ScrollTrigger.batch(cards, {
     start: 'top 90%',
     once: true,
@@ -53,10 +54,9 @@ useGsapContext(root, (c) => {
       gsap.to(batch, {
         autoAlpha: 1,
         y: 0,
-        scale: 1,
-        duration: 1.1,
-        ease: 'expo.out',
-        stagger: 0.18,
+        duration: 0.7,
+        ease: 'power3.out',
+        stagger: 0.12,
         overwrite: true,
       }),
   })
@@ -247,8 +247,8 @@ useGsapContext(root, (c) => {
   margin-inline: calc(var(--gutter) * -1);
   padding: 0.25rem var(--gutter) 1rem;
   overflow-x: auto;
-  /* `overflow-x: auto` fuerza `auto` también en vertical: las cards que entran desde y: 56 px creaban un
-     scroll vertical interno que se comía la rueda/el dedo y hacía «saltar» la página. */
+  /* `overflow-x: auto` fuerza `auto` también en vertical: sin esto, cualquier desborde crearía un scroll
+     interno que se come la rueda/el dedo. */
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--gutter);
@@ -258,6 +258,8 @@ useGsapContext(root, (c) => {
   display: none;
 }
 .reviews__item {
+  /* Contiene los `sr-only` (absolutos) de cada reseña: sin esto escapan del carrusel y ensanchan la página */
+  position: relative;
   flex: 0 0 min(84%, 22rem);
   min-width: 0;
   scroll-snap-align: start;
