@@ -425,8 +425,8 @@ onBeforeUnmount(() => {
 }
 .sheet__close {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
+  top: 1.5rem;
+  right: 1.5rem;
   z-index: 3;
   background: var(--color-bone);
   box-shadow: var(--shadow-float);
@@ -664,8 +664,6 @@ onBeforeUnmount(() => {
   }
   .sheet__close {
     position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
   }
   .sheet__grid {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
