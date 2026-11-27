@@ -626,6 +626,7 @@ onBeforeUnmount(() => {
   border: 1px solid var(--color-ink);
   border-radius: 50%;
   color: var(--color-ink);
+  cursor: pointer;
   transition:
     background-color var(--dur-base) var(--ease-out-soft),
     color var(--dur-base) var(--ease-out-soft),

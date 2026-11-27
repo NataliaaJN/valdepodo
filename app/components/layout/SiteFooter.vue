@@ -45,20 +45,7 @@ const year = new Date().getFullYear()
 
         <div class="footer-col">
           <p class="footer-title">Síguenos</p>
-          <ul class="footer-social" role="list">
-            <li>
-              <a :href="clinic.instagram.url" class="footer-social__link" target="_blank" rel="noopener">
-                <BaseIcon name="instagram" />
-                <span class="sr-only">Instagram (se abre en una pestaña nueva)</span>
-              </a>
-            </li>
-            <li>
-              <a :href="clinic.linkedin.url" class="footer-social__link" target="_blank" rel="noopener">
-                <BaseIcon name="linkedin" />
-                <span class="sr-only">LinkedIn (se abre en una pestaña nueva)</span>
-              </a>
-            </li>
-          </ul>
+          <SocialLinks />
         </div>
       </div>
 
@@ -126,34 +113,6 @@ const year = new Date().getFullYear()
 }
 .footer-link:hover {
   text-decoration-color: currentColor;
-}
-
-.footer-social {
-  display: flex;
-  gap: 0.5rem;
-}
-.footer-social__link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border: 1px solid rgb(241 239 233 / 0.3);
-  border-radius: 9999px;
-  color: var(--color-bone);
-  transition:
-    background-color var(--dur-fast) var(--ease-out-soft),
-    border-color var(--dur-fast) var(--ease-out-soft),
-    color var(--dur-fast) var(--ease-out-soft);
-}
-.footer-social__link :deep(.base-icon) {
-  width: 1.3rem;
-  height: 1.3rem;
-}
-.footer-social__link:hover {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-ink);
 }
 
 .footer-bottom {
