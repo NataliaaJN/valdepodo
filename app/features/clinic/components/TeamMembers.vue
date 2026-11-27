@@ -317,14 +317,14 @@ onBeforeUnmount(() => {
 }
 
 /* Visibles al enfocar, y siempre en táctil */
-.card:focus-within .glass__more {
+.card:has(:focus-visible) .glass__more {
   grid-template-rows: 1fr;
   opacity: 1;
 }
-.card:focus-within .social {
+.card:has(:focus-visible) .social {
   opacity: 1;
 }
-.card:focus-within .card__img {
+.card:has(:focus-visible) .card__img {
   scale: 1.03;
 }
 @media (hover: hover) and (pointer: fine) {
