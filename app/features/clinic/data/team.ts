@@ -2,7 +2,7 @@
  * Equipo (spec 05 §2): datos confirmados por la clínica. **No se deduce el equipo de las reseñas** (research §3.2).
  * Fotos reales; LinkedIn autorizado por cada profesional.
  */
-import { pending, type Maybe } from '#shared/utils/pending'
+import type { Maybe } from '#shared/utils/pending'
 
 export interface TeamMember {
   id: string
@@ -25,18 +25,15 @@ export interface TeamProfileData {
   lead: Maybe<string>
   /** Cifra destacada (opcional). */
   stat?: { value: string; label: string }
-  /** Formación y trayectoria en orden cronológico (opcional). `when` es opcional. */
-  path?: readonly { when?: string; title: Maybe<string>; place: Maybe<string> }[]
+  /** Formación y trayectoria en orden cronológico (opcional). `when` y `place` son opcionales. */
+  path?: readonly { when?: string; title: Maybe<string>; place?: Maybe<string> }[]
   /** Áreas de interés (opcional). */
   interests?: readonly Maybe<string>[]
-  /** Qué hace en la clínica, con su título de bloque. */
-  practice: { title: string; items: readonly Maybe<string>[] }
+  /** Qué hace en la clínica, con su título de bloque (opcional). */
+  practice?: { title: string; items: readonly Maybe<string>[] }
   /** Su forma de trabajar: rasgo destacado y texto. */
   approach: { trait: Maybe<string>; text: Maybe<string> }
 }
-
-/** Texto provisional de Valerie: validar con la clínica. */
-const V = (text: string) => pending(text, 'Texto de Valerie: validar con la clínica')
 
 const ROLE = 'Copropietaria | Podóloga'
 
@@ -92,20 +89,21 @@ export const team: readonly TeamMember[] = [
     specialties: [],
     license: null,
     profile: {
-      lead: V('Titular de Valerie pendiente: una frase que la presente.'),
+      lead: 'Quiropodia, exploración biomecánica y cirugía menor del pie.',
       path: [
-        { when: 'Año', title: V('Formación pendiente'), place: V('Centro pendiente') },
-        { when: 'Año', title: V('Trayectoria pendiente'), place: V('Centro pendiente') },
-        { title: V('Posgrado pendiente'), place: V('Centro pendiente') },
+        { when: 'Junio 2022', title: 'Graduada en Podología', place: 'Universidad Complutense de Madrid' },
+        { when: 'Abril 2023', title: 'Inicio de su trayectoria profesional como podóloga' },
+        { title: 'Experto en Podología Deportiva y Biomecánica', place: 'Centro Universitario La Salle' },
+        {
+          when: 'En curso',
+          title: 'Experto en Podología Médico-Quirúrgica',
+          place: 'Universidad Complutense de Madrid',
+        },
       ],
-      interests: [V('Área de interés'), V('Área de interés'), V('Área de interés')],
-      practice: {
-        title: 'En consulta',
-        items: [V('Tratamiento pendiente'), V('Tratamiento pendiente'), V('Tratamiento pendiente')],
-      },
+      interests: ['Quiropodia', 'Exploración biomecánica', 'Cirugía menor del pie'],
       approach: {
-        trait: V('Forma de trabajar'),
-        text: V('Texto pendiente sobre cómo trabaja Valerie y cómo trata a cada paciente.'),
+        trait: 'Cercanía y paciencia',
+        text: 'Valerie se considera una persona cercana, paciente, cuidadosa y amable. Lo que más disfruta de su trabajo es cuidar de los pacientes y contribuir a mejorar su calidad de vida: cada consulta es una oportunidad para ayudar, acompañar y ofrecer el mejor cuidado posible.',
       },
     },
     linkedin: 'https://es.linkedin.com/in/valerie-savignano-guti%C3%A9rrez-8552b3249',

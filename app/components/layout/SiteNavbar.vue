@@ -375,10 +375,7 @@ onBeforeUnmount(() => {
             <a :href="clinic.phoneHref" class="menu-contact">
               <ContentValue :value="site.phone" />
             </a>
-            <a :href="clinic.instagram.url" target="_blank" rel="noopener" class="menu-contact">
-              <ContentValue v-slot="{ value }" :value="site.instagram">{{ value.handle }}</ContentValue>
-              <span class="sr-only">(Instagram, se abre en una pestaña nueva)</span>
-            </a>
+            <SocialLinks />
           </div>
         </div>
       </div>

@@ -589,17 +589,17 @@ useGsapContext(root, (c) => {
             <!-- 04 · Entrega y revisión -->
             <g class="k-follow">
               <path
-                d="M190 394H470"
+                d="M190 384H470"
                 pathLength="1"
                 :style="{ strokeDasharray: 1, strokeDashoffset: 1 - v.follow }"
               />
               <g :style="{ opacity: seg(3.45, 3.6) }">
-                <circle cx="190" cy="394" r="5" />
-                <text class="k-note" x="190" y="414" text-anchor="middle">entrega</text>
+                <circle cx="190" cy="384" r="5" />
+                <text class="k-note" x="190" y="416" text-anchor="middle">entrega</text>
               </g>
               <g :style="{ opacity: seg(3.75, 3.95) }">
-                <circle cx="470" cy="394" r="5" />
-                <text class="k-note" x="470" y="414" text-anchor="middle">revisión</text>
+                <circle cx="470" cy="384" r="5" />
+                <text class="k-note" x="470" y="416" text-anchor="middle">revisión</text>
               </g>
             </g>
           </svg>
@@ -900,6 +900,10 @@ useGsapContext(root, (c) => {
   }
   .k-note.k-note--small {
     font-size: 18px;
+  }
+  /* Con la letra más grande, «entrega» y «revisión» bajan para no pegarse a su línea */
+  .k-follow .k-note {
+    transform: translateY(6px);
   }
 }
 
