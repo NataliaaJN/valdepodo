@@ -368,8 +368,11 @@ async function copy(text: string, what: string) {
 
 /* ---------- Cita + mapa ---------- */
 .cita {
-  scroll-margin-top: calc(var(--nav-h-compact) + 8px);
-  padding-block: clamp(3.5rem, 6vw, 5.5rem);
+  --cita-pad: clamp(3.5rem, 6vw, 5.5rem);
+  /* Al llegar por el ancla el rótulo queda a 2rem bajo la navbar: se descuenta el padding propio. El hueco
+     de la navbar ya lo pone `scroll-padding-top` en <html>; aquí solo se suma 1rem */
+  scroll-margin-top: calc(1rem - var(--cita-pad));
+  padding-block: var(--cita-pad);
 }
 .cita-head {
   display: grid;
