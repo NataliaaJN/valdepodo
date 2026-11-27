@@ -251,6 +251,8 @@ useGsapContext(root, (c) => {
   display: none;
 }
 .reviews__item {
+  /* Contiene los `sr-only` (absolutos) de cada reseña: sin esto escapan del carrusel y ensanchan la página */
+  position: relative;
   flex: 0 0 min(84%, 22rem);
   min-width: 0;
   scroll-snap-align: start;
