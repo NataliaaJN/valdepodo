@@ -3,8 +3,8 @@ import { resolveValue } from '#shared/utils/pending'
 import { site } from '~/data/site'
 
 /**
- * Índice de servicios: la misma cabecera que el resto de páginas (`ClinicHero`: vídeo a sangre con la foto de póster, migas de
- * pan, título y entradilla, sin botón: pedir cita está en la navbar y en el cierre) y el catálogo de los cinco
+ * Índice de servicios: la misma cabecera que el resto de páginas (`ClinicHero`: vídeo a sangre, con su primer fotograma de
+ * póster para que no se vea otra imagen mientras carga, migas de pan, título y entradilla, sin botón: pedir cita está en la navbar y en el cierre) y el catálogo de los cinco
  * servicios, sin numerar. El cierre «Pedir cita» lo pinta el layout (CtaBlock).
  */
 const city = resolveValue(site.city)
@@ -28,7 +28,7 @@ useBreadcrumbSchema([
       id="services-title"
       title="Servicios de podología"
       video="/videos/servicios.mp4"
-      :photo="{ src: '/images/clinic/contacto.webp', alt: '' }"
+      :photo="{ src: '/images/servicios/indice-poster.webp', alt: '' }"
       focus="50% 60%"
     >
       <template #crumbs>
