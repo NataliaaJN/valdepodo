@@ -425,8 +425,8 @@ onBeforeUnmount(() => {
 }
 .sheet__close {
   position: fixed;
-  top: 0.75rem;
-  right: 0.75rem;
+  top: 1.5rem;
+  right: 1.5rem;
   z-index: 3;
   background: var(--color-bone);
   box-shadow: var(--shadow-float);
@@ -675,7 +675,7 @@ onBeforeUnmount(() => {
   /* El scroll empieza bajo el botón de cerrar, para que la barra no se le meta debajo */
   .sheet__body {
     min-height: 0;
-    margin-top: 4.25rem;
+    margin-top: 5rem;
     overflow-y: auto;
     padding: 0 2.5rem 2rem;
   }
