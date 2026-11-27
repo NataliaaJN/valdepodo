@@ -132,7 +132,7 @@ onBeforeUnmount(() => {
                   <ContentValue :value="st.title" />
                   <span v-if="st.when" class="path__when">{{ st.when }}</span>
                 </p>
-                <p class="path__place"><ContentValue :value="st.place" /></p>
+                <p v-if="st.place" class="path__place"><ContentValue :value="st.place" /></p>
               </li>
             </ol>
           </section>
@@ -144,7 +144,7 @@ onBeforeUnmount(() => {
             </ul>
           </section>
 
-          <section class="blk">
+          <section v-if="cur.profile.practice" class="blk">
             <h4 class="blk__title">{{ cur.profile.practice.title }}</h4>
             <ul class="prac">
               <li v-for="(item, k) in cur.profile.practice.items" :key="k">
